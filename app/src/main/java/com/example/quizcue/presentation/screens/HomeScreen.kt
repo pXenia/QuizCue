@@ -3,6 +3,7 @@ package com.example.quizcue.presentation.screens
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -75,7 +76,8 @@ fun HomeScreen() {
             )
         },
         modifier = Modifier
-            .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()),
+            .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding())
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     ) {
         MainPreview()
@@ -84,7 +86,7 @@ fun HomeScreen() {
 
 @Composable
 fun MainPreview() {
-    Column(modifier = Modifier.padding(horizontal = 30.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 30.dp)) {
         Header()
         Body()
         LastQuiz()
@@ -165,7 +167,7 @@ fun ActiveItem(icon: ImageVector, title: String, subtitle: String) {
         ) {
             Icon(imageVector = icon, contentDescription = null)
         }
-        Spacer(modifier = Modifier.fillMaxWidth(0.3f))
+        Spacer(modifier = Modifier.fillMaxWidth(0.25f))
         Column {
             Text(text = title, style = MaterialTheme.typography.titleMedium)
             Text(text = subtitle, style = MaterialTheme.typography.titleSmall)

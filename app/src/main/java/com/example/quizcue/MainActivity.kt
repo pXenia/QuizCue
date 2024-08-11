@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.sp
 import com.example.quizcue.presentation.screens.Body
 import com.example.quizcue.presentation.screens.HomeScreen
 import com.example.quizcue.presentation.screens.LastQuiz
+import com.example.quizcue.presentation.screens.MainScreen
 import com.example.quizcue.presentation.screens.ProgressCircle
 import com.example.quizcue.ui.theme.QuizCueTheme
 
@@ -80,7 +81,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             QuizCueTheme {
-                HomeScreen()
+                MainScreen()
             }
         }
     }
