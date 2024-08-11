@@ -78,7 +78,7 @@ val AppTypography = Typography(
     ),
     titleLarge = baseline.titleLarge.copy(
         fontFamily = displayFontFamily,
-        fontSize = 22.sp,
+        fontSize = 20.sp,
         fontWeight = FontWeight.Bold,
         lineHeight = 28.sp,
         letterSpacing = 0.sp,
@@ -86,7 +86,7 @@ val AppTypography = Typography(
     titleMedium = baseline.titleMedium.copy(
         fontFamily = displayFontFamily,
         fontSize = 16.sp,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
         lineHeight = 24.sp,
         letterSpacing = 0.15.sp,
     ),
