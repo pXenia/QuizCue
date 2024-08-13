@@ -1,23 +1,26 @@
 package com.example.quizcue.presentation.screens.schedule_screen
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Icon
@@ -33,8 +36,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.quizcue.presentation.screens.QuestionCard
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -44,17 +50,28 @@ import java.util.Locale
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun CalendarWithEvents(events: List<Event>) {
+fun CalendarWithEvents(questionTitles: List<QuestionTitle>) {
+    val scroll = rememberScrollState()
+    val heightScr = LocalConfiguration.current.screenHeightDp.dp
+
     val currentMonth = remember { mutableStateOf(Calendar.getInstance()) }
 
-    val selectedDateEvents = remember { mutableStateOf<List<Event>>(listOf()) }
+    val selectedDateEvents = remember { mutableStateOf<List<QuestionTitle>>(listOf()) }
 
     val pagerState = rememberPagerState(initialPage = Int.MAX_VALUE / 2)
     val coroutineScope = rememberCoroutineScope()
-    Box(modifier = Modifier.padding(top = 10.dp)) {
+    Box(modifier = Modifier
+        .padding(top = 10.dp)
+        .verticalScroll(
+            scroll,
+        enabled = selectedDateEvents.value.isNotEmpty()
+        )
+        .height(heightScr*1.45f)
+    ) {
         HorizontalPager(
             count = Int.MAX_VALUE,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
             state = pagerState,
             verticalAlignment = Alignment.Top
         ) { page ->
@@ -63,10 +80,12 @@ fun CalendarWithEvents(events: List<Event>) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(16.dp),
             ) {
                 Text(
-                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 5.dp),
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(bottom = 5.dp),
                     text = "${
                         month.getDisplayName(
                             Calendar.MONTH,
@@ -76,15 +95,28 @@ fun CalendarWithEvents(events: List<Event>) {
                     } ${month.get(Calendar.YEAR)}",
                     style = MaterialTheme.typography.bodyLarge,
                 )
-
-                CalendarGrid(events, month, selectedDateEvents)
+                Box(
+                    modifier = Modifier.graphicsLayer {
+                        alpha = 1f - (scroll.value.toFloat() / scroll.maxValue)
+                    },
+                ) {
+                    CalendarGrid(questionTitles, month, selectedDateEvents)
+                }
+                Spacer(
+                    modifier = Modifier
+                        .height(10.dp)
+                )
                 EventList(selectedDateEvents.value)
             }
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .graphicsLayer {
+                    alpha = 1f - 10f*(scroll.value.toFloat() / scroll.maxValue)
+                },
         ) {
             IconButton(onClick = {
                 // Move to the previous page
@@ -110,7 +142,7 @@ fun CalendarWithEvents(events: List<Event>) {
 
 
 @Composable
-fun CalendarGrid(events: List<Event>, currentMonth: Calendar, selectedDateEvents: MutableState<List<Event>>) {
+fun CalendarGrid(questionTitles: List<QuestionTitle>, currentMonth: Calendar, selectedDateEvents: MutableState<List<QuestionTitle>>) {
     val daysInMonth = currentMonth.getActualMaximum(Calendar.DAY_OF_MONTH)
     val firstDayOfMonth = currentMonth.clone() as Calendar
     firstDayOfMonth.set(Calendar.DAY_OF_MONTH, 1)
@@ -125,19 +157,19 @@ fun CalendarGrid(events: List<Event>, currentMonth: Calendar, selectedDateEvents
             today.get(Calendar.YEAR) == currentMonth.get(Calendar.YEAR)
     val isSelected  = remember { mutableStateOf(today.get(Calendar.DAY_OF_MONTH)) }
     LazyVerticalGrid(
+
         columns = GridCells.Fixed(7)
     ) {
         items(allDays.size) { index ->
             val day = allDays[index]
             val textColor = if (day <= 0) Color.Transparent else MaterialTheme.colorScheme.tertiary
             val currentDay = if (day <= 0) "" else day.toString()
-            // Determine the events for this day
-            val eventsForDay = events.filter { event ->
+            val eventsForDay = questionTitles.filter { event ->
                 val eventCalendar = Calendar.getInstance()
                 eventCalendar.time = event.date
                 eventCalendar.get(Calendar.DAY_OF_MONTH) == day &&
                         eventCalendar.get(Calendar.MONTH) == currentMonth.get(Calendar.MONTH) &&
-                        event.date.year == currentMonth.get(Calendar.YEAR)
+                        eventCalendar.get(Calendar.YEAR) == currentMonth.get(Calendar.YEAR)
             }
             val isToday = isCurrentMonth && day == today.get(Calendar.DAY_OF_MONTH)
             // Display the day and event dots
@@ -176,14 +208,29 @@ fun CalendarGrid(events: List<Event>, currentMonth: Calendar, selectedDateEvents
 }
 
 @Composable
-fun EventList(events: List<Event>) {
-    Column(
+fun EventList(questionTitles: List<QuestionTitle>) {
+    val heightScr = LocalConfiguration.current.screenHeightDp.dp
+    LazyColumn(
         modifier = Modifier
             .padding(top = 16.dp)
-            .fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+            .fillMaxWidth()
+            .height(heightScr),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        events.forEach { event ->
-            Text(text = event.description)
+        items(
+            items = questionTitles,
+        ) { question ->
+            QuestionCard(text = question.description)
+            Spacer(
+                modifier = Modifier
+                    .height(10.dp)
+            )
+            if (question == questionTitles.last()) {
+                Spacer(
+                    modifier = Modifier
+                        .height(50.dp)
+                )
+            }
         }
     }
 }
