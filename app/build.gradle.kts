@@ -66,6 +66,15 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.animated.navigation.bar)
 
+    implementation(libs.kotlinx.coroutines.android)
+    implementation (libs.androidx.animation)
+
+
+    implementation (libs.androidx.foundation)
+    implementation (libs.androidx.runtime.livedata)
+    implementation (libs.accompanist.pager)
+
+
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.junit)

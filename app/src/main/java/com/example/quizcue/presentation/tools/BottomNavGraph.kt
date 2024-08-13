@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.quizcue.presentation.screens.CoursesScreen
 import com.example.quizcue.presentation.screens.HomeScreen
-import com.example.quizcue.presentation.screens.ScheduleScree
+import com.example.quizcue.presentation.screens.schedule_screen.ScheduleScree
 
 @Composable
 fun BottomNavGraph(navController: NavHostController){
