@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -26,6 +25,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarViewWeek
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.rounded.CalendarToday
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,9 +49,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.quizcue.R
@@ -89,7 +87,10 @@ fun MainPreview() {
     Column(modifier = Modifier.fillMaxSize().padding(horizontal = 30.dp)) {
         Header()
         Body()
-        LastQuiz()
+        CourseCard(
+            textColor = MaterialTheme.colorScheme.onPrimary,
+            trackColor = MaterialTheme.colorScheme.tertiary,
+            cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.primary))
     }
 }
 
@@ -176,15 +177,18 @@ fun ActiveItem(icon: ImageVector, title: String, subtitle: String) {
 }
 
 @Composable
-fun LastQuiz() {
+fun CourseCard(
+    textColor: Color,
+    trackColor: Color,
+    cardColor: CardColors) {
     OutlinedCard(
         modifier = Modifier
             .padding(top = 20.dp)
             .fillMaxWidth()
             .fillMaxHeight(0.5f),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
+        border = BorderStroke(1.dp, trackColor),
         elevation = CardDefaults.cardElevation(6.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+        colors = cardColor,
         onClick = { /* TODO */ }
     ) {
         Row(
@@ -208,13 +212,19 @@ fun LastQuiz() {
                 )
             }
             Spacer(modifier = Modifier.width(10.dp))
-            ProgressCircle(progress = 0.7f)
+            ProgressCircle(
+                textColor =  textColor,
+                trackColor = trackColor,
+                progress = 0.7f)
         }
     }
 }
 
 @Composable
-fun ProgressCircle(progress: Float) {
+fun ProgressCircle(
+    textColor: Color,
+    trackColor: Color,
+    progress: Float) {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.size(80.dp)
@@ -222,15 +232,15 @@ fun ProgressCircle(progress: Float) {
         CircularProgressIndicator(
             progress = { progress },
             modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.onPrimary,
+            color = textColor,
             strokeWidth = 5.dp,
-            trackColor = MaterialTheme.colorScheme.tertiary,
+            trackColor = trackColor,
         )
         Text(
             text = "${(progress * 100).toInt()}%",
             style = MaterialTheme.typography.titleMedium,
             fontSize = 20.sp,
-            color = MaterialTheme.colorScheme.onPrimary,
+            color = textColor,
             modifier = Modifier.align(Alignment.Center)
         )
     }

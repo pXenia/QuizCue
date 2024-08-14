@@ -46,7 +46,9 @@ fun QuestionCard(text: String) {
                 .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(Icons.Default.QuestionMark, "QuestionMark")
+            Icon(Icons.Default.QuestionMark,
+                "QuestionMark",
+                tint = MaterialTheme.colorScheme.primary)
             Text(
                 modifier = Modifier.padding(start = 14.dp),
                 text = text,
