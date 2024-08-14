@@ -33,11 +33,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun CoursesScreen() {
+fun CoursesScreen(
+    navController: NavController
+) {
 
     val scroll = rememberScrollState()
     val heightScr = LocalConfiguration.current.screenHeightDp.dp
@@ -99,6 +102,7 @@ fun CoursesScreen() {
         ) {
             items(7) {
                 CourseCard(
+                    navController= navController,
                     cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHighest),
                     textColor = MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.tertiary

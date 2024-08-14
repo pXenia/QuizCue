@@ -19,4 +19,5 @@ sealed class Screen(
     object Home: Screen("home", Icons.Filled.Home)
     object Courses: Screen("course", Icons.Default.School)
     object Schedule: Screen("schedule", Icons.Default.Schedule)
+    object Questions: Screen("questions", Icons.Default.Schedule)
 }

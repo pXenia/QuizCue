@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -104,9 +103,9 @@ fun CalendarWithEvents(questionTitles: List<QuestionTitle>) {
                 }
                 Spacer(
                     modifier = Modifier
-                        .height(10.dp)
+                        .height(26.dp)
                 )
-                EventList(selectedDateEvents.value)
+                QuestionsList(selectedDateEvents.value)
             }
         }
         Row(
@@ -208,11 +207,10 @@ fun CalendarGrid(questionTitles: List<QuestionTitle>, currentMonth: Calendar, se
 }
 
 @Composable
-fun EventList(questionTitles: List<QuestionTitle>) {
+fun QuestionsList(questionTitles: List<QuestionTitle>) {
     val heightScr = LocalConfiguration.current.screenHeightDp.dp
     LazyColumn(
         modifier = Modifier
-            .padding(top = 16.dp)
             .fillMaxWidth()
             .height(heightScr),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -228,7 +226,7 @@ fun EventList(questionTitles: List<QuestionTitle>) {
             if (question == questionTitles.last()) {
                 Spacer(
                     modifier = Modifier
-                        .height(50.dp)
+                        .height(55.dp)
                 )
             }
         }

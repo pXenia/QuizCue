@@ -12,12 +12,15 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.quizcue.presentation.tools.BottomNavGraph
 import com.example.quizcue.presentation.tools.BottomNavigationBar
+import com.example.quizcue.presentation.tools.currentRouteForBottomBar
 
 @Composable
 fun MainScreen(){
     val navController = rememberNavController()
     Scaffold(
-        bottomBar = { BottomNavigationBar(navController = navController)},
+        bottomBar = { if (currentRouteForBottomBar(navController = navController)) {
+            BottomNavigationBar(navController)
+        }},
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     ){
         Column(modifier = Modifier

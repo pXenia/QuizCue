@@ -52,12 +52,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.quizcue.R
+import com.example.quizcue.presentation.tools.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -74,20 +76,29 @@ fun HomeScreen() {
             )
         },
         modifier = Modifier
-            .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding())
+            .padding(
+                top = WindowInsets.statusBars
+                    .asPaddingValues()
+                    .calculateTopPadding()
+            )
             .background(MaterialTheme.colorScheme.surfaceContainerHigh),
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     ) {
-        MainPreview()
+        MainPreview(navController)
     }
 }
 
 @Composable
-fun MainPreview() {
-    Column(modifier = Modifier.fillMaxSize().padding(horizontal = 30.dp)) {
+fun MainPreview(
+    navController: NavController
+) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = 30.dp)) {
         Header()
         Body()
         CourseCard(
+            navController = navController,
             textColor = MaterialTheme.colorScheme.onPrimary,
             trackColor = MaterialTheme.colorScheme.tertiary,
             cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.primary))
@@ -143,7 +154,9 @@ fun Body() {
             .padding(20.dp),
     ) {
         Column(
-            modifier = Modifier.fillMaxHeight().align(Alignment.Center),
+            modifier = Modifier
+                .fillMaxHeight()
+                .align(Alignment.Center),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             activeItems.forEach { item ->
@@ -178,6 +191,7 @@ fun ActiveItem(icon: ImageVector, title: String, subtitle: String) {
 
 @Composable
 fun CourseCard(
+    navController: NavController,
     textColor: Color,
     trackColor: Color,
     cardColor: CardColors) {
@@ -189,7 +203,7 @@ fun CourseCard(
         border = BorderStroke(1.dp, trackColor),
         elevation = CardDefaults.cardElevation(6.dp),
         colors = cardColor,
-        onClick = { /* TODO */ }
+        onClick = { navController.navigate(Screen.Questions.route) }
     ) {
         Row(
             modifier = Modifier
