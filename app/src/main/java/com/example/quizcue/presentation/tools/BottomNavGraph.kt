@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.quizcue.presentation.screens.CoursesScreen
 import com.example.quizcue.presentation.screens.HomeScreen
+import com.example.quizcue.presentation.screens.LearnCardScreen
 import com.example.quizcue.presentation.screens.QuestionsScreen
 import com.example.quizcue.presentation.screens.schedule_screen.ScheduleScree
 
@@ -25,6 +26,9 @@ fun BottomNavGraph(navController: NavHostController){
         }
         composable(route = Screen.Questions.route){
             QuestionsScreen(navController)
+        }
+        composable(route = Screen.LearnCard.route){
+            LearnCardScreen(navController)
         }
 
     }

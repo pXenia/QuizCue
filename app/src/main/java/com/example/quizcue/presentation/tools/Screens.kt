@@ -14,10 +14,11 @@ import com.example.quizcue.R
 
 sealed class Screen(
     val route: String,
-    val icon: ImageVector
+    val icon: ImageVector?
 ){
     object Home: Screen("home", Icons.Filled.Home)
     object Courses: Screen("course", Icons.Default.School)
     object Schedule: Screen("schedule", Icons.Default.Schedule)
-    object Questions: Screen("questions", Icons.Default.Schedule)
+    object Questions: Screen("questions", null)
+    object LearnCard: Screen("learn_card", null)
 }

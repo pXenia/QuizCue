@@ -40,6 +40,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.quizcue.presentation.screens.schedule_screen.QuestionTitle
 import com.example.quizcue.presentation.screens.schedule_screen.QuestionsList
+import com.example.quizcue.presentation.tools.Screen
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -82,7 +83,7 @@ fun QuestionsScreen(
                     shape = RoundedCornerShape(15.dp),
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-                    onClick = { /*TODO*/ }) {
+                    onClick = { navController.navigate(Screen.LearnCard.route) }) {
                     Text(
                         text = "Учить",
                         style = MaterialTheme.typography.titleMedium.copy(

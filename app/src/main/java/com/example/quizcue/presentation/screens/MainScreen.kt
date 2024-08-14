@@ -1,5 +1,6 @@
 package com.example.quizcue.presentation.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import com.example.quizcue.presentation.tools.BottomNavGraph
 import com.example.quizcue.presentation.tools.BottomNavigationBar
 import com.example.quizcue.presentation.tools.currentRouteForBottomBar
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(){
     val navController = rememberNavController()

@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -59,7 +61,7 @@ fun BottomNavigationBar(navController: NavHostController) {
             ) {
                 Icon(
                     modifier = Modifier.size(26.dp),
-                    imageVector = item.icon,
+                    imageVector = item.icon ?: Icons.Default.ErrorOutline,
                     contentDescription = "",
                     tint = if (selectedIndex == screens.indexOf(item)) MaterialTheme.colorScheme.onPrimary
                     else MaterialTheme.colorScheme.secondary
