@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.screens.schedule_screen
+package com.example.quizcue.presentation.schedule_screen
 
 import java.util.Date
 

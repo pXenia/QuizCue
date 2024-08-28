@@ -2,19 +2,29 @@ package com.example.quizcue.presentation.tools
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.quizcue.presentation.screens.CoursesScreen
-import com.example.quizcue.presentation.screens.HomeScreen
-import com.example.quizcue.presentation.screens.LearnCardScreen
-import com.example.quizcue.presentation.screens.QuestionsScreen
-import com.example.quizcue.presentation.screens.schedule_screen.ScheduleScree
+import com.example.quizcue.presentation.CoursesScreen
+import com.example.quizcue.presentation.home_screen.HomeScreen
+import com.example.quizcue.presentation.LearnCardScreen
+import com.example.quizcue.presentation.QuestionsScreen
+import com.example.quizcue.presentation.authentication.AuthenticationNavigationViewModel
+import com.example.quizcue.presentation.authentication.login_screen.LoginScreen
+import com.example.quizcue.presentation.authentication.register_screen.RegisterScreen
+import com.example.quizcue.presentation.schedule_screen.ScheduleScree
 
 @Composable
-fun BottomNavGraph(navController: NavHostController){
-    NavHost(navController = navController, startDestination = Screen.Home.route) {
+fun BottomNavGraph(navController: NavHostController,
+                   authenticationNavigationViewModel: AuthenticationNavigationViewModel = hiltViewModel()){
+    NavHost(navController = navController,
+        startDestination = if (authenticationNavigationViewModel.isLoggedInState.value)
+            Screen.Login.route
+        else
+            Screen.Home.route
+    ) {
         composable(route = Screen.Home.route){
             HomeScreen(navController)
         }
@@ -30,7 +40,12 @@ fun BottomNavGraph(navController: NavHostController){
         composable(route = Screen.LearnCard.route){
             LearnCardScreen(navController)
         }
-
+        composable(route = Screen.Login.route){
+            LoginScreen(navController)
+        }
+        composable(route = Screen.Register.route){
+            RegisterScreen(navController)
+        }
     }
 }
 

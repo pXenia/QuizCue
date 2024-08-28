@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.screens
+package com.example.quizcue.presentation
 
 import androidx.compose.runtime.Composable
 

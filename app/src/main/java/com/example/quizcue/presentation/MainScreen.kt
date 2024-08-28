@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.screens
+package com.example.quizcue.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
@@ -23,12 +23,12 @@ fun MainScreen(){
         bottomBar = { if (currentRouteForBottomBar(navController = navController)) {
             BottomNavigationBar(navController)
         }},
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        modifier = Modifier.fillMaxSize()
     ){
         Column(modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = it.calculateBottomPadding())
-            .verticalScroll(rememberScrollState())){}
+            .padding(bottom = it.calculateBottomPadding())){}
         BottomNavGraph(navController = navController)
     }
 }
