@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "42462063290",
+    "project_id": "quizcue-298f3",
+    "storage_bucket": "quizcue-298f3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:42462063290:android:afbcf14316406acba1b083",
+        "android_client_info": {
+          "package_name": "com.example.quizcue"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyASUjnRcxkcnCtXJ8j56EqNr8MotLwm65g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

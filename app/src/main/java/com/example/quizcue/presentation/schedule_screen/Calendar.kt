@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.screens.schedule_screen
+package com.example.quizcue.presentation.schedule_screen
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -39,7 +37,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.quizcue.presentation.screens.QuestionCard
+import com.example.quizcue.presentation.elements.QuestionsList
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -206,30 +204,4 @@ fun CalendarGrid(questionTitles: List<QuestionTitle>, currentMonth: Calendar, se
     }
 }
 
-@Composable
-fun QuestionsList(questionTitles: List<QuestionTitle>) {
-    val heightScr = LocalConfiguration.current.screenHeightDp.dp
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(heightScr),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        items(
-            items = questionTitles,
-        ) { question ->
-            QuestionCard(text = question.description)
-            Spacer(
-                modifier = Modifier
-                    .height(10.dp)
-            )
-            if (question == questionTitles.last()) {
-                Spacer(
-                    modifier = Modifier
-                        .height(55.dp)
-                )
-            }
-        }
-    }
-}
 

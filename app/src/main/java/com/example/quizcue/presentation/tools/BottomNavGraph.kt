@@ -6,11 +6,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.quizcue.presentation.screens.CoursesScreen
-import com.example.quizcue.presentation.screens.HomeScreen
-import com.example.quizcue.presentation.screens.LearnCardScreen
-import com.example.quizcue.presentation.screens.QuestionsScreen
-import com.example.quizcue.presentation.screens.schedule_screen.ScheduleScree
+import com.example.quizcue.presentation.CoursesScreen
+import com.example.quizcue.presentation.HomeScreen
+import com.example.quizcue.presentation.LearnCardScreen
+import com.example.quizcue.presentation.QuestionsScreen
+import com.example.quizcue.presentation.schedule_screen.ScheduleScree
 
 @Composable
 fun BottomNavGraph(navController: NavHostController){

@@ -1,9 +1,8 @@
-package com.example.quizcue.presentation.screens.schedule_screen
+package com.example.quizcue.presentation.schedule_screen
 
 import androidx.compose.runtime.Composable
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import java.util.Random
 

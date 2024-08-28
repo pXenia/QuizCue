@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.screens
+package com.example.quizcue.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
