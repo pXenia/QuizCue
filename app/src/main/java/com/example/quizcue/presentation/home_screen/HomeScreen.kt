@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.home_screen
+import com.example.quizcue.presentation.home_screen.HomeScreenViewModel
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke

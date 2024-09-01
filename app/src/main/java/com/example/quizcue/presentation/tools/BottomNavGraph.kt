@@ -1,5 +1,6 @@
 package com.example.quizcue.presentation.tools
 
+import HomeScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -8,7 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.quizcue.presentation.CoursesScreen
-import com.example.quizcue.presentation.home_screen.HomeScreen
 import com.example.quizcue.presentation.LearnCardScreen
 import com.example.quizcue.presentation.QuestionsScreen
 import com.example.quizcue.presentation.authentication.AuthenticationNavigationViewModel
