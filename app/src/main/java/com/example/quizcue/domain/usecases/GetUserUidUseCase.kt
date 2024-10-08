@@ -1,6 +1,6 @@
 package com.example.quizcue.domain.usecases
 
-import com.example.quizcue.domain.AuthenticationRepository
+import com.example.quizcue.domain.repository.AuthenticationRepository
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 

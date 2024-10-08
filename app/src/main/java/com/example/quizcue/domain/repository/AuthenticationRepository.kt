@@ -1,5 +1,6 @@
-package com.example.quizcue.domain
+package com.example.quizcue.domain.repository
 
+import com.example.quizcue.domain.Response
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.flow.Flow
 

@@ -1,6 +1,6 @@
 package com.example.quizcue.domain.usecases
 
-import com.example.quizcue.domain.AuthenticationRepository
+import com.example.quizcue.domain.repository.AuthenticationRepository
 import javax.inject.Inject
 
 class RegisterUseCase @Inject constructor(

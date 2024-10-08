@@ -46,6 +46,9 @@ fun BottomNavGraph(navController: NavHostController,
         composable(route = Screen.Register.route){
             RegisterScreen(navController)
         }
+//        composable(route = Screen.EditQuestion.route){
+//            EditQuestion(navController)
+//        }
     }
 }
 

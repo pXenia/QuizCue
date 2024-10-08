@@ -21,6 +21,7 @@ sealed class Screen(
     object Schedule: Screen("schedule", Icons.Default.Schedule)
     object Questions: Screen("questions", null)
     object LearnCard: Screen("learn_card", null)
-    object Login: Screen("login_screen", null)
-    object Register: Screen("register_screen", null)
+    object Login: Screen("login", null)
+    object Register: Screen("register", null)
+    object EditQuestion: Screen("edit_question", null)
 }

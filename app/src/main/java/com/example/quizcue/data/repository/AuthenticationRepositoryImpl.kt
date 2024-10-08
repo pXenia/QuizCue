@@ -1,6 +1,6 @@
-package com.example.quizcue.data
+package com.example.quizcue.data.repository
 
-import com.example.quizcue.domain.AuthenticationRepository
+import com.example.quizcue.domain.repository.AuthenticationRepository
 import com.example.quizcue.domain.Response
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth

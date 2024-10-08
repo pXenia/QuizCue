@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.google.gms.google.services)
     alias(libs.plugins.daggerHilt)
     alias(libs.plugins.org.jetbrains.kotlin.kapt)
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -41,6 +42,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -79,8 +81,10 @@ dependencies {
 
     implementation (libs.firebase.auth)
     implementation (libs.firebase.database)
+    implementation (libs.firebase.firestore.ktx)
 
     implementation(libs.hilt.android)
+    implementation(libs.firebase.firestore)
     kapt(libs.hilt.android.compiler)
     implementation(libs.hilt.navigation.compose)
 
@@ -92,6 +96,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(libs.generativeai)
+    implementation (libs.androidx.lifecycle.viewmodel.ktx)
 
 }
 

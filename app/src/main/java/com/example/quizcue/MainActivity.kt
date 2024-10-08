@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.ExperimentalMaterial3Api
-import com.example.quizcue.presentation.MainScreen
+import androidx.navigation.compose.rememberNavController
+import com.example.quizcue.presentation.edit_question_screen.EditQuestion
 import com.example.quizcue.ui.theme.QuizCueTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             QuizCueTheme {
-                MainScreen()
+                EditQuestion(navController = rememberNavController())
             }
         }
     }
