@@ -103,7 +103,7 @@ fun CalendarWithEvents(questionTitles: List<QuestionTitle>) {
                     modifier = Modifier
                         .height(26.dp)
                 )
-                QuestionsList(selectedDateEvents.value)
+                //QuestionsList(selectedDateEvents.value)
             }
         }
         Row(

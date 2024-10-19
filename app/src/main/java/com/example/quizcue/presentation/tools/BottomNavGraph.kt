@@ -14,6 +14,7 @@ import com.example.quizcue.presentation.QuestionsScreen
 import com.example.quizcue.presentation.authentication.AuthenticationNavigationViewModel
 import com.example.quizcue.presentation.authentication.login_screen.LoginScreen
 import com.example.quizcue.presentation.authentication.register_screen.RegisterScreen
+import com.example.quizcue.presentation.edit_question_screen.EditQuestion
 import com.example.quizcue.presentation.schedule_screen.ScheduleScree
 
 @Composable
@@ -46,9 +47,9 @@ fun BottomNavGraph(navController: NavHostController,
         composable(route = Screen.Register.route){
             RegisterScreen(navController)
         }
-//        composable(route = Screen.EditQuestion.route){
-//            EditQuestion(navController)
-//        }
+       composable(route = Screen.EditQuestion.route){
+            EditQuestion(navController)
+        }
     }
 }
 

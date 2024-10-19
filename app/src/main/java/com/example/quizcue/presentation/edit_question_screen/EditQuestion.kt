@@ -31,6 +31,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.quizcue.domain.model.Question
+import com.example.quizcue.presentation.tools.Screen
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -39,11 +41,11 @@ fun EditQuestion(
     navController: NavController,
     questionViewModel: EditQuestionViewModel = hiltViewModel()
 ) {
-    val questionsState by questionViewModel.questionsFlow.collectAsState()
-    var answer = questionViewModel.answerGenerationResult.collectAsState().value ?: ""
-    var hint = questionViewModel.hintGenerationResult.collectAsState().value ?: ""
 
-    var question by remember { mutableStateOf("") }
+    var text = questionViewModel.textQuestion.value
+    var hint = questionViewModel.hintQuestion.value
+    var answer  = questionViewModel.answerQuestion.value
+
     Scaffold(
         floatingActionButton = {
             Row {
@@ -52,6 +54,9 @@ fun EditQuestion(
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     shape = RoundedCornerShape(15.dp),
                     onClick = {
+                        questionViewModel.upsertQuestion(question = Question(text = text, hint = hint, answer = answer)) {
+                            navController.navigate(Screen.Questions.route)
+                        }
                     }) {
                     Icon(Icons.Filled.Done, contentDescription = "Done")
                 }
@@ -69,7 +74,7 @@ fun EditQuestion(
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     shape = RoundedCornerShape(15.dp),
                     onClick = {
-                        questionViewModel.generateAnswer(question)
+                        questionViewModel.generateAnswer(text)
                     }) {
                     Icon(Icons.Filled.AutoAwesome, contentDescription = "AutoAwesome")
                 }
@@ -94,8 +99,10 @@ fun EditQuestion(
                         text = "Вопрос",
                     )
                 },
-                value = question,
-                onValueChange = { question = it },
+                value = text,
+                onValueChange = {
+                    questionViewModel.onEvent(EditQuestionEvent.EnteredTextQuestion(it))
+                },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -114,7 +121,9 @@ fun EditQuestion(
                     .fillMaxWidth(),
                 placeholder = { Text(text = "Подсказка") },
                 value = hint,
-                onValueChange = { hint = it },
+                onValueChange = {
+                    questionViewModel.onEvent(EditQuestionEvent.EnteredHintQuestion(it))
+                },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -133,7 +142,9 @@ fun EditQuestion(
                     .fillMaxSize(),
                 value = answer,
                 placeholder = { Text(text = "Ответ") },
-                onValueChange = { answer = it },
+                onValueChange = {
+                    questionViewModel.onEvent(EditQuestionEvent.EnteredAnswerQuestion(it))
+                },
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,

@@ -1,40 +1,68 @@
 package com.example.quizcue.data.repository
 
-import com.example.quizcue.domain.Response
+import android.util.Log
 import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.repository.QuestionRepository
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 
+
 class QuestionRepositoryImpl(
-    private val firestore: FirebaseFirestore,
+    private val database: FirebaseDatabase,
     private val auth: FirebaseAuth
 ) : QuestionRepository {
 
-    private val questionsCollection = firestore.collection("questions")
+    private val databaseRef = database.reference
+        .child(auth.currentUser?.uid.toString())
 
-    override suspend fun addQuestion(question: Question): Response<Void?> {
-        return  try {
-            val userId = auth.currentUser?.uid ?: throw Exception ("User not logged in")
-            val document = questionsCollection.document(userId).collection("userQuestions").document()
-            document.set(question).await()
-            Response.Success(null)
-        } catch (e: Exception) {
-            Response.Error(e.toString())
-        }
+    override suspend fun upsertQuestion(question: Question, onSuccess: () -> Unit) {
+        val questionId = if (question.id == "") databaseRef.push().key ?: return else question.id
+        val questionMap = hashMapOf<String, Any>(
+            "text" to question.text,
+            "hint" to question.hint,
+            "answer" to question.answer,
+        )
+        databaseRef.child(questionId)
+            .setValue(questionMap)
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { exception ->
+                Log.e("FirebaseError", "Failed to add question", exception)
+            }
     }
 
-    override fun getQuestions(): Flow<Response<List<Question>>> = flow {
-        try {
-            val userId = auth.currentUser?.uid ?: throw Exception ("User not logged in")
-            val snapshot = questionsCollection.document(userId).collection("userQuestions").get().await()
-            val questions = snapshot.toObjects(Question::class.java)
-            emit(Response.Success(questions))
-        } catch (e: Exception) {
-            emit(Response.Error(e.toString()))
-        }
+    override suspend fun deleteQuestion(question: Question, onSuccess: () -> Unit) {
+        databaseRef.child(question.id)
+            .removeValue()
+            .addOnSuccessListener { onSuccess() }
     }
+
+    override fun getQuestions(): Flow<List<Question>> = callbackFlow {
+        val questionsListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val questions = mutableListOf<Question>()
+                snapshot.children.forEach { child ->
+                    val question = child.getValue(Question::class.java)
+                    question?.let { questions.add(it) }
+                }
+                trySend(questions).isSuccess
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseError", "Failed to retrieve questions", error.toException())
+            }
+        }
+
+        databaseRef.addValueEventListener(questionsListener)
+
+        awaitClose { databaseRef.removeEventListener(questionsListener) }
+    }
+
 }

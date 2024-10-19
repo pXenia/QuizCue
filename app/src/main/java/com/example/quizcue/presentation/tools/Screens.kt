@@ -10,7 +10,6 @@ import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TaskAlt
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.quizcue.R
 
 sealed class Screen(
     val route: String,

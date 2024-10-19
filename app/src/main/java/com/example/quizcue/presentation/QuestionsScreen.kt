@@ -14,6 +14,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -21,39 +22,30 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.quizcue.domain.Response
+import com.example.quizcue.presentation.edit_question_screen.EditQuestionViewModel
 import com.example.quizcue.presentation.elements.QuestionsList
-import com.example.quizcue.presentation.schedule_screen.QuestionTitle
 import com.example.quizcue.presentation.tools.Screen
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.Random
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun QuestionsScreen(
-    navController: NavController
+    navController: NavController,
+    questionViewModel: EditQuestionViewModel = hiltViewModel()
 ) {
-    val heightScr = LocalConfiguration.current.screenHeightDp.dp
-    val random = Random()
-    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-    val questions = List(20) {
-        val month = 7
-        val day = random.nextInt(15) + 1
-        val calendar = Calendar.getInstance()
-        calendar.set(2024, month, day)
-
-        QuestionTitle(
-            date = calendar.time,
-            description = "Question ${it + 1}: Random question text here."
-        )
-    }
+    val questions = questionViewModel.questions.value
     Scaffold(
         bottomBar = {
             Row(
@@ -85,7 +77,7 @@ fun QuestionsScreen(
                     containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     shape = RoundedCornerShape(15.dp),
-                    onClick = { /*TODO*/ }) {
+                    onClick = { navController.navigate(Screen.EditQuestion.route) }) {
                     Icon(Icons.Filled.Add, contentDescription = "Add")
                 }
             }
@@ -108,10 +100,7 @@ fun QuestionsScreen(
                 thickness = 1.dp,
                 color = MaterialTheme.colorScheme.tertiary
             )
-            QuestionsList(
-                questionTitles = questions
-            )
-
+            QuestionsList(questionList = questions)
         }
     }
 }

@@ -4,7 +4,7 @@ import com.google.firebase.Timestamp
 import java.util.UUID
 
 data class Question(
-    val id: String = UUID.randomUUID().toString(),
+    val id: String = "",
     val text: String = "",
     val hint: String = "",
     val answer: String = "",
