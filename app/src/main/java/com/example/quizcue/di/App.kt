@@ -1,4 +1,4 @@
-package com.example.quizcue
+package com.example.quizcue.di
 
 import android.app.Application
 import com.example.quizcue.data.repository.AuthenticationRepositoryImpl

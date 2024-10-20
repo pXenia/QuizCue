@@ -1,5 +1,6 @@
 package com.example.quizcue.presentation.elements
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,16 +20,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.quizcue.domain.model.Question
+import com.example.quizcue.presentation.tools.Screen
 
 @Composable
-fun QuestionCard(text: String) {
+fun QuestionCard(
+    question: Question,
+    navController: NavController) {
     OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(70.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
         colors = CardDefaults.cardColors(Color.Transparent),
-        onClick = { /* TODO */ }
+        onClick = {
+            Log.d("QuestionID_1", question.id)
+            navController.navigate(Screen.EditQuestion.route+"?questionId=${question.id}")
+        }
     ) {
         Row(
             modifier = Modifier
@@ -42,7 +51,7 @@ fun QuestionCard(text: String) {
                 tint = MaterialTheme.colorScheme.primary)
             Text(
                 modifier = Modifier.padding(start = 14.dp),
-                text = text,
+                text = question.text,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     textAlign = TextAlign.Center
                 )

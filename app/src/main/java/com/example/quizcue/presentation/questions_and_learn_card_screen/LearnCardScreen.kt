@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation
+package com.example.quizcue.presentation.questions_and_learn_card_screen
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloatAsState
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,7 +42,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.quizcue.domain.model.Question
+import com.example.quizcue.presentation.edit_question_screen.EditQuestionViewModel
 import com.example.quizcue.presentation.elements.LearnCard
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
@@ -49,59 +53,9 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun LearnCardScreen(navController: NavController){
-    val questions = listOf(
-        Question(
-            question = "What is the capital of France?",
-            hint = "It's known as the City of Light.",
-            answer = "Paris"
-        ),
-        Question(
-            question = "What is the largest planet in our solar system?",
-            hint = "It's a gas giant.",
-            answer = "Jupiter"
-        ),
-        Question(
-            question = "Who wrote 'Hamlet'?",
-            hint = "An English playwright, often called the Bard.",
-            answer = "William Shakespeare"
-        ),
-        Question(
-            question = "What is the chemical symbol for water?",
-            hint = "Two hydrogen atoms and one oxygen atom.",
-            answer = "H2O"
-        ),
-        Question(
-            question = "What year did the Titanic sink?",
-            hint = "It happened in the early 20th century.",
-            answer = "1912"
-        ),
-        Question(
-            question = "What is the smallest prime number?",
-            hint = "It's also an even number.",
-            answer = "2"
-        ),
-        Question(
-            question = "Which element has the atomic number 6?",
-            hint = "It's essential for life.",
-            answer = "Carbon"
-        ),
-        Question(
-            question = "Who painted the Mona Lisa?",
-            hint = "An Italian Renaissance artist.",
-            answer = "Leonardo da Vinci"
-        ),
-        Question(
-            question = "What is the hardest natural substance on Earth?",
-            hint = "It's often used in jewelry.",
-            answer = "Diamond"
-        ),
-        Question(
-            question = "What is the longest river in the world?",
-            hint = "It flows through South America.",
-            answer = "Amazon River"
-        )
-    )
+fun LearnCardScreen(
+    navController: NavController,
+    questionViewModel: EditQuestionViewModel = hiltViewModel()){
     Scaffold(
         topBar = {
             TopAppBar(
@@ -119,7 +73,11 @@ fun LearnCardScreen(navController: NavController){
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     ) {
-        SwipeCard(questions = questions)
+        if (questionViewModel.questions.value.isEmpty()) {
+            CircularProgressIndicator()
+        } else {
+            SwipeCard(questions = questionViewModel.questions.value)
+        }
     }
 }
 @Composable
@@ -133,6 +91,9 @@ fun SwipeCard(
     var dismissLeft by remember { mutableStateOf(false) }
     val density = LocalDensity.current.density
     var cardList by remember { mutableStateOf(questions) }
+    LaunchedEffect(questions) {
+        cardList = questions
+    }
     var repeat by remember { mutableStateOf(0) }
     var ready by remember { mutableStateOf(0) }
     val onSwipeLeft = { repeat++ }
@@ -203,7 +164,7 @@ fun SwipeCard(
                     )
                 )
             } else {
-                key(cardList.first().question) {
+                key(cardList.first()) {
                     LearnCard(question = cardList.first())
                 }
             }
@@ -211,8 +172,4 @@ fun SwipeCard(
     }
 }
 
-data class Question(
-    val question: String,
-    val hint: String,
-    val answer: String
-)
+

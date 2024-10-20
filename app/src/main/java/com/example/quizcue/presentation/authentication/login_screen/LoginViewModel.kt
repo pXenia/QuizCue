@@ -3,8 +3,8 @@ package com.example.quizcue.presentation.authentication.login_screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quizcue.domain.Response
-import com.example.quizcue.domain.usecases.LoginUseCase
-import com.example.quizcue.domain.usecases.ResetPasswordUseCase
+import com.example.quizcue.domain.usecases.registration_UC.LoginUseCase
+import com.example.quizcue.domain.usecases.registration_UC.ResetPasswordUseCase
 import com.google.firebase.auth.AuthResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

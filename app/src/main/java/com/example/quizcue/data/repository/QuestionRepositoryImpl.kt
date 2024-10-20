@@ -26,6 +26,7 @@ class QuestionRepositoryImpl(
     override suspend fun upsertQuestion(question: Question, onSuccess: () -> Unit) {
         val questionId = if (question.id == "") databaseRef.push().key ?: return else question.id
         val questionMap = hashMapOf<String, Any>(
+            "id" to questionId,
             "text" to question.text,
             "hint" to question.hint,
             "answer" to question.answer,
@@ -63,6 +64,20 @@ class QuestionRepositoryImpl(
         databaseRef.addValueEventListener(questionsListener)
 
         awaitClose { databaseRef.removeEventListener(questionsListener) }
+    }
+
+    override suspend fun getQuestionById(questionId: String, onSuccess: (Question?) -> Unit) {
+        databaseRef.child(questionId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val question = snapshot.getValue(Question::class.java)
+                    onSuccess(question)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
+                }
+            })
     }
 
 }

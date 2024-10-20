@@ -1,7 +1,9 @@
 package com.example.quizcue.presentation.edit_question_screen
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quizcue.BuildConfig
@@ -19,7 +21,8 @@ import kotlinx.coroutines.flow.collectLatest
 
 @HiltViewModel
 class EditQuestionViewModel  @Inject constructor(
-    private val questionRepository: QuestionRepository
+    private val questionRepository: QuestionRepository,
+    savedStateHandler: SavedStateHandle
 ) : ViewModel() {
     private  val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash" ,
@@ -66,10 +69,23 @@ class EditQuestionViewModel  @Inject constructor(
     }
     init {
         getQuestions()
+        savedStateHandler.get<String?>("questionId")?.let { questionId ->
+            if (questionId != "") {
+                viewModelScope.launch {
+                    questionRepository.getQuestionById(questionId) { question ->
+                        question?.let {
+                            _textQuestion.value = it.text
+                            _hintQuestion.value = it.hint
+                            _answerQuestion.value = it.answer
+                        }
+                    }
+                }
+            }
+        }
     }
     fun getQuestions() {
         viewModelScope.launch {
-            questionRepository.getQuestions().collectLatest { questionsList ->
+            questionRepository.getQuestions().collect{ questionsList ->
                 _questions.value = questionsList
             }
         }

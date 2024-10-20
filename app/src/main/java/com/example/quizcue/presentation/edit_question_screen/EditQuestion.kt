@@ -39,12 +39,11 @@ import com.example.quizcue.presentation.tools.Screen
 @Composable
 fun EditQuestion(
     navController: NavController,
-    questionViewModel: EditQuestionViewModel = hiltViewModel()
+    questionViewModel: EditQuestionViewModel = hiltViewModel(),
 ) {
-
-    var text = questionViewModel.textQuestion.value
-    var hint = questionViewModel.hintQuestion.value
-    var answer  = questionViewModel.answerQuestion.value
+    val text = questionViewModel.textQuestion.value
+    val hint = questionViewModel.hintQuestion.value
+    val answer  = questionViewModel.answerQuestion.value
 
     Scaffold(
         floatingActionButton = {

@@ -3,7 +3,7 @@ package com.example.quizcue.presentation.authentication
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.quizcue.domain.usecases.IsLoggedInUseCase
+import com.example.quizcue.domain.usecases.registration_UC.IsLoggedInUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

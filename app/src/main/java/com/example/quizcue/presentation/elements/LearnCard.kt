@@ -30,7 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
-import com.example.quizcue.presentation.Question
+import com.example.quizcue.domain.model.Question
 
 @Composable
 fun LearnCard(
@@ -83,7 +83,7 @@ fun LearnCard(
                 Text(
                     modifier = Modifier
                         .weight(6f),
-                    text = question.question,
+                    text = question.text,
                     style = MaterialTheme.typography.titleLarge
                 )
                 IconButton(

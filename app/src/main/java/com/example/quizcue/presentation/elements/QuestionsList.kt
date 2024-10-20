@@ -10,10 +10,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.quizcue.domain.model.Question
 
 @Composable
-fun QuestionsList(questionList: List<Question>) {
+fun QuestionsList(
+    questionList: List<Question>,
+    navController: NavController
+) {
     val heightScr = LocalConfiguration.current.screenHeightDp.dp
 
     LazyColumn(
@@ -25,7 +29,7 @@ fun QuestionsList(questionList: List<Question>) {
         items(
             items = questionList,
         ) { question ->
-            QuestionCard(text = question.text)
+            QuestionCard(question = question, navController = navController)
             Spacer(
                 modifier = Modifier
                     .height(10.dp)

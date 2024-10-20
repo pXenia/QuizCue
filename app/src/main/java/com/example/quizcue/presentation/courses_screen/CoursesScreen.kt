@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation
+package com.example.quizcue.presentation.courses_screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.quizcue.presentation.elements.CourseCard
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CoursesScreen(
