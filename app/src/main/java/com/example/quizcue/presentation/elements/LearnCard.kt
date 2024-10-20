@@ -31,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import com.example.quizcue.domain.model.Question
+import dev.jeziellago.compose.markdowntext.MarkdownText
+
 
 @Composable
 fun LearnCard(
@@ -80,10 +82,10 @@ fun LearnCard(
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
-                Text(
+                MarkdownText(
                     modifier = Modifier
                         .weight(6f),
-                    text = question.text,
+                    markdown = question.text,
                     style = MaterialTheme.typography.titleLarge
                 )
                 IconButton(
@@ -100,16 +102,17 @@ fun LearnCard(
                 }
             }
             if (hintState) {
-                Text(
-                    text = question.hint,
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.titleMedium
+                MarkdownText(
+                    markdown = question.hint,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = MaterialTheme.colorScheme.primary
+                    )
 
                 )
             }
             if (expandedState) {
-                Text(
-                    text = question.answer,
+                MarkdownText(
+                    markdown = question.answer,
                     style = MaterialTheme.typography.bodyLarge
                 )
             }

@@ -41,6 +41,7 @@ fun EditQuestion(
     navController: NavController,
     questionViewModel: EditQuestionViewModel = hiltViewModel(),
 ) {
+    val id = questionViewModel.idQuestion.value
     val text = questionViewModel.textQuestion.value
     val hint = questionViewModel.hintQuestion.value
     val answer  = questionViewModel.answerQuestion.value
@@ -53,7 +54,8 @@ fun EditQuestion(
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     shape = RoundedCornerShape(15.dp),
                     onClick = {
-                        questionViewModel.upsertQuestion(question = Question(text = text, hint = hint, answer = answer)) {
+                        questionViewModel.upsertQuestion(
+                            question = Question(id = id, text = text, hint = hint, answer = answer)) {
                             navController.navigate(Screen.Questions.route)
                         }
                     }) {

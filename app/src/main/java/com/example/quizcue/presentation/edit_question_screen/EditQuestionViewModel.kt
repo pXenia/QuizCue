@@ -1,8 +1,10 @@
 package com.example.quizcue.presentation.edit_question_screen
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,6 +32,9 @@ class EditQuestionViewModel  @Inject constructor(
     )
     private val _questions = mutableStateOf<List<Question>>(emptyList())
     val questions: State<List<Question>> = _questions
+
+    private val _idQuestion = mutableStateOf("")
+    val idQuestion: State<String> = _idQuestion
 
     private val _textQuestion = mutableStateOf("")
     val textQuestion: State<String> = _textQuestion
@@ -65,6 +70,15 @@ class EditQuestionViewModel  @Inject constructor(
             is EditQuestionEvent.EnteredAnswerQuestion -> {
                 _answerQuestion.value = event.value
             }
+            is EditQuestionEvent.SaveQuestion -> {
+                upsertQuestion(
+                    Question(
+                        id = idQuestion.value,
+                        text = textQuestion.value,
+                        hint = hintQuestion.value,
+                        answer = answerQuestion.value
+                    )) {}
+            }
         }
     }
     init {
@@ -74,6 +88,7 @@ class EditQuestionViewModel  @Inject constructor(
                 viewModelScope.launch {
                     questionRepository.getQuestionById(questionId) { question ->
                         question?.let {
+                            _idQuestion.value = it.id
                             _textQuestion.value = it.text
                             _hintQuestion.value = it.hint
                             _answerQuestion.value = it.answer
@@ -105,16 +120,12 @@ class EditQuestionViewModel  @Inject constructor(
     }
 
     fun upsertQuestion(question: Question, onSuccess: () -> Unit) = viewModelScope.launch {
-        viewModelScope.launch(Dispatchers.Main) {
             questionRepository.upsertQuestion(question, onSuccess)
             onSuccess()
-        }
-    }
-    fun deleteQuestion(question: Question, onSuccess: () -> Unit) = viewModelScope.launch {
-        viewModelScope.launch(Dispatchers.Main) {
-            questionRepository.deleteQuestion(question, onSuccess)
-            onSuccess()
-        }
     }
 
+    fun deleteQuestion(question: Question, onSuccess: () -> Unit) = viewModelScope.launch {
+            questionRepository.deleteQuestion(question, onSuccess)
+            onSuccess()
+    }
 }

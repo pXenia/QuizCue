@@ -98,7 +98,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.generativeai)
-    implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    implementation("com.github.jeziellago:compose-markdown:0.5.2")
+
 
 }
 
