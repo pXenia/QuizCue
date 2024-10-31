@@ -14,4 +14,5 @@ class HomeScreenViewModel @Inject constructor(
     fun logout() = viewModelScope.launch {
         logoutUseCase.invoke()
     }
+
 }

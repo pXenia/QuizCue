@@ -2,17 +2,24 @@ package com.example.quizcue.presentation.authentication.register_screen
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -34,6 +41,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
@@ -43,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
+import com.example.quizcue.R
 import com.example.quizcue.domain.Response
 import com.example.quizcue.presentation.tools.CircularProgress
 import com.example.quizcue.presentation.tools.Screen
@@ -82,7 +95,7 @@ fun RegisterScreen(
             paddingValues = paddingValues,
             registerFlowState = registerViewModel.registerFlow,
             onNavigateToLogin = { navController.popBackStack() },
-            onRegister = { email, password -> registerViewModel.register(email, password) },
+            onRegister = { email, password, name -> registerViewModel.register(email, password, name) },
             registerSuccess = { navController.navigate(Screen.Home.route) },
             registerError = { scope.launch { hostState.showSnackbar("Упс! что-то пошло не так, " +
                     "проверьте подключение и повторите попытку") } }
@@ -94,7 +107,7 @@ fun RegisterScreen(
 fun Content(
     paddingValues: PaddingValues,
     registerFlowState: MutableSharedFlow<Response<AuthResult>>,
-    onRegister: (String, String) -> Unit,
+    onRegister: (String, String, String) -> Unit,
     onNavigateToLogin: () -> Unit,
     registerSuccess: () -> Unit,
     registerError: () -> Unit
@@ -102,20 +115,60 @@ fun Content(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues)
+            .padding(paddingValues),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val nameText = remember {
+            mutableStateOf("")
+        }
         val emailText = remember {
             mutableStateOf("")
         }
         val passwordText = remember {
             mutableStateOf("")
         }
-
+        Image(
+            modifier = Modifier
+                .padding(top = 15.dp)
+                .size(150.dp)
+                .border(
+                    BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
+                    CircleShape
+                )
+                .clip(CircleShape),
+            painter = painterResource(id = R.drawable.koshka),
+            contentDescription = "user",
+            contentScale = ContentScale.Crop,
+            colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0.5f) })
+        )
+        Text(
+            style = MaterialTheme.typography.titleMedium,
+            text = "Добавить фото",
+            modifier = Modifier
+                .wrapContentWidth()
+                .wrapContentHeight()
+                .align(alignment = Alignment.CenterHorizontally)
+                .padding(20.dp)
+                .clickable { },
+        )
         TextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(start = 20.dp, end = 20.dp, top = 5.dp),
+            value = nameText.value,
+            onValueChange = { text -> nameText.value = text },
+            label = { Text("Name") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            leadingIcon = { Icon(Icons.Filled.AccountCircle, "email") },
+        )
+
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(start = 20.dp, end = 20.dp, top = 20.dp),
             value = emailText.value,
             onValueChange = { text -> emailText.value = text },
             label = { Text("Email") },
@@ -137,7 +190,7 @@ fun Content(
             leadingIcon = { Icon(Icons.Filled.Lock, "password") },
         )
         Button(
-            onClick = { onRegister(emailText.value, passwordText.value) },
+            onClick = { onRegister(emailText.value, passwordText.value, nameText.value) },
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()

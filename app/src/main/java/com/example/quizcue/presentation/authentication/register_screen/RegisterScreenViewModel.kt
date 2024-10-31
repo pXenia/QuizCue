@@ -17,8 +17,8 @@ class RegisterScreenViewModel @Inject constructor(
     private var _registerFlow = MutableSharedFlow<Response<AuthResult>>()
     val registerFlow = _registerFlow
 
-    fun register(email: String, password: String) = viewModelScope.launch {
-        registerUseCase.invoke(email, password).collect {
+    fun register(email: String, password: String, name: String) = viewModelScope.launch {
+        registerUseCase.invoke(email, password, name).collect {
             _registerFlow.emit(it)
         }
     }

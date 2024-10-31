@@ -30,8 +30,11 @@ object AuthenticationModule {
     @Provides
     @Singleton
     fun provideAuthenticationRepository(
+        database: FirebaseDatabase,
         auth: FirebaseAuth
-    ): AuthenticationRepository = AuthenticationRepositoryImpl(auth)
+    ): AuthenticationRepository = AuthenticationRepositoryImpl(database,auth)
+
+
 }
 
 @Module
