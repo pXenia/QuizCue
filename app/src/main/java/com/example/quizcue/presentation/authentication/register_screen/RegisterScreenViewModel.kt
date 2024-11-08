@@ -1,5 +1,6 @@
 package com.example.quizcue.presentation.authentication.register_screen
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quizcue.domain.Response
@@ -17,8 +18,8 @@ class RegisterScreenViewModel @Inject constructor(
     private var _registerFlow = MutableSharedFlow<Response<AuthResult>>()
     val registerFlow = _registerFlow
 
-    fun register(email: String, password: String, name: String) = viewModelScope.launch {
-        registerUseCase.invoke(email, password, name).collect {
+    fun register(email: String, password: String, name: String, imageUri: Uri?) = viewModelScope.launch {
+        registerUseCase.invoke(email, password, name, imageUri).collect {
             _registerFlow.emit(it)
         }
     }

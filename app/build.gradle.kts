@@ -69,6 +69,7 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material)
+    implementation(libs.coil.compose)
     implementation(libs.animated.navigation.bar)
 
     implementation(libs.kotlinx.coroutines.android)
@@ -100,7 +101,7 @@ dependencies {
     implementation(libs.generativeai)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
-    implementation("com.github.jeziellago:compose-markdown:0.5.2")
+    implementation(libs.compose.markdown)
 
 
 }

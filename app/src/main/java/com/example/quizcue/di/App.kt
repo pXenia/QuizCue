@@ -1,6 +1,7 @@
 package com.example.quizcue.di
 
 import android.app.Application
+import android.content.Context
 import com.example.quizcue.data.repository.AuthenticationRepositoryImpl
 import com.example.quizcue.data.repository.QuestionRepositoryImpl
 import com.example.quizcue.domain.repository.AuthenticationRepository
@@ -15,6 +16,7 @@ import dagger.hilt.android.HiltAndroidApp
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import com.google.firebase.ktx.Firebase
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 @HiltAndroidApp
 class App : Application()
@@ -31,8 +33,9 @@ object AuthenticationModule {
     @Singleton
     fun provideAuthenticationRepository(
         database: FirebaseDatabase,
-        auth: FirebaseAuth
-    ): AuthenticationRepository = AuthenticationRepositoryImpl(database,auth)
+        auth: FirebaseAuth,
+        @ApplicationContext context: Context
+    ): AuthenticationRepository = AuthenticationRepositoryImpl(database,auth, context)
 
 
 }

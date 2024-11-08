@@ -1,7 +1,10 @@
 package com.example.quizcue.presentation.authentication.register_screen
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -52,13 +55,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
+import coil3.compose.rememberAsyncImagePainter
 import com.example.quizcue.R
 import com.example.quizcue.domain.Response
 import com.example.quizcue.presentation.tools.CircularProgress
 import com.example.quizcue.presentation.tools.Screen
+import com.google.android.play.integrity.internal.s
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -95,7 +101,7 @@ fun RegisterScreen(
             paddingValues = paddingValues,
             registerFlowState = registerViewModel.registerFlow,
             onNavigateToLogin = { navController.popBackStack() },
-            onRegister = { email, password, name -> registerViewModel.register(email, password, name) },
+            onRegister = { email, password, name, image -> registerViewModel.register(email, password, name, image) },
             registerSuccess = { navController.navigate(Screen.Home.route) },
             registerError = { scope.launch { hostState.showSnackbar("Упс! что-то пошло не так, " +
                     "проверьте подключение и повторите попытку") } }
@@ -107,26 +113,31 @@ fun RegisterScreen(
 fun Content(
     paddingValues: PaddingValues,
     registerFlowState: MutableSharedFlow<Response<AuthResult>>,
-    onRegister: (String, String, String) -> Unit,
+    onRegister: (String, String, String, Uri?) -> Unit,
     onNavigateToLogin: () -> Unit,
     registerSuccess: () -> Unit,
     registerError: () -> Unit
 ) {
+    val nameText = remember {
+        mutableStateOf("")
+    }
+    val emailText = remember {
+        mutableStateOf("")
+    }
+    val passwordText = remember {
+        mutableStateOf("")
+    }
+    val selectedImageUri = remember{ mutableStateOf<Uri?>(null) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        selectedImageUri.value = uri
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val nameText = remember {
-            mutableStateOf("")
-        }
-        val emailText = remember {
-            mutableStateOf("")
-        }
-        val passwordText = remember {
-            mutableStateOf("")
-        }
         Image(
             modifier = Modifier
                 .padding(top = 15.dp)
@@ -135,8 +146,12 @@ fun Content(
                     BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
                     CircleShape
                 )
-                .clip(CircleShape),
-            painter = painterResource(id = R.drawable.koshka),
+                .clip(CircleShape)
+                .clickable{launcher.launch("image/*")},
+            painter = if (selectedImageUri.value != null)
+                rememberAsyncImagePainter(selectedImageUri.value)
+            else
+                painterResource(id = R.drawable.koshka),
             contentDescription = "user",
             contentScale = ContentScale.Crop,
             colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0.5f) })
@@ -190,7 +205,8 @@ fun Content(
             leadingIcon = { Icon(Icons.Filled.Lock, "password") },
         )
         Button(
-            onClick = { onRegister(emailText.value, passwordText.value, nameText.value) },
+            onClick = { onRegister(emailText.value, passwordText.value, nameText.value, selectedImageUri.value
+            ) },
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()

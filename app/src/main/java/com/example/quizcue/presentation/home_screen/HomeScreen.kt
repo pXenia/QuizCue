@@ -36,12 +36,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -49,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
+import coil3.compose.rememberAsyncImagePainter
 import com.example.quizcue.R
 import com.example.quizcue.presentation.elements.CourseCard
 import com.example.quizcue.presentation.tools.Screen
@@ -109,7 +116,12 @@ fun MainPreview(
 }
 
 @Composable
-fun Header(modifier: Modifier = Modifier) {
+fun Header(modifier: Modifier = Modifier,
+        homeViewModel: HomeScreenViewModel = hiltViewModel())
+{
+    val userName by homeViewModel.userName.collectAsState(initial = "")
+    val userEmail by homeViewModel.userEmail.collectAsState(initial = "")
+    val userPhoto by homeViewModel.userPhoto.collectAsState(null)
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -126,17 +138,20 @@ fun Header(modifier: Modifier = Modifier) {
                     CircleShape
                 )
                 .clip(CircleShape),
-            painter = painterResource(id = R.drawable.koshka),
+            painter = if (userPhoto != null)
+                BitmapPainter(userPhoto!!.asImageBitmap())
+            else
+                painterResource(id = R.drawable.koshka),
             contentDescription = "user",
             contentScale = ContentScale.Crop,
             colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0.5f) })
         )
         Text(
-            text = "Имя Фамилия",
+            text = userName,
             style = MaterialTheme.typography.headlineMedium
         )
         Text(
-            text = "namePHIO@gmail.com",
+            text = userEmail,
             style = MaterialTheme.typography.bodySmall
         )
     }
