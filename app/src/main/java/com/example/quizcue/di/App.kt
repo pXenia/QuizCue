@@ -3,8 +3,10 @@ package com.example.quizcue.di
 import android.app.Application
 import android.content.Context
 import com.example.quizcue.data.repository.AuthenticationRepositoryImpl
+import com.example.quizcue.data.repository.CourseRepositoryImpl
 import com.example.quizcue.data.repository.QuestionRepositoryImpl
 import com.example.quizcue.domain.repository.AuthenticationRepository
+import com.example.quizcue.domain.repository.CourseRepository
 import com.example.quizcue.domain.repository.QuestionRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
@@ -54,4 +56,11 @@ object FirebaseDatabaseModule {
         database: FirebaseDatabase,
         auth: FirebaseAuth
     ): QuestionRepository = QuestionRepositoryImpl(database, auth)
+
+    @Provides
+    @Singleton
+    fun provideCourseRepository(
+        database: FirebaseDatabase,
+        auth: FirebaseAuth
+    ): CourseRepository = CourseRepositoryImpl(database, auth)
 }
