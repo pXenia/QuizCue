@@ -23,4 +23,5 @@ sealed class Screen(
     object Login: Screen("login", null)
     object Register: Screen("register", null)
     object EditQuestion: Screen("edit_question", null)
+    object AddCourse: Screen("add_course", null)
 }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -32,17 +33,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.quizcue.presentation.elements.CourseCard
+import com.example.quizcue.presentation.tools.Screen
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CoursesScreen(
-    navController: NavController
+    navController: NavController,
+    courseViewModel: CourseViewModel = hiltViewModel()
 ) {
 
     val scroll = rememberScrollState()
     val heightScr = LocalConfiguration.current.screenHeightDp.dp
+    val courses = courseViewModel.courses.value
 
     Column(
         modifier = Modifier
@@ -86,7 +91,9 @@ fun CoursesScreen(
                 containerColor = MaterialTheme.colorScheme.tertiary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = RoundedCornerShape(15.dp),
-                onClick = { /*TODO*/ }) {
+                onClick = {
+                    navController.navigate(Screen.AddCourse.route)
+                }) {
                 Icon(Icons.Filled.Add, contentDescription = "Add")
 
             }
@@ -99,14 +106,14 @@ fun CoursesScreen(
         LazyColumn(
             modifier = Modifier.height(heightScr*0.84f)
         ) {
-            items(7) {
+            items(courses) {
                 CourseCard(
                     navController= navController,
                     cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHighest),
                     textColor = MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.tertiary
                 )
-                if (it == 6) {
+                if (it == courses.last()) {
                     Spacer(modifier = Modifier.height(80.dp))
                 }
             }

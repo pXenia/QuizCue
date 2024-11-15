@@ -18,7 +18,7 @@ class CourseRepositoryImpl(
     private val auth: FirebaseAuth
 ) : CourseRepository {
     val databaseRef = database.reference
-        .child(auth.currentUser?.uid.toString())
+        .child(auth.currentUser?.uid.toString()).child("courses")
 
     override suspend fun upsertCourse(course: Course, onSuccess: () -> Unit) {
         val courseId = if (course.id == "") databaseRef.push().key ?: return else course.id
