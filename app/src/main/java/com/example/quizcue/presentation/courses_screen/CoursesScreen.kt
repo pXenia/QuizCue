@@ -111,7 +111,8 @@ fun CoursesScreen(
                     navController= navController,
                     cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHighest),
                     textColor = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.tertiary
+                    trackColor = MaterialTheme.colorScheme.tertiary,
+                    course = it
                 )
                 if (it == courses.last()) {
                     Spacer(modifier = Modifier.height(80.dp))

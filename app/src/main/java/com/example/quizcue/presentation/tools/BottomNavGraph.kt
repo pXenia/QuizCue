@@ -40,7 +40,15 @@ fun BottomNavGraph(navController: NavHostController,
         composable(route = Screen.Schedule.route) {
             ScheduleScree()
         }
-        composable(route = Screen.Questions.route) {
+        composable(route = Screen.Questions.route + "?courseId={courseId}",
+            arguments = listOf(
+                navArgument(
+                    name = "courseId"
+                ) {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )) {
             QuestionsScreen(navController)
         }
         composable(route = Screen.LearnCard.route) {
@@ -52,8 +60,14 @@ fun BottomNavGraph(navController: NavHostController,
         composable(route = Screen.Register.route) {
             RegisterScreen(navController)
         }
-        composable(route = Screen.EditQuestion.route + "?questionId={questionId}",
+        composable(route = Screen.EditQuestion.route+ "?courseId={courseId}" + "?questionId={questionId}",
             arguments = listOf(
+                navArgument(
+                    name = "courseId"
+                ) {
+                    type = NavType.StringType
+                    defaultValue = " "
+                },
                 navArgument(
                     name = "questionId"
                 ) {

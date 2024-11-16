@@ -50,12 +50,13 @@ fun AddCourseDialog(
                         )
                     }
                 )
+                Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
                     modifier = Modifier
                         .background(Color.Transparent),
                     value = courseViewModel.description.value,
                     onValueChange = {
-                        courseViewModel.onEvent(EditCourseEvent.EnteredTextCourse(it))
+                        courseViewModel.onEvent(EditCourseEvent.EnteredDescriptionCourse(it))
                     },
                     placeholder = {
                         Text(
