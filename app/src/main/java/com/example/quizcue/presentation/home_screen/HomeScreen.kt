@@ -57,6 +57,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraph
 import coil3.compose.rememberAsyncImagePainter
 import com.example.quizcue.R
+import com.example.quizcue.domain.model.Course
 import com.example.quizcue.presentation.elements.CourseCard
 import com.example.quizcue.presentation.tools.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -111,7 +112,9 @@ fun MainPreview(
             navController = navController,
             textColor = MaterialTheme.colorScheme.onPrimary,
             trackColor = MaterialTheme.colorScheme.tertiary,
-            cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.primary))
+            cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+            course = Course("","","")
+        )
     }
 }
 

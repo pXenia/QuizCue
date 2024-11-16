@@ -25,11 +25,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.quizcue.domain.model.Course
 import com.example.quizcue.presentation.tools.Screen
 
 @Composable
 fun CourseCard(
     navController: NavController,
+    course: Course,
     textColor: Color,
     trackColor: Color,
     cardColor: CardColors
@@ -42,7 +44,9 @@ fun CourseCard(
         border = BorderStroke(1.dp, trackColor),
         elevation = CardDefaults.cardElevation(6.dp),
         colors = cardColor,
-        onClick = { navController.navigate(Screen.Questions.route) }
+        onClick = {
+            navController.navigate(Screen.Questions.route+"?courseId=${course.id}")
+        }
     ) {
         Row(
             modifier = Modifier
@@ -56,11 +60,11 @@ fun CourseCard(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Название курса",
+                    text = course.name,
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
-                    text = "Название модуля",
+                    text = course.description,
                     style = MaterialTheme.typography.titleMedium
                 )
             }

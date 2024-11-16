@@ -9,6 +9,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import com.example.quizcue.presentation.courses_screen.CoursesScreen
 import com.example.quizcue.presentation.questions_and_learn_card_screen.LearnCardScreen
@@ -16,6 +17,7 @@ import com.example.quizcue.presentation.questions_and_learn_card_screen.Question
 import com.example.quizcue.presentation.authentication.AuthenticationNavigationViewModel
 import com.example.quizcue.presentation.authentication.login_screen.LoginScreen
 import com.example.quizcue.presentation.authentication.register_screen.RegisterScreen
+import com.example.quizcue.presentation.courses_screen.AddCourseDialog
 import com.example.quizcue.presentation.edit_question_screen.EditQuestion
 import com.example.quizcue.presentation.schedule_screen.ScheduleScree
 
@@ -38,7 +40,15 @@ fun BottomNavGraph(navController: NavHostController,
         composable(route = Screen.Schedule.route) {
             ScheduleScree()
         }
-        composable(route = Screen.Questions.route) {
+        composable(route = Screen.Questions.route + "?courseId={courseId}",
+            arguments = listOf(
+                navArgument(
+                    name = "courseId"
+                ) {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )) {
             QuestionsScreen(navController)
         }
         composable(route = Screen.LearnCard.route) {
@@ -50,8 +60,14 @@ fun BottomNavGraph(navController: NavHostController,
         composable(route = Screen.Register.route) {
             RegisterScreen(navController)
         }
-        composable(route = Screen.EditQuestion.route + "?questionId={questionId}",
+        composable(route = Screen.EditQuestion.route+ "?courseId={courseId}" + "?questionId={questionId}",
             arguments = listOf(
+                navArgument(
+                    name = "courseId"
+                ) {
+                    type = NavType.StringType
+                    defaultValue = " "
+                },
                 navArgument(
                     name = "questionId"
                 ) {
@@ -61,6 +77,11 @@ fun BottomNavGraph(navController: NavHostController,
             )
         ) {
             EditQuestion(navController = navController)
+        }
+        dialog(
+            route = Screen.AddCourse.route,
+        ) {
+            AddCourseDialog(navController = navController)
         }
     }
 }

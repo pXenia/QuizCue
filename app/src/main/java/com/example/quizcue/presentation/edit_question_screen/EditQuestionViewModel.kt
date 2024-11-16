@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.quizcue.domain.model.Question
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.android.play.integrity.internal.s
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 
@@ -44,6 +45,8 @@ class EditQuestionViewModel  @Inject constructor(
 
     private val _hintQuestion = mutableStateOf("")
     val hintQuestion: State<String> = _hintQuestion
+
+    private var _courseQuestion: String = ""
 
     fun generateAnswer(question: String) {
         _answerQuestion.value = "Generating ..."
@@ -76,7 +79,8 @@ class EditQuestionViewModel  @Inject constructor(
                         id = idQuestion.value,
                         text = textQuestion.value,
                         hint = hintQuestion.value,
-                        answer = answerQuestion.value
+                        answer = answerQuestion.value,
+                        course = _courseQuestion
                     )) {}
             }
         }
@@ -92,6 +96,7 @@ class EditQuestionViewModel  @Inject constructor(
                             _textQuestion.value = it.text
                             _hintQuestion.value = it.hint
                             _answerQuestion.value = it.answer
+                            _courseQuestion = savedStateHandler.get<String?>("courseId") ?: ""
                         }
                     }
                 }
@@ -101,7 +106,7 @@ class EditQuestionViewModel  @Inject constructor(
     fun getQuestions() {
         viewModelScope.launch {
             questionRepository.getQuestions().collect{ questionsList ->
-                _questions.value = questionsList
+                _questions.value = questionsList.filter { it.course == _courseQuestion }
             }
         }
     }
