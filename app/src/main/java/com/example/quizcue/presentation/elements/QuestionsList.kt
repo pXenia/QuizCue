@@ -1,5 +1,6 @@
 package com.example.quizcue.presentation.elements
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +36,7 @@ fun QuestionsList(
             QuestionCard(
                 question = question,
                 onClick = {
-                    navController.navigate(Screen.EditQuestion.route + "?courseId = ${question.course}" + "?questionId=${question.id}")
+                    navController.navigate(Screen.EditQuestion.route + "?courseId=${question.course}" + "?questionId=${question.id}")
                 },
                 modifier = Modifier
                     .fillMaxWidth()

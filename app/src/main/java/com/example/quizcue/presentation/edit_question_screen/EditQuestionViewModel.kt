@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.quizcue.domain.model.Question
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.android.play.integrity.internal.q
 import com.google.android.play.integrity.internal.s
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -40,19 +41,24 @@ class EditQuestionViewModel  @Inject constructor(
     init {
         val questionId = savedStateHandler["questionId"] ?: ""
         val courseId = savedStateHandler["courseId"] ?: ""
-        if (questionId != "") {
+        _uiState.update { it.copy(course = courseId) }
+
+        if (questionId.isNotEmpty()) {
             viewModelScope.launch {
-                val question = questionRepository.getQuestionById(questionId)
-                question?.let {
-                    _uiState.value = _uiState.value.copy(
-                        text = it.text,
-                        hint = it.hint,
-                        answer = it.answer
-                    )
+                questionRepository.getQuestionById(questionId) { question ->
+                    question?.let {
+                        _uiState.update {
+                            it.copy(
+                                id = question.id,
+                                text = question.text,
+                                hint = question.hint,
+                                answer = question.answer
+                            )
+                        }
+                    }
                 }
             }
         }
-        _uiState.update { it.copy(course = courseId) }
     }
 
     fun onEvent(event: EditQuestionEvent) {

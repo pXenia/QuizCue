@@ -8,6 +8,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -70,19 +71,18 @@ class QuestionRepositoryImpl(
         awaitClose { databaseRef.removeEventListener(questionsListener) }
     }
 
-    override suspend fun getQuestionById(questionId: String): Question? {
-        return suspendCoroutine { continuation ->
-            databaseRef.child(questionId)
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        val question = snapshot.getValue(Question::class.java)
-                        continuation.resume(question)
-                    }
+    override suspend fun getQuestionById(questionId: String, onSuccess: (Question?) -> Unit) {
+        databaseRef.child(questionId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val question = snapshot.getValue(Question::class.java)
+                    onSuccess(question)
+                }
 
-                    override fun onCancelled(error: DatabaseError) {
-                        continuation.resumeWithException(error.toException())
-                    }
-                })
-        }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
+                }
+            })
     }
+
 }
