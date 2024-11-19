@@ -3,10 +3,13 @@ package com.example.quizcue.presentation.elements
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.CardDefaults
@@ -27,17 +30,14 @@ import com.example.quizcue.presentation.tools.Screen
 @Composable
 fun QuestionCard(
     question: Question,
-    navController: NavController) {
+    modifier: Modifier,
+    onClick: () -> Unit
+) {
     OutlinedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(70.dp),
+        onClick = onClick,
+        modifier = modifier,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-        colors = CardDefaults.cardColors(Color.Transparent),
-        onClick = {
-            Log.d("QuestionID_1", question.id)
-            navController.navigate(Screen.EditQuestion.route+"?questionId=${question.id}")
-        }
+        colors = CardDefaults.cardColors(Color.Transparent)
     ) {
         Row(
             modifier = Modifier
@@ -47,10 +47,11 @@ fun QuestionCard(
         ) {
             Icon(
                 Icons.Default.QuestionMark,
-                "QuestionMark",
-                tint = MaterialTheme.colorScheme.primary)
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(14.dp))
             Text(
-                modifier = Modifier.padding(start = 14.dp),
                 text = question.text,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     textAlign = TextAlign.Center

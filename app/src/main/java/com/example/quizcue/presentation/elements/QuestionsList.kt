@@ -1,6 +1,8 @@
 package com.example.quizcue.presentation.elements
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,34 +14,35 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.quizcue.domain.model.Question
+import com.example.quizcue.presentation.tools.Screen
 
 @Composable
 fun QuestionsList(
     questionList: List<Question>,
-    navController: NavController
+    navController: NavController,
+    modifier: Modifier,
 ) {
-    val heightScr = LocalConfiguration.current.screenHeightDp.dp
-
     LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(heightScr),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(5.dp),
     ) {
         items(
             items = questionList,
-        ) { question ->
-            QuestionCard(question = question, navController = navController)
-            Spacer(
+            key = {
+                it.id
+            }) { question ->
+            QuestionCard(
+                question = question,
+                onClick = {
+                    navController.navigate(Screen.EditQuestion.route + "?courseId = ${question.course}" + "?questionId=${question.id}")
+                },
                 modifier = Modifier
-                    .height(10.dp)
+                    .fillMaxWidth()
+                    .height(70.dp)
             )
-            if (question == questionList.last()) {
-                Spacer(
-                    modifier = Modifier
-                        .height(55.dp)
-                )
-            }
+            if (question.id == questionList.last().id)
+                Spacer(modifier = Modifier.height(60.dp))
         }
     }
 }

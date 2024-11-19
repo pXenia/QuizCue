@@ -69,7 +69,7 @@ fun EditQuestion(
     navController: NavController,
     questionViewModel: EditQuestionViewModel = hiltViewModel()
 ) {
-    val uiState by questionViewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by questionViewModel.uiState.collectAsState()
     val context = LocalContext.current
     Scaffold(
         topBar = {

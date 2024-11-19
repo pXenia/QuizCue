@@ -21,7 +21,7 @@ class QuestionsScreensViewModel @Inject constructor(
     private val _questions = MutableStateFlow<List<Question>>(emptyList())
     val questions: StateFlow<List<Question>> = _questions
 
-    private val courseQuestion: String = savedStateHandler["courseId"] ?: ""
+    val courseQuestion: String = savedStateHandler["courseId"] ?: ""
 
     init {
         getQuestions()
@@ -30,8 +30,10 @@ class QuestionsScreensViewModel @Inject constructor(
     private fun getQuestions() {
         viewModelScope.launch {
             questionRepository.getQuestions()
-                .collect{ _questions.value = it }
-            _questions.value.filter { it.course == courseQuestion }
+                .map { questionsList -> questionsList.filter { it.course == courseQuestion } }
+                .collect { filteredQuestions ->
+                    _questions.value = filteredQuestions
+                }
         }
     }
 }

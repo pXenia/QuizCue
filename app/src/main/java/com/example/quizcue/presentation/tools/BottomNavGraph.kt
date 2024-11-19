@@ -66,13 +66,13 @@ fun BottomNavGraph(navController: NavHostController,
                     name = "courseId"
                 ) {
                     type = NavType.StringType
-                    defaultValue = " "
+                    defaultValue = ""
                 },
                 navArgument(
                     name = "questionId"
                 ) {
                     type = NavType.StringType
-                    defaultValue = " "
+                    defaultValue = ""
                 }
             )
         ) {
