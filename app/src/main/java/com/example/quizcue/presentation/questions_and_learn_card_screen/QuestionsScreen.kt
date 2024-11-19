@@ -36,7 +36,7 @@ fun QuestionsScreen(
     navController: NavController,
     questionViewModel: EditQuestionViewModel = hiltViewModel()
 ) {
-    val questions = questionViewModel.questions.value
+    //val questions = questionViewModel.questions.value
     Scaffold(
         bottomBar = {
             Row(
@@ -91,7 +91,7 @@ fun QuestionsScreen(
                 thickness = 1.dp,
                 color = MaterialTheme.colorScheme.tertiary
             )
-            QuestionsList(questionList = questions, navController = navController)
+            //QuestionsList(questionList =questions, navController = navController)
         }
     }
 }

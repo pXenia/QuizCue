@@ -32,8 +32,8 @@ class EditQuestionViewModel  @Inject constructor(
     private val _uiState = MutableStateFlow(Question())
     val uiState: StateFlow<Question> = _uiState
 
-    private  val generativeModel = GenerativeModel(
-        modelName = "gemini-1.5-flash" ,
+    private val generativeModel = GenerativeModel(
+        modelName = "gemini-1.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
 
@@ -71,29 +71,29 @@ class EditQuestionViewModel  @Inject constructor(
         _uiState.update(update)
     }
 
-    private fun saveQuestion(){
+    private fun saveQuestion() {
         viewModelScope.launch {
             val upsertQuestion = _uiState.value
-            questionRepository.upsertQuestion(question = upsertQuestion){}
+            questionRepository.upsertQuestion(question = upsertQuestion) {}
         }
     }
 
-    fun generateAnswer(question: String) {
+    fun generateAnswer() {
+        updateState { copy(answer = "Generating ...") }
         executeGeneration(
-            prompt = "Напиши ответ на вопрос: $question",
+            prompt = "Напиши ответ на вопрос: ${uiState.value.text}",
             onUpdate = { answer -> updateState { copy(answer = answer) } }
         )
     }
 
-    fun generateHint(answer: String) {
-        if (answer != "") {
-            executeGeneration(
-                prompt = "Напиши подсказку для запоминания ответа: $answer не более 20 слов",
-                onUpdate = { hint -> updateState { copy(hint = hint) } }
-            )
-        } else
-            updateState { copy(hint = "Сначала добавьте ответ на вопрос") }
+    fun generateHint() {
+        updateState { copy(hint = "Generating ...") }
+        executeGeneration(
+            prompt = "Напиши подсказку для запоминания ответа: $${uiState.value.answer} не более 20 слов",
+            onUpdate = { hint -> updateState { copy(hint = hint) } }
+        )
     }
+
 
     private fun executeGeneration(prompt: String, onUpdate: (String) -> Unit) {
         viewModelScope.launch {
@@ -104,18 +104,5 @@ class EditQuestionViewModel  @Inject constructor(
                 onUpdate("Ошибка генерации")
             }
         }
-    }
-
-    fun getQuestions() {
-        viewModelScope.launch {
-            questionRepository.getQuestions().collect{ questionsList ->
-                //_questions.value = questionsList.filter { it.course == _courseQuestion }
-            }
-        }
-    }
-
-    fun deleteQuestion(question: Question, onSuccess: () -> Unit) = viewModelScope.launch {
-            questionRepository.deleteQuestion(question, onSuccess)
-            onSuccess()
     }
 }

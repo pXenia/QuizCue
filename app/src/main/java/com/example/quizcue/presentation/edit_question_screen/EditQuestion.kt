@@ -1,160 +1,222 @@
 package com.example.quizcue.presentation.edit_question_screen
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.MaterialTheme.colors
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.quizcue.R
 import com.example.quizcue.domain.model.Question
 import com.example.quizcue.presentation.tools.Screen
+import com.google.android.play.integrity.internal.i
 
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditQuestion(
     navController: NavController,
-    questionViewModel: EditQuestionViewModel = hiltViewModel(),
+    questionViewModel: EditQuestionViewModel = hiltViewModel()
 ) {
-    val id = questionViewModel.idQuestion.value
-    val text = questionViewModel.textQuestion.value
-    val hint = questionViewModel.hintQuestion.value
-    val answer  = questionViewModel.answerQuestion.value
-
+    val uiState by questionViewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     Scaffold(
-        floatingActionButton = {
-            Row {
-                FloatingActionButton(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    shape = RoundedCornerShape(15.dp),
-                    onClick = {
-                        questionViewModel.upsertQuestion(
-                            question = Question(id = id, text = text, hint = hint, answer = answer)) {
-                            navController.navigate(Screen.Questions.route)
+        topBar = {
+            TopAppBar(
+                title = {Text("")},
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            navController.navigateUp()
+                        },
+                        content = {
+                            Icon(Icons.Filled.ArrowBackIosNew, "Назад")
                         }
-                    }) {
-                    Icon(Icons.Filled.Done, contentDescription = "Done")
-                }
-                FloatingActionButton(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    shape = RoundedCornerShape(15.dp),
-                    onClick = {
-                        questionViewModel.generateHint(answer)
-                    }) {
-                    Icon(Icons.Filled.AutoAwesome, contentDescription = "AutoAwesome")
-                }
-                FloatingActionButton(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    shape = RoundedCornerShape(15.dp),
-                    onClick = {
-                        questionViewModel.generateAnswer(text)
-                    }) {
-                    Icon(Icons.Filled.AutoAwesome, contentDescription = "AutoAwesome")
-                }
-            }
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                .padding(15.dp)
-                .fillMaxSize()
-        ) {
-            Spacer(
-                modifier = Modifier
-                    .padding(10.dp)
-            )
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                placeholder = {
-                    Text(
-                        text = "Вопрос",
                     )
                 },
-                value = text,
-                onValueChange = {
-                    questionViewModel.onEvent(EditQuestionEvent.EnteredTextQuestion(it))
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    questionViewModel.onEvent(EditQuestionEvent.SaveQuestion)
+                    navController.navigate(Screen.Questions.route)
                 },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent
-                ),
+                shape = RoundedCornerShape(15.dp),
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                content = { Icon(Icons.Filled.Done, "Сохранить вопрос") }
             )
-            HorizontalDivider(
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .padding(horizontal = 25.dp)
+                .fillMaxSize()
+        ) {
+            // поле для ввода вопроса
+            TextFieldForQuestion(
+                title = "Вопрос:",
+                value = uiState.text,
+                onValueChange = {questionViewModel.onEvent(EditQuestionEvent.EnteredTextQuestion(it))},
                 modifier = Modifier
-                    .padding(5.dp),
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.tertiary
+                    .padding(bottom = 7.dp),
             )
-            TextField(
+
+            // поле для ввода подсказки
+            TextFieldForQuestion(
+                title = "Подсказка:",
+                value = uiState.hint,
+                onValueChange = {questionViewModel.onEvent(EditQuestionEvent.EnteredHintQuestion(it))},
                 modifier = Modifier
-                    .fillMaxWidth(),
-                placeholder = { Text(text = "Подсказка") },
-                value = hint,
-                onValueChange = {
-                    questionViewModel.onEvent(EditQuestionEvent.EnteredHintQuestion(it))
-                },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent
-                ),
+                    .padding(vertical = 7.dp),
+                icon = Icons.Outlined.AutoAwesome,
+                onClick = {
+                    if (uiState.answer != "")
+                    questionViewModel.generateHint()
+                    else
+                        Toast.makeText(context, "Сначала добавьте ответ на вопрос",Toast.LENGTH_SHORT).show()
+                }
             )
-            HorizontalDivider(
+
+            // поле для ввода ответа
+            TextFieldForQuestion(
+                title = "Ответ:",
+                value = uiState.answer,
+                onValueChange = {questionViewModel.onEvent(EditQuestionEvent.EnteredAnswerQuestion(it))},
                 modifier = Modifier
-                    .padding(5.dp),
-                thickness = 1.dp,
-                color = MaterialTheme.colorScheme.tertiary
-            )
-            TextField(
-                modifier = Modifier
-                    .fillMaxSize(),
-                value = answer,
-                placeholder = { Text(text = "Ответ") },
-                onValueChange = {
-                    questionViewModel.onEvent(EditQuestionEvent.EnteredAnswerQuestion(it))
-                },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent
-                ),
+                    .padding(vertical = 7.dp),
+                icon = Icons.Outlined.AutoAwesome,
+                onClick = {
+                    if (uiState.text != "")
+                        questionViewModel.generateAnswer()
+                    else
+                        Toast.makeText(context, "Сначала введите вопрос",Toast.LENGTH_SHORT).show()
+                }
             )
         }
     }
 }
+
+@Composable
+fun TextFieldForQuestion(
+    title: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier,
+    icon: ImageVector? = null,
+    onClick: () -> Unit = {}
+) {
+    Column(
+        modifier = modifier
+    ) {
+
+        // заголовок поля
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+
+            Text(
+                modifier = Modifier
+                    .weight(1f),
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            if (icon != null) {
+                IconButton(
+                    onClick = onClick,
+                    content = {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                )
+            }
+
+        }
+
+        if (icon == null){
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text(text = "Добавить ...") },
+            textStyle = MaterialTheme.typography.bodyLarge,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                capitalization = KeyboardCapitalization.Sentences
+            ),
+            shape = RoundedCornerShape(15.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary
+            )
+
+        )
+    }
+
+}
+
+
 
 

@@ -73,11 +73,11 @@ fun LearnCardScreen(
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     ) {
-        if (questionViewModel.questions.value.isEmpty()) {
-            CircularProgressIndicator()
-        } else {
-            SwipeCard(questions = questionViewModel.questions.value)
-        }
+        //if (questionViewModel.questions.value.isEmpty()) {
+            //CircularProgressIndicator()
+        //} else {
+         //   SwipeCard(questions = questionViewModel.questions.value)
+        //}
     }
 }
 @Composable
