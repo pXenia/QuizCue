@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 
 class QuestionRepositoryImpl(
@@ -67,18 +70,19 @@ class QuestionRepositoryImpl(
         awaitClose { databaseRef.removeEventListener(questionsListener) }
     }
 
-    override suspend fun getQuestionById(questionId: String, onSuccess: (Question?) -> Unit) {
-        databaseRef.child(questionId)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val question = snapshot.getValue(Question::class.java)
-                    onSuccess(question)
-                }
+    override suspend fun getQuestionById(questionId: String): Question? {
+        return suspendCoroutine { continuation ->
+            databaseRef.child(questionId)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val question = snapshot.getValue(Question::class.java)
+                        continuation.resume(question)
+                    }
 
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
-                }
-            })
+                    override fun onCancelled(error: DatabaseError) {
+                        continuation.resumeWithException(error.toException())
+                    }
+                })
+        }
     }
-
 }
