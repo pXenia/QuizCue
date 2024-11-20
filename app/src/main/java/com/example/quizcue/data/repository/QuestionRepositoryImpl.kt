@@ -36,7 +36,7 @@ class QuestionRepositoryImpl(
             "answer" to question.answer,
             "course" to question.course
         )
-        databaseRef.child(questionId)
+        databaseRef.child("questions").child(questionId)
             .setValue(questionMap)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception ->
@@ -45,7 +45,7 @@ class QuestionRepositoryImpl(
     }
 
     override suspend fun deleteQuestion(question: Question, onSuccess: () -> Unit) {
-        databaseRef.child(question.id)
+        databaseRef.child("questions").child(question.id)
             .removeValue()
             .addOnSuccessListener { onSuccess() }
     }
@@ -54,7 +54,7 @@ class QuestionRepositoryImpl(
         val questionsListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val questions = mutableListOf<Question>()
-                snapshot.children.forEach { child ->
+                snapshot.child("questions").children.forEach { child ->
                     val question = child.getValue(Question::class.java)
                     question?.let { questions.add(it) }
                 }
@@ -72,7 +72,7 @@ class QuestionRepositoryImpl(
     }
 
     override suspend fun getQuestionById(questionId: String, onSuccess: (Question?) -> Unit) {
-        databaseRef.child(questionId)
+        databaseRef.child("questions").child(questionId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val question = snapshot.getValue(Question::class.java)
