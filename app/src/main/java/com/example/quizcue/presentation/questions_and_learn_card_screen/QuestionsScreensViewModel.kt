@@ -46,4 +46,15 @@ class QuestionsScreensViewModel @Inject constructor(
         }
 
     }
+
+    fun addToFavorites(question: Question) {
+
+    }
+
+    fun deleteQuestion(question: Question) {
+        viewModelScope.launch {
+            questionRepository.deleteQuestion(question)
+        }
+    }
+
 }
