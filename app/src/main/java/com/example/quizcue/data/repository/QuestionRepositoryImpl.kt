@@ -34,7 +34,8 @@ class QuestionRepositoryImpl(
             "text" to question.text,
             "hint" to question.hint,
             "answer" to question.answer,
-            "course" to question.course
+            "course" to question.course,
+            "isStudied" to question.isStudied,
         )
         databaseRef.child("questions").child(questionId)
             .setValue(questionMap)

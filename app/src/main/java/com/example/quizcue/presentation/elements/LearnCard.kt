@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.quizcue.domain.model.Question
 import dev.jeziellago.compose.markdowntext.MarkdownText
@@ -40,6 +41,7 @@ fun LearnCard(
 ){
     var hintState by remember { mutableStateOf(false) }
     var expandedState by remember { mutableStateOf(false) }
+
     val rotationStateDropDown by animateFloatAsState(
         targetValue = if (expandedState) 180f else 0f
     )
@@ -59,7 +61,7 @@ fun LearnCard(
             ),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
         shape = RoundedCornerShape(15.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHigh)
+        colors = CardDefaults.cardColors(Color.Transparent)
     ) {
         Column(
             modifier = Modifier

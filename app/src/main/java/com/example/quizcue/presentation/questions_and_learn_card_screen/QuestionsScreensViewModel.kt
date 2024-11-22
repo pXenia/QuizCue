@@ -3,6 +3,7 @@ package com.example.quizcue.presentation.questions_and_learn_card_screen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.repository.QuestionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,5 +36,14 @@ class QuestionsScreensViewModel @Inject constructor(
                     _questions.value = filteredQuestions
                 }
         }
+    }
+
+    fun updateQuestionIsStudied(question: Question, isStudied: Boolean){
+        viewModelScope.launch {
+            questionRepository.upsertQuestion(
+                question.copy(isStudied = isStudied)
+            ){}
+        }
+
     }
 }

@@ -40,7 +40,6 @@ fun QuestionsList(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(70.dp)
             )
             if (question.id == questionList.last().id)
                 Spacer(modifier = Modifier.height(60.dp))

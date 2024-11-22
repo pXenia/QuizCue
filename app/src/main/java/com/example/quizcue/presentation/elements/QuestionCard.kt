@@ -2,6 +2,7 @@ package com.example.quizcue.presentation.elements
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.quizcue.domain.model.Question
 import com.example.quizcue.presentation.tools.Screen
+import com.example.quizcue.ui.theme.studyLight
 
 @Composable
 fun QuestionCard(
@@ -35,7 +38,8 @@ fun QuestionCard(
 ) {
     OutlinedCard(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier
+            .height(IntrinsicSize.Min),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
         colors = CardDefaults.cardColors(Color.Transparent)
     ) {
@@ -46,16 +50,14 @@ fun QuestionCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
-                Icons.Default.QuestionMark,
+                Icons.Filled.QuestionMark,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = if (question.isStudied) Color(0xFF3E731C) else MaterialTheme.colorScheme.error
             )
             Spacer(modifier = Modifier.width(14.dp))
             Text(
                 text = question.text,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    textAlign = TextAlign.Center
-                )
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }

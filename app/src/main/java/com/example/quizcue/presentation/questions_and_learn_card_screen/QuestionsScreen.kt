@@ -71,7 +71,8 @@ fun QuestionsScreen(
         bottomBar = {
             QuestionsScreenBottomBar(
                 onClickLearn = {
-                    navController.navigate(Screen.LearnCard.route)
+                    navController.navigate(Screen.LearnCard.route+"?courseId=${course}")
+
                 },
                 onClickAdd = {
                     navController.navigate(Screen.EditQuestion.route+ "?courseId=${course}" + "?questionId=${""}")
