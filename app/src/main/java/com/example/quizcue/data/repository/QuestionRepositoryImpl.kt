@@ -3,6 +3,7 @@ package com.example.quizcue.data.repository
 import android.util.Log
 import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.repository.QuestionRepository
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -11,8 +12,6 @@ import com.google.firebase.database.ValueEventListener
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.tasks.await
 
 
 class QuestionRepositoryImpl(
@@ -30,9 +29,10 @@ class QuestionRepositoryImpl(
             "text" to question.text,
             "hint" to question.hint,
             "answer" to question.answer,
-            "course" to question.course
+            "course" to question.course,
+            "isStudied" to question.isStudied,
         )
-        databaseRef.child(questionId)
+        databaseRef.child("questions").child(questionId)
             .setValue(questionMap)
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { exception ->
@@ -40,19 +40,29 @@ class QuestionRepositoryImpl(
             }
     }
 
-    override suspend fun deleteQuestion(question: Question, onSuccess: () -> Unit) {
-        databaseRef.child(question.id)
+    override suspend fun deleteQuestion(question: Question) {
+        databaseRef.child("questions").child(question.id)
             .removeValue()
-            .addOnSuccessListener { onSuccess() }
     }
 
     override fun getQuestions(): Flow<List<Question>> = callbackFlow {
         val questionsListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val questions = mutableListOf<Question>()
-                snapshot.children.forEach { child ->
-                    val question = child.getValue(Question::class.java)
-                    question?.let { questions.add(it) }
+                snapshot.child("questions").children.forEach { child ->
+                    val id = child.child("id").getValue(String::class.java) ?: ""
+                    val text = child.child("text").getValue(String::class.java) ?: ""
+                    val hint = child.child("hint").getValue(String::class.java) ?: ""
+                    val answer = child.child("answer").getValue(String::class.java) ?: ""
+                    val course = child.child("course").getValue(String::class.java) ?: ""
+                    val isStudied = child.child("isStudied").getValue(Boolean::class.java) ?: false
+                    val numberOfRepetitions = child.child("numberOfRepetitions").getValue(Int::class.java) ?: 0
+                    val createdDate = child.child("createdDate").getValue(Timestamp::class.java) ?: Timestamp.now()
+
+                    val question = Question(
+                        id, text, hint, answer, course, isStudied, numberOfRepetitions, createdDate
+                    )
+                    questions.add(question)
                 }
                 trySend(questions).isSuccess
             }
@@ -68,7 +78,7 @@ class QuestionRepositoryImpl(
     }
 
     override suspend fun getQuestionById(questionId: String, onSuccess: (Question?) -> Unit) {
-        databaseRef.child(questionId)
+        databaseRef.child("questions").child(questionId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val question = snapshot.getValue(Question::class.java)

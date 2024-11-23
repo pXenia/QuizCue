@@ -18,119 +18,94 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.quizcue.domain.model.Question
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.android.play.integrity.internal.q
 import com.google.android.play.integrity.internal.s
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class EditQuestionViewModel  @Inject constructor(
     private val questionRepository: QuestionRepository,
     savedStateHandler: SavedStateHandle
 ) : ViewModel() {
-    private  val generativeModel = GenerativeModel(
-        modelName = "gemini-1.5-flash" ,
+
+    private val _uiState = MutableStateFlow(Question())
+    val uiState: StateFlow<Question> = _uiState
+
+    private val generativeModel = GenerativeModel(
+        modelName = "gemini-1.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
-    private val _questions = mutableStateOf<List<Question>>(emptyList())
-    val questions: State<List<Question>> = _questions
 
-    private val _idQuestion = mutableStateOf("")
-    val idQuestion: State<String> = _idQuestion
-
-    private val _textQuestion = mutableStateOf("")
-    val textQuestion: State<String> = _textQuestion
-
-    private val _answerQuestion = mutableStateOf("")
-    val answerQuestion: State<String> = _answerQuestion
-
-    private val _hintQuestion = mutableStateOf("")
-    val hintQuestion: State<String> = _hintQuestion
-
-    private var _courseQuestion: String = ""
-
-    fun generateAnswer(question: String) {
-        _answerQuestion.value = "Generating ..."
-        val prompt = "Напиши ответ на вопрос: $question"
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val result = generativeModel.generateContent(prompt)
-                _answerQuestion.value = result.text ?: "Не удалось создать ответ"
-            } catch (e: Exception) {
-                _answerQuestion.value = "Не удалось создать ответ"
-            }
-        }
-    }
-    fun onEvent(event: EditQuestionEvent) {
-        when (event) {
-            is EditQuestionEvent.EnteredTextQuestion -> {
-                _textQuestion.value = event.value
-            }
-
-            is EditQuestionEvent.EnteredHintQuestion -> {
-                _hintQuestion.value = event.value
-            }
-
-            is EditQuestionEvent.EnteredAnswerQuestion -> {
-                _answerQuestion.value = event.value
-            }
-            is EditQuestionEvent.SaveQuestion -> {
-                upsertQuestion(
-                    Question(
-                        id = idQuestion.value,
-                        text = textQuestion.value,
-                        hint = hintQuestion.value,
-                        answer = answerQuestion.value,
-                        course = _courseQuestion
-                    )) {}
-            }
-        }
-    }
     init {
-        getQuestions()
-        savedStateHandler.get<String?>("questionId")?.let { questionId ->
-            if (questionId != "") {
-                viewModelScope.launch {
-                    questionRepository.getQuestionById(questionId) { question ->
-                        question?.let {
-                            _idQuestion.value = it.id
-                            _textQuestion.value = it.text
-                            _hintQuestion.value = it.hint
-                            _answerQuestion.value = it.answer
-                            _courseQuestion = savedStateHandler.get<String?>("courseId") ?: ""
+        val questionId = savedStateHandler["questionId"] ?: ""
+        val courseId = savedStateHandler["courseId"] ?: ""
+        _uiState.update { it.copy(course = courseId) }
+
+        if (questionId.isNotEmpty()) {
+            viewModelScope.launch {
+                questionRepository.getQuestionById(questionId) { question ->
+                    question?.let {
+                        _uiState.update {
+                            it.copy(
+                                id = question.id,
+                                text = question.text,
+                                hint = question.hint,
+                                answer = question.answer
+                            )
                         }
                     }
                 }
             }
         }
     }
-    fun getQuestions() {
-        viewModelScope.launch {
-            questionRepository.getQuestions().collect{ questionsList ->
-                _questions.value = questionsList.filter { it.course == _courseQuestion }
-            }
+
+    fun onEvent(event: EditQuestionEvent) {
+        when (event) {
+            is EditQuestionEvent.EnteredTextQuestion -> updateState { copy(text = event.value) }
+            is EditQuestionEvent.EnteredHintQuestion -> updateState { copy(hint = event.value) }
+            is EditQuestionEvent.EnteredAnswerQuestion -> updateState { copy(answer = event.value) }
+            is EditQuestionEvent.SaveQuestion -> saveQuestion()
         }
     }
 
-    fun generateHint(answer: String) {
-        _hintQuestion.value = "Generating ..."
-        val prompt = "Напиши подсказку чтобы запомноить этот ответ на вопрос: $answer не более 20 слов"
-        viewModelScope.launch(Dispatchers.IO) {
+    private fun updateState(update: Question.() -> Question) {
+        _uiState.update(update)
+    }
+
+    private fun saveQuestion() {
+        viewModelScope.launch {
+            val upsertQuestion = _uiState.value
+            questionRepository.upsertQuestion(question = upsertQuestion) {}
+        }
+    }
+
+    fun generateAnswer() {
+        updateState { copy(answer = "Generating ...") }
+        executeGeneration(
+            prompt = "Напиши ответ на вопрос: ${uiState.value.text}",
+            onUpdate = { answer -> updateState { copy(answer = answer) } }
+        )
+    }
+
+    fun generateHint() {
+        updateState { copy(hint = "Generating ...") }
+        executeGeneration(
+            prompt = "Напиши подсказку для запоминания ответа: $${uiState.value.answer} не более 20 слов",
+            onUpdate = { hint -> updateState { copy(hint = hint) } }
+        )
+    }
+
+
+    private fun executeGeneration(prompt: String, onUpdate: (String) -> Unit) {
+        viewModelScope.launch {
             try {
                 val result = generativeModel.generateContent(prompt)
-                _hintQuestion.value = result.text ?: "Не удалось создать ответ"
+                onUpdate(result.text ?: "Не удалось создать")
             } catch (e: Exception) {
-                _hintQuestion.value = "Не удалось создать ответ"
+                onUpdate("Ошибка генерации")
             }
         }
-    }
-
-    fun upsertQuestion(question: Question, onSuccess: () -> Unit) = viewModelScope.launch {
-            questionRepository.upsertQuestion(question, onSuccess)
-            onSuccess()
-    }
-
-    fun deleteQuestion(question: Question, onSuccess: () -> Unit) = viewModelScope.launch {
-            questionRepository.deleteQuestion(question, onSuccess)
-            onSuccess()
     }
 }

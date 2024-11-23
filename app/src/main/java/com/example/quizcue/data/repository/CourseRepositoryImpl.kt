@@ -2,7 +2,6 @@ package com.example.quizcue.data.repository
 
 import android.util.Log
 import com.example.quizcue.domain.model.Course
-import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.repository.CourseRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -18,7 +17,7 @@ class CourseRepositoryImpl(
     private val auth: FirebaseAuth
 ) : CourseRepository {
     val databaseRef = database.reference
-        .child(auth.currentUser?.uid.toString()).child("courses")
+        .child(auth.currentUser?.uid.toString())
 
     override suspend fun upsertCourse(course: Course, onSuccess: () -> Unit) {
         val courseId = if (course.id == "") databaseRef.push().key ?: return else course.id
@@ -27,23 +26,63 @@ class CourseRepositoryImpl(
             "name" to course.name,
             "description" to course.description,
         )
-        databaseRef.child(courseId)
+        databaseRef.child("courses").child(courseId)
             .setValue(courseMap)
             .addOnSuccessListener { onSuccess() }
     }
 
     override suspend fun deleteCourse(course: Course, onSuccess: () -> Unit) {
-        databaseRef.child(course.id)
+        databaseRef.child("courses").child(course.id)
             .removeValue()
             .addOnSuccessListener { onSuccess() }
     }
+
+    override fun getCoursesProgress(): Flow<Map<String, Float>> = callbackFlow {
+        val questionsRef = databaseRef.child("questions")
+
+        val questionListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val progressMap = mutableMapOf<String, Pair<Int, Int>>() // <CourseId, Pair<isStudiedCount, totalCount>>
+
+                snapshot.children.forEach { questionSnapshot ->
+                    val courseId = questionSnapshot.child("course").getValue(String::class.java)
+                    val isStudied = questionSnapshot.child("isStudied").getValue(Boolean::class.java) ?: false
+
+                    if (courseId != null) {
+                        val stats = progressMap[courseId] ?: (0 to 0)
+                        progressMap[courseId] = if (isStudied) {
+                            stats.copy(first = stats.first + 1, second = stats.second + 1)
+                        } else {
+                            stats.copy(second = stats.second + 1)
+                        }
+                    }
+                }
+
+                // Вычисляем прогресс
+                val progress = progressMap.mapValues { (courseId, stats) ->
+                    val (studied, total) = stats
+                    if (total > 0) studied.toFloat() / total else 0f
+                }
+                trySend(progress).isSuccess
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e("FirebaseError", "Failed to retrieve questions", error.toException())
+            }
+        }
+
+        questionsRef.addValueEventListener(questionListener)
+
+        awaitClose { questionsRef.removeEventListener(questionListener) }
+    }
+
 
 
     override fun getCourses(): Flow<List<Course>> = callbackFlow{
         val courseListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val courses = mutableListOf<Course>()
-                snapshot.children.forEach { child ->
+                snapshot.child("courses").children.forEach { child ->
                     val course = child.getValue(Course::class.java)
                     course?.let { courses.add(it) }
                 }
@@ -57,6 +96,20 @@ class CourseRepositoryImpl(
         databaseRef.addValueEventListener(courseListener)
 
         awaitClose { databaseRef.removeEventListener(courseListener) }
+    }
+
+    override suspend fun getCourseById(courseId: String, onSuccess: (Course?) -> Unit) {
+        databaseRef.child("courses").child(courseId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val course = snapshot.getValue(Course::class.java)
+                    onSuccess(course)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
+                }
+            })
     }
 
 

@@ -1,10 +1,10 @@
 package com.example.quizcue.presentation.questions_and_learn_card_screen
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,84 +14,136 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.quizcue.presentation.edit_question_screen.EditQuestionViewModel
 import com.example.quizcue.presentation.elements.QuestionsList
 import com.example.quizcue.presentation.tools.Screen
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionsScreen(
     navController: NavController,
-    questionViewModel: EditQuestionViewModel = hiltViewModel()
+    questionsViewModel: QuestionsScreensViewModel = hiltViewModel()
 ) {
-    val questions = questionViewModel.questions.value
+    val questions by questionsViewModel.questions.collectAsState()
+    val courseName by questionsViewModel.courseTitle
+    val course = questionsViewModel.courseId
+
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {  },
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            navController.navigateUp()
+                        },
+                        content = {
+                            Icon(Icons.Filled.ArrowBackIosNew, "Назад")
+                        }
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
+        },
         bottomBar = {
-            Row(
+            QuestionsScreenBottomBar(
+                onClickLearn = {
+                    navController.navigate(Screen.LearnCard.route+"?courseId=${course}")
+
+                },
+                onClickAdd = {
+                    navController.navigate(Screen.EditQuestion.route+ "?courseId=${course}" + "?questionId=${""}")
+                },
                 modifier = Modifier
-                    .padding(
-                        horizontal = 20.dp,
-                        vertical = 10.dp
-                    )
-                    .fillMaxWidth(),
-            ) {
-                OutlinedButton(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(56.dp),
-                    shape = RoundedCornerShape(15.dp),
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-                    onClick = { navController.navigate(Screen.LearnCard.route) }) {
-                    Text(
-                        text = "Учить",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            textAlign = TextAlign.Center
-                        ),
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-                Spacer(modifier = Modifier.width(5.dp))
-                FloatingActionButton(
-                    containerColor = MaterialTheme.colorScheme.tertiary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                    shape = RoundedCornerShape(15.dp),
-                    onClick = { navController.navigate(Screen.EditQuestion.route+"?questionId=${""}") }) {
-                    Icon(Icons.Filled.Add, contentDescription = "Add")
-                }
-            }
+                    .padding(horizontal = 20.dp, vertical = 10.dp)
+                    .fillMaxWidth()
+            )
         }
-    ) {
+    ) { padding ->
         Column(
-            modifier = Modifier.padding(
-                vertical = 5.dp,
-                horizontal = 20.dp
-            )
+            modifier = Modifier
+                .padding(padding)
+                .padding(horizontal = 25.dp)
+                .fillMaxSize()
         ) {
-            Text(
-                modifier = Modifier
-                    .padding(vertical = 10.dp)
-                    .fillMaxWidth(),
-                text = "Название курса",
-                style = MaterialTheme.typography.headlineMedium,
-            )
+            Text(text = courseName.uppercase(),
+                modifier = Modifier.padding(bottom = 5.dp),
+                style = MaterialTheme.typography.headlineMedium)
             HorizontalDivider(
+                modifier = Modifier.padding(vertical = 2.dp),
                 thickness = 1.dp,
                 color = MaterialTheme.colorScheme.tertiary
             )
-            QuestionsList(questionList = questions, navController = navController)
+            QuestionsList(
+                modifier = Modifier.fillMaxSize(),
+                questionList = questions,
+                navController = navController,
+                onAddToFavorites = { question ->
+                    questionsViewModel.addToFavorites(question)
+                },
+                onDeleteQuestion = { question ->
+                    questionsViewModel.deleteQuestion(question)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun QuestionsScreenBottomBar(
+    onClickLearn: () -> Unit,
+    onClickAdd: () -> Unit,
+    modifier: Modifier
+) {
+    Row(
+        modifier = modifier,
+    ) {
+        OutlinedButton(
+            onClick = onClickLearn,
+            modifier = Modifier
+                .weight(1f)
+                .height(56.dp),
+            shape = RoundedCornerShape(15.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+        ) {
+            Text(
+                text = "Учить",
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    textAlign = TextAlign.Center
+                ),
+            )
+        }
+        Spacer(modifier = Modifier.width(5.dp))
+        FloatingActionButton(
+            onClick = onClickAdd,
+            shape = RoundedCornerShape(15.dp),
+            containerColor = MaterialTheme.colorScheme.tertiary,
+            contentColor = MaterialTheme.colorScheme.onPrimary
+        ) {
+            Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
         }
     }
 }

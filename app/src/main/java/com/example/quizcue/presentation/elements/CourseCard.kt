@@ -32,6 +32,7 @@ import com.example.quizcue.presentation.tools.Screen
 fun CourseCard(
     navController: NavController,
     course: Course,
+    progress: Float,
     textColor: Color,
     trackColor: Color,
     cardColor: CardColors
@@ -72,7 +73,7 @@ fun CourseCard(
             ProgressCircle(
                 textColor =  textColor,
                 trackColor = trackColor,
-                progress = 0.7f)
+                progress = progress)
         }
     }
 }
