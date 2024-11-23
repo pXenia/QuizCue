@@ -29,14 +29,26 @@ class CourseViewModel @Inject constructor(
     private val _description = mutableStateOf("")
     val description: State<String> = _description
 
+    private val _progress = mutableStateOf<Map<String, Float>>(emptyMap())
+    val progress: State<Map<String, Float>> = _progress
+
     init {
         getCourses()
+        getCoursesProgress()
     }
 
     fun getCourses() {
         viewModelScope.launch {
             courseRepository.getCourses().collect{ coursesList ->
                 _courses.value = coursesList
+            }
+        }
+    }
+
+    fun getCoursesProgress() {
+        viewModelScope.launch {
+            courseRepository.getCoursesProgress().collect{ coursesProgress ->
+                _progress.value = coursesProgress
             }
         }
     }

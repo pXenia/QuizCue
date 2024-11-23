@@ -113,6 +113,7 @@ fun MainPreview(
             textColor = MaterialTheme.colorScheme.onPrimary,
             trackColor = MaterialTheme.colorScheme.tertiary,
             cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+            progress = 0f,
             course = Course("","","")
         )
     }

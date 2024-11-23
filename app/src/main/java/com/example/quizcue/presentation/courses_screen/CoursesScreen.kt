@@ -48,6 +48,7 @@ fun CoursesScreen(
     val scroll = rememberScrollState()
     val heightScr = LocalConfiguration.current.screenHeightDp.dp
     val courses = courseViewModel.courses.value
+    val progress = courseViewModel.progress.value
 
     Column(
         modifier = Modifier
@@ -112,6 +113,7 @@ fun CoursesScreen(
                     cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHighest),
                     textColor = MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.tertiary,
+                    progress = progress[it.id] ?: 0f,
                     course = it
                 )
                 if (it == courses.last()) {
