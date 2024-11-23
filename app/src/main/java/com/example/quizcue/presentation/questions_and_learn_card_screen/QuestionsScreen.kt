@@ -1,6 +1,5 @@
 package com.example.quizcue.presentation.questions_and_learn_card_screen
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,19 +28,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.quizcue.presentation.edit_question_screen.EditQuestionViewModel
 import com.example.quizcue.presentation.elements.QuestionsList
 import com.example.quizcue.presentation.tools.Screen
-import com.google.android.play.integrity.internal.q
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,12 +44,13 @@ fun QuestionsScreen(
     questionsViewModel: QuestionsScreensViewModel = hiltViewModel()
 ) {
     val questions by questionsViewModel.questions.collectAsState()
-    val course = questionsViewModel.courseQuestion
+    val courseName by questionsViewModel.courseTitle
+    val course = questionsViewModel.courseId
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("МАТЕМАТИЧЕСКИЙ АНАЛИЗ") },
+                title = {  },
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -92,8 +87,11 @@ fun QuestionsScreen(
                 .padding(horizontal = 25.dp)
                 .fillMaxSize()
         ) {
-
+            Text(text = courseName.uppercase(),
+                modifier = Modifier.padding(bottom = 5.dp),
+                style = MaterialTheme.typography.headlineMedium)
             HorizontalDivider(
+                modifier = Modifier.padding(vertical = 2.dp),
                 thickness = 1.dp,
                 color = MaterialTheme.colorScheme.tertiary
             )

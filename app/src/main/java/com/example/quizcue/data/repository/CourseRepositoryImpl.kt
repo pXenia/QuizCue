@@ -2,7 +2,6 @@ package com.example.quizcue.data.repository
 
 import android.util.Log
 import com.example.quizcue.domain.model.Course
-import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.repository.CourseRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -64,7 +63,6 @@ class CourseRepositoryImpl(
                     val (studied, total) = stats
                     if (total > 0) studied.toFloat() / total else 0f
                 }
-                Log.d("repo", "${progress["-OCC_9eH3uMnz01YWgcY"]}")
                 trySend(progress).isSuccess
             }
 
@@ -98,6 +96,20 @@ class CourseRepositoryImpl(
         databaseRef.addValueEventListener(courseListener)
 
         awaitClose { databaseRef.removeEventListener(courseListener) }
+    }
+
+    override suspend fun getCourseById(courseId: String, onSuccess: (Course?) -> Unit) {
+        databaseRef.child("courses").child(courseId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val course = snapshot.getValue(Course::class.java)
+                    onSuccess(course)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
+                }
+            })
     }
 
 
