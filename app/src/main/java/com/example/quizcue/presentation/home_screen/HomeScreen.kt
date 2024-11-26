@@ -15,15 +15,22 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoGraph
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarViewWeek
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.rounded.CalendarToday
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -58,8 +65,10 @@ import androidx.navigation.NavGraph
 import coil3.compose.rememberAsyncImagePainter
 import com.example.quizcue.R
 import com.example.quizcue.domain.model.Course
+import com.example.quizcue.presentation.courses_screen.CourseViewModel
 import com.example.quizcue.presentation.elements.CourseCard
 import com.example.quizcue.presentation.tools.Screen
+import com.google.android.play.integrity.internal.h
 import dagger.hilt.android.lifecycle.HiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,11 +110,12 @@ fun HomeScreen(
 
 @Composable
 fun MainPreview(
-    navController: NavController
+    navController: NavController,
 ) {
     Column(modifier = Modifier
         .fillMaxSize()
-        .padding(horizontal = 30.dp)) {
+        .padding(horizontal = 30.dp)
+    ) {
         Header()
         Body()
         CourseCard(
@@ -113,7 +123,7 @@ fun MainPreview(
             textColor = MaterialTheme.colorScheme.onPrimary,
             trackColor = MaterialTheme.colorScheme.tertiary,
             cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-            progress = 0f,
+            progress = 0.55f,
             course = Course("","","")
         )
     }
@@ -136,7 +146,7 @@ fun Header(modifier: Modifier = Modifier,
         Image(
             modifier = Modifier
                 .padding(top = 15.dp)
-                .size(128.dp)
+                .size(140.dp)
                 .border(
                     BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
                     CircleShape
@@ -164,16 +174,16 @@ fun Header(modifier: Modifier = Modifier,
 @Composable
 fun Body() {
     val activeItems = listOf(
-        listOf(Icons.Rounded.CalendarToday, "Сегодня", "6 повторений"),
-        listOf(Icons.Filled.CalendarViewWeek, "На этой неделе", "20 повторений"),
-        listOf(Icons.Filled.CalendarMonth, "В этом месяце", "30 повторений")
+        listOf(Icons.Rounded.Favorite, "Избранное", "Всего вопросов: 5"),
+        listOf(Icons.Filled.QuestionMark, "Все вопросы", "Всего вопросов: 15"),
+        listOf(Icons.Filled.AutoGraph, "Статистика", "Ваш прогресс!")
     )
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.45f)
+            .fillMaxHeight(0.50f)
             .border(1.dp, MaterialTheme.colorScheme.tertiary, FloatingActionButtonDefaults.shape)
-            .padding(20.dp),
+            .padding(vertical = 20.dp, horizontal = 25.dp),
     ) {
         Column(
             modifier = Modifier
@@ -190,7 +200,10 @@ fun Body() {
 
 @Composable
 fun ActiveItem(icon: ImageVector, title: String, subtitle: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Absolute.SpaceBetween,
+    ) {
         FloatingActionButton(
             modifier = Modifier.border(
                 1.dp,
@@ -203,7 +216,7 @@ fun ActiveItem(icon: ImageVector, title: String, subtitle: String) {
         ) {
             Icon(imageVector = icon, contentDescription = null)
         }
-        Spacer(modifier = Modifier.fillMaxWidth(0.25f))
+        Spacer(modifier = Modifier.fillMaxWidth(0.20f))
         Column {
             Text(text = title, style = MaterialTheme.typography.titleMedium)
             Text(text = subtitle, style = MaterialTheme.typography.titleSmall)

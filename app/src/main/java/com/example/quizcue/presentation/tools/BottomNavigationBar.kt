@@ -2,6 +2,7 @@ package com.example.quizcue.presentation.tools
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -37,7 +38,9 @@ fun BottomNavigationBar(navController: NavHostController) {
     var selectedIndex by remember { mutableStateOf(0) }
 
     AnimatedNavigationBar(
-        modifier = Modifier.fillMaxHeight(0.12f)
+        modifier = Modifier
+            .defaultMinSize(minHeight = 100.dp)
+            .fillMaxHeight(0.12f)
             .padding(horizontal = 30.dp, vertical = 15.dp),
         selectedIndex = selectedIndex,
         cornerRadius = shapeCornerRadius(cornerRadius = 34.dp),
