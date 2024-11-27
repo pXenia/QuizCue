@@ -17,6 +17,7 @@ import com.example.quizcue.presentation.questions_and_learn_card_screen.Question
 import com.example.quizcue.presentation.authentication.AuthenticationNavigationViewModel
 import com.example.quizcue.presentation.authentication.login_screen.LoginScreen
 import com.example.quizcue.presentation.authentication.register_screen.RegisterScreen
+import com.example.quizcue.presentation.competition_screen.CompetitionScreen
 import com.example.quizcue.presentation.courses_screen.AddCourseDialog
 import com.example.quizcue.presentation.edit_question_screen.EditQuestion
 import com.example.quizcue.presentation.schedule_screen.ScheduleScree
@@ -39,6 +40,9 @@ fun BottomNavGraph(navController: NavHostController,
         }
         composable(route = Screen.Schedule.route) {
             ScheduleScree()
+        }
+        composable(route = Screen.Competition.route) {
+            CompetitionScreen(navController)
         }
         composable(route = Screen.Questions.route + "?courseId={courseId}",
             arguments = listOf(

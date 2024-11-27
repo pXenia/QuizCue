@@ -117,7 +117,7 @@ fun MainPreview(
         .padding(horizontal = 30.dp)
     ) {
         Header()
-        Body()
+        Body(navController)
         CourseCard(
             navController = navController,
             textColor = MaterialTheme.colorScheme.onPrimary,
@@ -172,7 +172,8 @@ fun Header(modifier: Modifier = Modifier,
 }
 
 @Composable
-fun Body() {
+fun Body(navController: NavController,)
+{
     val activeItems = listOf(
         listOf(Icons.Rounded.Favorite, "Избранное", "Всего вопросов: 5"),
         listOf(Icons.Filled.QuestionMark, "Все вопросы", "Всего вопросов: 15"),
@@ -192,14 +193,19 @@ fun Body() {
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
             activeItems.forEach { item ->
-                ActiveItem(item[0] as ImageVector, item[1].toString(), item[2].toString())
+                ActiveItem(item[0] as ImageVector, item[1].toString(), item[2].toString(),
+                    onClick = {navController.navigate(Screen.Competition.route)})
             }
         }
     }
 }
 
 @Composable
-fun ActiveItem(icon: ImageVector, title: String, subtitle: String) {
+fun ActiveItem(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Absolute.SpaceBetween,
@@ -210,7 +216,7 @@ fun ActiveItem(icon: ImageVector, title: String, subtitle: String) {
                 MaterialTheme.colorScheme.tertiary,
                 FloatingActionButtonDefaults.shape
             ),
-            onClick = { /* TODO */ },
+            onClick = onClick,
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             contentColor = MaterialTheme.colorScheme.primary
         ) {
