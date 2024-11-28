@@ -65,6 +65,7 @@ import androidx.navigation.NavGraph
 import coil3.compose.rememberAsyncImagePainter
 import com.example.quizcue.R
 import com.example.quizcue.domain.model.Course
+import com.example.quizcue.domain.model.User
 import com.example.quizcue.presentation.courses_screen.CourseViewModel
 import com.example.quizcue.presentation.elements.CourseCard
 import com.example.quizcue.presentation.tools.Screen
@@ -133,9 +134,9 @@ fun MainPreview(
 fun Header(modifier: Modifier = Modifier,
         homeViewModel: HomeScreenViewModel = hiltViewModel())
 {
-    val userName by homeViewModel.userName.collectAsState(initial = "")
-    val userEmail by homeViewModel.userEmail.collectAsState(initial = "")
-    val userPhoto by homeViewModel.userPhoto.collectAsState(null)
+    val user by homeViewModel.uiState.collectAsState()
+    val email = homeViewModel.email
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -152,8 +153,8 @@ fun Header(modifier: Modifier = Modifier,
                     CircleShape
                 )
                 .clip(CircleShape),
-            painter = if (userPhoto != null)
-                BitmapPainter(userPhoto!!.asImageBitmap())
+            painter = if (user.photo != null)
+                BitmapPainter(user.photo!!.asImageBitmap())
             else
                 painterResource(id = R.drawable.koshka),
             contentDescription = "user",
@@ -161,11 +162,11 @@ fun Header(modifier: Modifier = Modifier,
             colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0.5f) })
         )
         Text(
-            text = userName,
+            text = user.name,
             style = MaterialTheme.typography.headlineMedium
         )
         Text(
-            text = userEmail,
+            text = email,
             style = MaterialTheme.typography.bodySmall
         )
     }

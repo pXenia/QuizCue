@@ -7,6 +7,7 @@ import com.example.quizcue.domain.model.Course
 import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.repository.CompetitionRepository
 import com.google.android.play.integrity.internal.al
+import com.google.android.play.integrity.internal.c
 import com.google.android.play.integrity.internal.m
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -22,35 +23,75 @@ class CompetitionRepositoryImpl(
     val databaseRef = database.reference
 
     override suspend fun addOpponent(
-        opponentId: String,
-        challengeDate: Long
+        competitionId: String,
+        onSuccess: (String?) -> Unit
     ){
         val currentUser = auth.currentUser?.uid.toString()
-        val competitionId = databaseRef.push().key ?: return
-        val competitionMap = hashMapOf<String, Any>(
-            "id" to competitionId,
-            "user1" to currentUser,
-            "user2" to opponentId,
-            "challengeDate" to challengeDate,
-        )
-        databaseRef.child(competitionId)
-            .setValue(competitionId)
-        val userCompetitionInfo = mapOf("competition" to competitionId)
-        databaseRef.child("users").child(competitionId).setValue(userCompetitionInfo)
-        databaseRef.child("users").child(opponentId).setValue(userCompetitionInfo)
+        var user2: String? = null
+        databaseRef.child("competitions").child(competitionId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    user2 = snapshot.child("user2").getValue(String::class.java)
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
+                }
+            })
+        if (user2 == ""){
+            databaseRef.child("competitions").child(competitionId).child("user2").setValue(currentUser)
+            onSuccess("Вы успешно присоединились к соревнованию!")
+            databaseRef.child("users").child(currentUser).child("competitionId").setValue(competitionId)
+        } else {
+            onSuccess("К сожалению, в сореановании не может быть более 2х участников")
+        }
     }
+
+    override suspend fun addCompetition(prize: String, challengeDate: Long, onSuccess: (String?) -> Unit){
+        val currentUser = auth.currentUser?.uid.toString()
+        var competitionId: String? = null
+        databaseRef.child(currentUser)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    competitionId = snapshot.child("competitionId").getValue(String::class.java)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
+                }
+            })
+
+        if (competitionId == null) {
+            competitionId = databaseRef.child("competitions").push().key
+            val competitionMap = hashMapOf<String, Any?>(
+                "id" to competitionId,
+                "user1" to currentUser,
+                "user2" to "",
+                "prize" to prize,
+                "challengeDate" to challengeDate,
+            )
+            competitionId?.let {
+                databaseRef.child("competitions").child(it).setValue(competitionMap)
+                onSuccess(competitionId)
+                databaseRef.child(currentUser).child("competitionId").setValue(competitionId)
+            }
+        } else {
+            onSuccess("Вы уже учавствуете в соревновании! Сначала завершите его.")
+        }
+    }
+
     override suspend fun getCompetitionById(competitionId: String, onSuccess: (Competition?) -> Unit) {
-        databaseRef.child(competitionId)
+        databaseRef.child("competitions").child(competitionId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     snapshot.children.forEach { child ->
                         val id = child.child("id").getValue(String::class.java) ?: ""
                         val user1 = child.child("user1").getValue(String::class.java) ?: ""
                         val user2 = child.child("user2").getValue(String::class.java) ?: ""
+                        val prize = child.child("prize").getValue(String::class.java) ?: ""
                         val challengeDate =
                             child.child("challengeDate").getValue(Long::class.java) ?: 0L
                         val competition = Competition(
-                            id, user1, user2, challengeDate
+                            id, user1, user2, prize, challengeDate
                         )
                         onSuccess(competition)
                     }

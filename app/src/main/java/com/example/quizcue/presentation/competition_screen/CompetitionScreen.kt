@@ -42,6 +42,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -57,7 +59,14 @@ import com.example.quizcue.presentation.tools.Screen
 @Composable
 fun CompetitionScreen(
     navController: NavController,
+    competitionViewModel: CompetitionViewModel = hiltViewModel()
 ) {
+    /*
+    val userName by ""
+    val userPhoto by competitionViewModel.userPhoto.collectAsState(null)
+    val opponentName by competitionViewModel.opponentName.collectAsState(initial = "")
+    val opponentPhoto by competitionViewModel.opponentPhoto.collectAsState(null)
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -124,7 +133,10 @@ fun CompetitionScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.koshka),
+                        painter = if (userPhoto != null)
+                            BitmapPainter(userPhoto!!.asImageBitmap())
+                        else
+                            painterResource(id = R.drawable.koshka),
                         contentDescription = "Фото пользователя 1",
                         modifier = Modifier
                             .size(150.dp)
@@ -139,7 +151,7 @@ fun CompetitionScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text(text = "Anna", style = MaterialTheme.typography.headlineMedium)
+                        Text(text = userName, style = MaterialTheme.typography.headlineMedium)
                         Text("Вопросы: 27 б", style = MaterialTheme.typography.titleSmall)
                         Text("Тесты: 21 б", style = MaterialTheme.typography.titleSmall)
                     }
@@ -197,8 +209,11 @@ fun CompetitionScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.koshka),
-                        contentDescription = "Фото пользователя 1",
+                        painter = if (opponentPhoto != null)
+                            BitmapPainter(opponentPhoto!!.asImageBitmap())
+                        else
+                            painterResource(id = R.drawable.koshka),
+                        contentDescription = "Фото пользователя 2",
                         modifier = Modifier
                             .size(150.dp)
                             .clip(CircleShape)
@@ -212,7 +227,7 @@ fun CompetitionScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ){
-                        Text(text = "Ammy", style = MaterialTheme.typography.headlineMedium)
+                        Text(text = opponentName, style = MaterialTheme.typography.headlineMedium)
                         Text("Вопросы: 27 б", style = MaterialTheme.typography.titleSmall)
                         Text("Тесты: 21 б", style = MaterialTheme.typography.titleSmall)
                     }
@@ -222,4 +237,6 @@ fun CompetitionScreen(
             Spacer(modifier = Modifier.height(30.dp))
         }
     }
+
+     */
 }
