@@ -38,7 +38,6 @@ class AuthenticationRepositoryImpl @Inject constructor(
         }
     }
 
-
     override suspend fun register(
         email: String,
         password: String,
@@ -86,7 +85,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
     override suspend fun isLoggerIn(): Boolean = auth.currentUser == null
 
-    override fun getUserInfo(userId: String, onSuccess: (User?) -> Unit ){
+    override fun getUserInfo(userId: String, onSuccess: (User?) -> Unit) {
         var name: String?
         var pictureToBitmap: Bitmap?
         var competitionId: String?

@@ -22,9 +22,9 @@ class CompetitionRepositoryImpl(
 ):CompetitionRepository {
     val databaseRef = database.reference
 
-    override suspend fun addOpponent(
+    override fun addOpponent(
         competitionId: String,
-        onSuccess: (String?) -> Unit
+        onSuccess: (String) -> Unit
     ){
         val currentUser = auth.currentUser?.uid.toString()
         var user2: String? = null
@@ -46,7 +46,7 @@ class CompetitionRepositoryImpl(
         }
     }
 
-    override suspend fun addCompetition(prize: String, challengeDate: Long, onSuccess: (String?) -> Unit){
+    override fun addCompetition(prize: String, challengeDate: Long, onSuccess: (String) -> Unit){
         val currentUser = auth.currentUser?.uid.toString()
         var competitionId: String? = null
         databaseRef.child(currentUser)
@@ -71,15 +71,15 @@ class CompetitionRepositoryImpl(
             )
             competitionId?.let {
                 databaseRef.child("competitions").child(it).setValue(competitionMap)
-                onSuccess(competitionId)
-                databaseRef.child(currentUser).child("competitionId").setValue(competitionId)
+                onSuccess(it)
+                databaseRef.child("users").child(currentUser).child("competitionId").setValue(competitionId)
             }
         } else {
             onSuccess("Вы уже учавствуете в соревновании! Сначала завершите его.")
         }
     }
 
-    override suspend fun getCompetitionById(competitionId: String, onSuccess: (Competition?) -> Unit) {
+    override fun getCompetitionById(competitionId: String, onSuccess: (Competition?) -> Unit) {
         databaseRef.child("competitions").child(competitionId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
