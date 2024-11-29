@@ -1,17 +1,24 @@
 package com.example.quizcue.presentation.competition_screen
 
 import android.graphics.Bitmap
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.quizcue.domain.model.Course
 import com.example.quizcue.domain.model.User
 import com.example.quizcue.domain.repository.AuthenticationRepository
 import com.example.quizcue.domain.repository.CompetitionRepository
+import com.example.quizcue.presentation.courses_screen.EditCourseEvent
+import com.example.quizcue.presentation.edit_question_screen.EditQuestionEvent
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,59 +31,30 @@ class CompetitionViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(uiState())
     val uiState: StateFlow<uiState> = _uiState
 
-    var addOpponentResult: String? = null
+    private var _competitionKey = mutableStateOf("")
+    val competitionKey: State<String> = _competitionKey
 
     init {
         val competitionId = savedStateHandle["competitionId"] ?: ""
         if (competitionId != "") {
-            competitionRepository.getCompetitionById(competitionId) { competition ->
-                if (competition != null) {
-                    authenticationRepository.getUserInfo(competition.user1){ user ->
-                        user?.let {
-                            _uiState.update { uiState ->
-                                uiState.copy(
-                                    user1 = it
-                                )
-                            }
-                        }
-                    }
+            getCompetitionById(competitionId)
+        }
+    }
 
-                    authenticationRepository.getUserInfo(competition.user2){ user ->
-                        user?.let {
-                            _uiState.update { uiState ->
-                                uiState.copy(
-                                    user2 = it
-                                )
-                            }
-                        }
-                    }
-
-                    _uiState.update { uiState ->
-                        uiState.copy(
-                            competitionId = competitionId,
-                            date = competition.challengeDate,
-                            prize = competition.prize,
-                            user1TestScore = competition.user1TestScore,
-                            user1CardScore = competition.user1CardScore,
-                            user2TestScore = competition.user2TestScore,
-                            user2CardScore = competition.user2CardScore
-                        )
-                    }
-
-                }
-            }
+    fun onEvent(event: AddCompetitionEvent) {
+        when (event) {
+            is AddCompetitionEvent.EditCompetitionPrize -> _uiState.update { it.copy(prize = event.value) }
+            is AddCompetitionEvent.EditCompetitionDate -> _uiState.update { it.copy(date = event.value) }
         }
     }
 
     fun addCompetition() {
-        competitionRepository.addCompetition(
-            prize = uiState.value.prize,
-            challengeDate = uiState.value.date,
-        ) {
-            _uiState.update { uiState ->
-                uiState.copy(
-                    competitionId = it
-                )
+        viewModelScope.launch {
+            competitionRepository.addCompetition(
+                prize = uiState.value.prize,
+                challengeDate = uiState.value.date,
+            ) {
+                _competitionKey.value = it
             }
         }
     }
@@ -85,11 +63,48 @@ class CompetitionViewModel @Inject constructor(
         competitionRepository.addOpponent(
             competitionId = uiState.value.competitionId,
         ) {
-            addOpponentResult = it
+            _competitionKey.value = it
         }
     }
 
+    fun getCompetitionById(competitionId: String) {
+        competitionRepository.getCompetitionById(competitionId) { competition ->
+            if (competition != null) {
+                authenticationRepository.getUserInfo(competition.user1) { user ->
+                    user?.let {
+                        _uiState.update { uiState ->
+                            uiState.copy(
+                                user1 = it
+                            )
+                        }
+                    }
+                }
 
+                authenticationRepository.getUserInfo(competition.user2) { user ->
+                    user?.let {
+                        _uiState.update { uiState ->
+                            uiState.copy(
+                                user2 = it
+                            )
+                        }
+                    }
+                }
+
+                _uiState.update { uiState ->
+                    uiState.copy(
+                        competitionId = competitionId,
+                        date = competition.challengeDate,
+                        prize = competition.prize,
+                        user1TestScore = competition.user1TestScore,
+                        user1CardScore = competition.user1CardScore,
+                        user2TestScore = competition.user2TestScore,
+                        user2CardScore = competition.user2CardScore
+                    )
+                }
+
+            }
+        }
+    }
 }
 
 data class uiState(

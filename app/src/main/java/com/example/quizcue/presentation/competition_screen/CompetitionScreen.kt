@@ -61,11 +61,7 @@ fun CompetitionScreen(
     navController: NavController,
     competitionViewModel: CompetitionViewModel = hiltViewModel()
 ) {
-    /*
-    val userName by ""
-    val userPhoto by competitionViewModel.userPhoto.collectAsState(null)
-    val opponentName by competitionViewModel.opponentName.collectAsState(initial = "")
-    val opponentPhoto by competitionViewModel.opponentPhoto.collectAsState(null)
+    val uiState by competitionViewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
@@ -85,6 +81,19 @@ fun CompetitionScreen(
                     containerColor = Color.Transparent
                 )
             )
+        },
+        floatingActionButton = {
+            if (uiState.competitionId == "") {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(Screen.AddCompetitionDialog.route)
+                    },
+                    shape = RoundedCornerShape(15.dp),
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    content = { Icon(Icons.Filled.Done, "Сохранить вопрос") }
+                )
+            }
         }
     ) { padding ->
         Column(
@@ -133,8 +142,9 @@ fun CompetitionScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Image(
-                        painter = if (userPhoto != null)
-                            BitmapPainter(userPhoto!!.asImageBitmap())
+                        painter = if (uiState.user1?.photo != null) {
+                            BitmapPainter(uiState.user1?.photo!!.asImageBitmap())
+                        }
                         else
                             painterResource(id = R.drawable.koshka),
                         contentDescription = "Фото пользователя 1",
@@ -151,7 +161,7 @@ fun CompetitionScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text(text = userName, style = MaterialTheme.typography.headlineMedium)
+                        Text(text = uiState.user1?.name ?: "", style = MaterialTheme.typography.headlineMedium)
                         Text("Вопросы: 27 б", style = MaterialTheme.typography.titleSmall)
                         Text("Тесты: 21 б", style = MaterialTheme.typography.titleSmall)
                     }
@@ -209,8 +219,8 @@ fun CompetitionScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Image(
-                        painter = if (opponentPhoto != null)
-                            BitmapPainter(opponentPhoto!!.asImageBitmap())
+                        painter = if (uiState.user2?.photo != null)
+                            BitmapPainter(uiState.user2?.photo!!.asImageBitmap())
                         else
                             painterResource(id = R.drawable.koshka),
                         contentDescription = "Фото пользователя 2",
@@ -227,7 +237,7 @@ fun CompetitionScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ){
-                        Text(text = opponentName, style = MaterialTheme.typography.headlineMedium)
+                        Text(text = uiState.user2?.name ?: "", style = MaterialTheme.typography.headlineMedium)
                         Text("Вопросы: 27 б", style = MaterialTheme.typography.titleSmall)
                         Text("Тесты: 21 б", style = MaterialTheme.typography.titleSmall)
                     }
@@ -237,6 +247,4 @@ fun CompetitionScreen(
             Spacer(modifier = Modifier.height(30.dp))
         }
     }
-
-     */
 }

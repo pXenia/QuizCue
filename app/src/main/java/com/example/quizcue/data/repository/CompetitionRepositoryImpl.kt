@@ -46,7 +46,7 @@ class CompetitionRepositoryImpl(
         }
     }
 
-    override fun addCompetition(prize: String, challengeDate: Long, onSuccess: (String) -> Unit){
+    override suspend fun addCompetition(prize: String, challengeDate: Long, onSuccess: (String) -> Unit){
         val currentUser = auth.currentUser?.uid.toString()
         var competitionId: String? = null
         databaseRef.child(currentUser)
@@ -91,7 +91,7 @@ class CompetitionRepositoryImpl(
                         val challengeDate =
                             child.child("challengeDate").getValue(Long::class.java) ?: 0L
                         val competition = Competition(
-                            id, user1, user2, prize, challengeDate
+                            id, user1, user2, prize, challengeDate, 0, 0, 0, 0
                         )
                         onSuccess(competition)
                     }

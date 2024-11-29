@@ -6,7 +6,7 @@ import com.example.quizcue.domain.model.Course
 import kotlinx.coroutines.flow.Flow
 
 interface CompetitionRepository {
-    fun addCompetition(prize: String, challengeDate: Long, onSuccess: (String) -> Unit)
+    suspend fun addCompetition(prize: String, challengeDate: Long, onSuccess: (String) -> Unit)
     fun addOpponent(competitionId: String, onSuccess: (String) -> Unit)
     fun getCompetitionById(competitionId: String, onSuccess: (Competition?) -> Unit)
 }
