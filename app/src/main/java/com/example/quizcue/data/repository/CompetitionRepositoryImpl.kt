@@ -37,7 +37,7 @@ class CompetitionRepositoryImpl(
                     Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
                 }
             })
-        if (user2 == ""){
+        if (user2 == null){
             databaseRef.child("competitions").child(competitionId).child("user2").setValue(currentUser)
             onSuccess("Вы успешно присоединились к соревнованию!")
             databaseRef.child("users").child(currentUser).child("competitionId").setValue(competitionId)
@@ -65,7 +65,6 @@ class CompetitionRepositoryImpl(
             val competitionMap = hashMapOf<String, Any?>(
                 "id" to competitionId,
                 "user1" to currentUser,
-                "user2" to "",
                 "prize" to prize,
                 "challengeDate" to challengeDate,
             )
@@ -83,18 +82,16 @@ class CompetitionRepositoryImpl(
         databaseRef.child("competitions").child(competitionId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    snapshot.children.forEach { child ->
-                        val id = child.child("id").getValue(String::class.java) ?: ""
-                        val user1 = child.child("user1").getValue(String::class.java) ?: ""
-                        val user2 = child.child("user2").getValue(String::class.java) ?: ""
-                        val prize = child.child("prize").getValue(String::class.java) ?: ""
+                        val id = snapshot.child("id").getValue(String::class.java) ?: ""
+                        val user1 = snapshot.child("user1").getValue(String::class.java) ?: ""
+                        val user2 = snapshot.child("user2").getValue(String::class.java) ?: ""
+                        val prize = snapshot.child("prize").getValue(String::class.java) ?: ""
                         val challengeDate =
-                            child.child("challengeDate").getValue(Long::class.java) ?: 0L
+                            snapshot.child("challengeDate").getValue(Long::class.java) ?: 0L
                         val competition = Competition(
                             id, user1, user2, prize, challengeDate, 0, 0, 0, 0
                         )
                         onSuccess(competition)
-                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {

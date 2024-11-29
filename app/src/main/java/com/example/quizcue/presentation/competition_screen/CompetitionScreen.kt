@@ -62,7 +62,6 @@ fun CompetitionScreen(
     competitionViewModel: CompetitionViewModel = hiltViewModel()
 ) {
     val uiState by competitionViewModel.uiState.collectAsState()
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -103,148 +102,159 @@ fun CompetitionScreen(
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedCard(
-                modifier = Modifier
-                    .padding(bottom = 10.dp)
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min),
-                border = BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary),
-                colors = CardDefaults.cardColors(Color.Transparent),
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.SpaceAround,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Дата окончания 27.11.2024")
-                    Text("Приз: поход в кино")
-                }
+            if (uiState.competitionId != ""){
+                CompetitionContent(uiState)
+            } else {
+                Text("Добавьте соревнование")
             }
-            OutlinedCard(
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-                elevation = CardDefaults.cardElevation(6.dp),
-                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-            ) {
-                // Пользователь 1
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(
-                            vertical = 30.dp,
-                            horizontal = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = if (uiState.user1?.photo != null) {
-                            BitmapPainter(uiState.user1?.photo!!.asImageBitmap())
-                        }
-                        else
-                            painterResource(id = R.drawable.koshka),
-                        contentDescription = "Фото пользователя 1",
-                        modifier = Modifier
-                            .size(150.dp)
-                            .clip(CircleShape)
-                            .border(1.dp, Color.White, CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                    Column(
-                        modifier = Modifier
-                            .padding(5.dp)
-                            .fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(text = uiState.user1?.name ?: "", style = MaterialTheme.typography.headlineMedium)
-                        Text("Вопросы: 27 б", style = MaterialTheme.typography.titleSmall)
-                        Text("Тесты: 21 б", style = MaterialTheme.typography.titleSmall)
-                    }
-
-                }
-            }
-
-            // Шкала прогресса
-            Column(
-                modifier = Modifier
-                    .padding(vertical = 10.dp)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(8.dp))
-                LinearProgressIndicator(
-                    progress = { 25 / 90.toFloat() },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(CircleShape)
-                        .height(25.dp),
-                    trackColor = MaterialTheme.colorScheme.tertiary,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-                // Счет
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("25 баллов", style = MaterialTheme.typography.titleLarge)
-                    Text("26 баллов", style = MaterialTheme.typography.titleLarge)
-                }
-            }
-
-            // Против пользователь 2
-            OutlinedCard(
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-                elevation = CardDefaults.cardElevation(6.dp),
-                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiary),
-            ) {
-                // Пользователь 1
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(
-                            vertical = 30.dp,
-                            horizontal = 20.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = if (uiState.user2?.photo != null)
-                            BitmapPainter(uiState.user2?.photo!!.asImageBitmap())
-                        else
-                            painterResource(id = R.drawable.koshka),
-                        contentDescription = "Фото пользователя 2",
-                        modifier = Modifier
-                            .size(150.dp)
-                            .clip(CircleShape)
-                            .border(1.dp, Color.White, CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                    Column(
-                        modifier = Modifier
-                            .padding(5.dp)
-                            .fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ){
-                        Text(text = uiState.user2?.name ?: "", style = MaterialTheme.typography.headlineMedium)
-                        Text("Вопросы: 27 б", style = MaterialTheme.typography.titleSmall)
-                        Text("Тесты: 21 б", style = MaterialTheme.typography.titleSmall)
-                    }
-
-                }
-            }
-            Spacer(modifier = Modifier.height(30.dp))
         }
     }
+}
+
+@Composable
+fun CompetitionContent(
+    uiState: uiState
+){
+    OutlinedCard(
+        modifier = Modifier
+            .padding(bottom = 10.dp)
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
+        border = BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary),
+        colors = CardDefaults.cardColors(Color.Transparent),
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceAround,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Дата окончания 27.11.2024")
+            Text("Приз: ${uiState.prize}")
+        }
+    }
+    OutlinedCard(
+        modifier = Modifier
+            .padding(10.dp)
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
+        elevation = CardDefaults.cardElevation(6.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+    ) {
+        // Пользователь 1
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    vertical = 30.dp,
+                    horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = if (uiState.user1?.photo != null) {
+                    BitmapPainter(uiState.user1?.photo!!.asImageBitmap())
+                }
+                else
+                    painterResource(id = R.drawable.koshka),
+                contentDescription = "Фото пользователя 1",
+                modifier = Modifier
+                    .size(150.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, Color.White, CircleShape),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = uiState.user1?.name ?: "", style = MaterialTheme.typography.headlineMedium)
+                Text("Вопросы: 27 б", style = MaterialTheme.typography.titleSmall)
+                Text("Тесты: 21 б", style = MaterialTheme.typography.titleSmall)
+            }
+
+        }
+    }
+
+    // Шкала прогресса
+    Column(
+        modifier = Modifier
+            .padding(vertical = 10.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.height(8.dp))
+        LinearProgressIndicator(
+            progress = { 25 / 90.toFloat() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(CircleShape)
+                .height(25.dp),
+            trackColor = MaterialTheme.colorScheme.tertiary,
+            color = MaterialTheme.colorScheme.primary,
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+        // Счет
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("25 баллов", style = MaterialTheme.typography.titleLarge)
+            Text("26 баллов", style = MaterialTheme.typography.titleLarge)
+        }
+    }
+
+    // Против пользователь 2
+    OutlinedCard(
+        modifier = Modifier
+            .padding(10.dp)
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
+        elevation = CardDefaults.cardElevation(6.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiary),
+    ) {
+        // Пользователь 1
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                    vertical = 30.dp,
+                    horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = if (uiState.user2?.photo != null)
+                    BitmapPainter(uiState.user2?.photo!!.asImageBitmap())
+                else
+                    painterResource(id = R.drawable.koshka),
+                contentDescription = "Фото пользователя 2",
+                modifier = Modifier
+                    .size(150.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, Color.White, CircleShape),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ){
+                Text(text = uiState.user2?.name ?: "", style = MaterialTheme.typography.headlineMedium)
+                Text("Вопросы: 27 б", style = MaterialTheme.typography.titleSmall)
+                Text("Тесты: 21 б", style = MaterialTheme.typography.titleSmall)
+            }
+
+        }
+    }
+    Spacer(modifier = Modifier.height(30.dp))
 }

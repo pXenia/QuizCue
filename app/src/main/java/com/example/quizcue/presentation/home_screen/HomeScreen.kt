@@ -112,13 +112,17 @@ fun HomeScreen(
 @Composable
 fun MainPreview(
     navController: NavController,
+    homeViewModel: HomeScreenViewModel = hiltViewModel()
 ) {
+    val user by homeViewModel.uiState.collectAsState()
+    val email = homeViewModel.email
+
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(horizontal = 30.dp)
     ) {
-        Header()
-        Body(navController)
+        Header(user, email)
+        Body(user, navController)
         CourseCard(
             navController = navController,
             textColor = MaterialTheme.colorScheme.onPrimary,
@@ -131,12 +135,12 @@ fun MainPreview(
 }
 
 @Composable
-fun Header(modifier: Modifier = Modifier,
-        homeViewModel: HomeScreenViewModel = hiltViewModel())
+fun Header(
+    user: User,
+    email: String,
+    modifier: Modifier = Modifier,
+)
 {
-    val user by homeViewModel.uiState.collectAsState()
-    val email = homeViewModel.email
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -173,7 +177,9 @@ fun Header(modifier: Modifier = Modifier,
 }
 
 @Composable
-fun Body(navController: NavController,)
+fun Body(
+    user: User,
+    navController: NavController)
 {
     val activeItems = listOf(
         listOf(Icons.Rounded.Favorite, "Избранное", "Всего вопросов: 5"),
@@ -195,7 +201,7 @@ fun Body(navController: NavController,)
         ) {
             activeItems.forEach { item ->
                 ActiveItem(item[0] as ImageVector, item[1].toString(), item[2].toString(),
-                    onClick = {navController.navigate(Screen.Competition.route)})
+                    onClick = {navController.navigate(Screen.Competition.route+ "?competitionId=${user.competitionId}")})
             }
         }
     }

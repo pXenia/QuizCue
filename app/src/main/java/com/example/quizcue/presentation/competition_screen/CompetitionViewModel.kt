@@ -59,12 +59,10 @@ class CompetitionViewModel @Inject constructor(
         }
     }
 
-    fun addOpponent() {
+    fun addOpponent(competitionId: String) {
         competitionRepository.addOpponent(
-            competitionId = uiState.value.competitionId,
-        ) {
-            _competitionKey.value = it
-        }
+            competitionId = competitionId,
+        ) {}
     }
 
     fun getCompetitionById(competitionId: String) {

@@ -44,7 +44,15 @@ fun BottomNavGraph(navController: NavHostController,
         composable(route = Screen.Schedule.route) {
             ScheduleScree()
         }
-        composable(route = Screen.Competition.route) {
+        composable(route = Screen.Competition.route + "?competitionId={competitionId}",
+            arguments = listOf(
+                navArgument(
+                    name = "competitionId"
+                ) {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )) {
             CompetitionScreen(navController)
         }
         composable(route = Screen.Questions.route + "?courseId={courseId}",

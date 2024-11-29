@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.AlertDialog
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.Icon
@@ -45,10 +45,11 @@ fun ChoseAddingCompetitionDialog(
         )
     }
 
-//    if (showAddCompetitionByKeyDialog) {
-//        AddCompetitionByKeyDialog(
-//        )
-//    }
+    if (showAddCompetitionByKeyDialog) {
+        AddCompetitionByKeyDialog(
+            navController = navController
+        )
+    }
 
     AlertDialog(
         title = { Text(text = "Создание соревнования") },
@@ -126,9 +127,9 @@ fun AddCompetitionDialog(
 @Composable
 fun AddCompetitionByKeyDialog(
     navController: NavController,
+    competitionViewModel: CompetitionViewModel = hiltViewModel(),
 ) {
     var addedCompetitionId by remember { mutableStateOf("") }
-    var showKeyForCompetitionDialog by remember { mutableStateOf(false) }
 
 
     AlertDialog(
@@ -154,7 +155,8 @@ fun AddCompetitionByKeyDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    showKeyForCompetitionDialog = true
+                    competitionViewModel.addOpponent(competitionId = addedCompetitionId)
+                    navController.navigate(Screen.Competition.route + "?competitionId=${addedCompetitionId}")
                 }
             ) {
                 Text("Присоединиться")
