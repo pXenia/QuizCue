@@ -1,5 +1,7 @@
 package com.example.quizcue.presentation.competition_screen
 
+import android.icu.text.SimpleDateFormat
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -19,8 +21,12 @@ import androidx.compose.foundation.layout.windowInsetsEndWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Update
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -45,15 +52,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.quizcue.R
+import com.example.quizcue.domain.model.User
 import com.example.quizcue.presentation.edit_question_screen.EditQuestionEvent
 import com.example.quizcue.presentation.edit_question_screen.EditQuestionViewModel
 import com.example.quizcue.presentation.tools.Screen
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -90,7 +102,7 @@ fun CompetitionScreen(
                     shape = RoundedCornerShape(15.dp),
                     containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
-                    content = { Icon(Icons.Filled.Done, "Сохранить вопрос") }
+                    content = { Icon(Icons.Filled.Add, "Добавить") }
                 )
             }
         }
@@ -103,7 +115,9 @@ fun CompetitionScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (uiState.competitionId != ""){
-                CompetitionContent(uiState)
+                CompetitionContent(
+                    uiState = uiState,
+                    onClick = {competitionViewModel.getCompetitionById(uiState.competitionId)})
             } else {
                 Text("Добавьте соревнование")
             }
@@ -113,8 +127,11 @@ fun CompetitionScreen(
 
 @Composable
 fun CompetitionContent(
-    uiState: uiState
-){
+    uiState: uiState,
+    onClick: () -> Unit
+) {
+    val date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(uiState.date)
+
     OutlinedCard(
         modifier = Modifier
             .padding(bottom = 10.dp)
@@ -130,58 +147,17 @@ fun CompetitionContent(
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Дата окончания 27.11.2024")
+            Text("Дата окончания ${date}")
             Text("Приз: ${uiState.prize}")
         }
     }
-    OutlinedCard(
-        modifier = Modifier
-            .padding(10.dp)
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-        elevation = CardDefaults.cardElevation(6.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-    ) {
-        // Пользователь 1
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    vertical = 30.dp,
-                    horizontal = 20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Image(
-                painter = if (uiState.user1?.photo != null) {
-                    BitmapPainter(uiState.user1?.photo!!.asImageBitmap())
-                }
-                else
-                    painterResource(id = R.drawable.koshka),
-                contentDescription = "Фото пользователя 1",
-                modifier = Modifier
-                    .size(150.dp)
-                    .clip(CircleShape)
-                    .border(1.dp, Color.White, CircleShape),
-                contentScale = ContentScale.Crop
-            )
-            Column(
-                modifier = Modifier
-                    .padding(5.dp)
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(text = uiState.user1?.name ?: "", style = MaterialTheme.typography.headlineMedium)
-                Text("Вопросы: 27 б", style = MaterialTheme.typography.titleSmall)
-                Text("Тесты: 21 б", style = MaterialTheme.typography.titleSmall)
-            }
 
-        }
+    if (uiState.user1 != null) {
+        UserCard(
+            user = uiState.user1,
+            cardColor = MaterialTheme.colorScheme.primary)
     }
 
-    // Шкала прогресса
     Column(
         modifier = Modifier
             .padding(vertical = 10.dp)
@@ -210,7 +186,25 @@ fun CompetitionContent(
         }
     }
 
-    // Против пользователь 2
+    if (uiState.user2?.competitionId != "" && uiState.user2 != null) {
+        UserCard(
+            user = uiState.user2,
+            cardColor = MaterialTheme.colorScheme.tertiary)
+    } else {
+        CardWithoutOpponent(
+            competitionId = uiState.competitionId,
+            onClick = onClick
+        )
+    }
+
+    Spacer(modifier = Modifier.height(30.dp))
+}
+
+@Composable
+fun UserCard(
+    user: User,
+    cardColor: Color
+) {
     OutlinedCard(
         modifier = Modifier
             .padding(10.dp)
@@ -218,9 +212,8 @@ fun CompetitionContent(
             .height(IntrinsicSize.Min),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
         elevation = CardDefaults.cardElevation(6.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiary),
+        colors = CardDefaults.cardColors(cardColor),
     ) {
-        // Пользователь 1
         Row(
             modifier = Modifier
                 .fillMaxSize()
@@ -231,11 +224,12 @@ fun CompetitionContent(
             horizontalArrangement = Arrangement.Center
         ) {
             Image(
-                painter = if (uiState.user2?.photo != null)
-                    BitmapPainter(uiState.user2?.photo!!.asImageBitmap())
+                painter = if (user.photo != null) {
+                    BitmapPainter(user.photo.asImageBitmap())
+                }
                 else
                     painterResource(id = R.drawable.koshka),
-                contentDescription = "Фото пользователя 2",
+                contentDescription = "Фото пользователя",
                 modifier = Modifier
                     .size(150.dp)
                     .clip(CircleShape)
@@ -248,13 +242,82 @@ fun CompetitionContent(
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
-            ){
-                Text(text = uiState.user2?.name ?: "", style = MaterialTheme.typography.headlineMedium)
+            ) {
+                Text(text = user.name, style = MaterialTheme.typography.headlineMedium)
                 Text("Вопросы: 27 б", style = MaterialTheme.typography.titleSmall)
                 Text("Тесты: 21 б", style = MaterialTheme.typography.titleSmall)
             }
 
         }
     }
-    Spacer(modifier = Modifier.height(30.dp))
+}
+
+@Composable
+fun CardWithoutOpponent(
+    competitionId: String,
+    onClick: () -> Unit,
+) {
+    val clipboardManager = LocalClipboardManager.current
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        OutlinedCard(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+                .padding(10.dp),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
+            elevation = CardDefaults.cardElevation(0.dp),
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiary),
+        ) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                text = "Чтобы пригласить друга, скопируйте код ниже и отправьте ему!",
+                style = MaterialTheme.typography.titleSmall.copy(
+                    textAlign = TextAlign.Center
+                )
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = competitionId,
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                IconButton(onClick = {
+                    clipboardManager.setText(AnnotatedString(competitionId))
+                    Toast.makeText(context, "Ключ скопирован в буфер обмена", Toast.LENGTH_SHORT)
+                        .show()
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.ContentCopy,
+                        contentDescription = "Копировать ключ"
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(
+            onClick = onClick
+        ) {
+            Icon(
+                modifier = Modifier.padding(5.dp),
+                imageVector = Icons.Default.Update,
+                contentDescription = "Update"
+            )
+            Text(
+                text = "Обновить",
+                modifier = Modifier.padding(5.dp),
+            )
+        }
+    }
 }
