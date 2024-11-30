@@ -103,6 +103,10 @@ class CompetitionViewModel @Inject constructor(
             }
         }
     }
+
+    fun deleteCompetition(competitionId: String){
+        competitionRepository.deleteCompetition(competitionId)
+    }
 }
 
 data class uiState(

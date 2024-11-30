@@ -20,13 +20,14 @@ class CompetitionRepositoryImpl(
     private val database: FirebaseDatabase,
     private val auth: FirebaseAuth
 ):CompetitionRepository {
+
     val databaseRef = database.reference
+    val currentUser = auth.currentUser?.uid.toString()
 
     override fun addOpponent(
         competitionId: String,
         onSuccess: (String) -> Unit
     ){
-        val currentUser = auth.currentUser?.uid.toString()
         var user2: String? = null
         databaseRef.child("competitions").child(competitionId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -46,7 +47,7 @@ class CompetitionRepositoryImpl(
         }
     }
 
-    override suspend fun addCompetition(prize: String, challengeDate: Long, onSuccess: (String) -> Unit){
+    override fun addCompetition(prize: String, challengeDate: Long, onSuccess: (String) -> Unit){
         val currentUser = auth.currentUser?.uid.toString()
         var competitionId: String? = null
         databaseRef.child(currentUser)
@@ -98,5 +99,10 @@ class CompetitionRepositoryImpl(
                     Log.e("FirebaseError", "Failed to retrieve competition by id", error.toException())
                 }
             })
+    }
+
+    override fun deleteCompetition(competitionId: String) {
+        databaseRef.child("users").child(currentUser).child("competitionId")
+            .removeValue()
     }
 }

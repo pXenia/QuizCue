@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Update
@@ -62,8 +63,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.quizcue.R
 import com.example.quizcue.domain.model.User
-import com.example.quizcue.presentation.edit_question_screen.EditQuestionEvent
-import com.example.quizcue.presentation.edit_question_screen.EditQuestionViewModel
 import com.example.quizcue.presentation.tools.Screen
 import java.util.Locale
 
@@ -81,7 +80,7 @@ fun CompetitionScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            navController.navigateUp()
+                            navController.navigate(Screen.Home.route)
                         },
                         content = {
                             Icon(Icons.Filled.ArrowBackIosNew, "Назад")
@@ -103,6 +102,32 @@ fun CompetitionScreen(
                     containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     content = { Icon(Icons.Filled.Add, "Добавить") }
+                )
+            } else {
+                FloatingActionButton(
+                    onClick = {
+                        competitionViewModel.deleteCompetition(uiState.competitionId)
+                        navController.navigate(Screen.Home.route)
+                    },
+                    shape = RoundedCornerShape(15.dp),
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    content = {
+                        Row(
+                            modifier = Modifier.padding(10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                modifier = Modifier.padding(5.dp),
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Завершить"
+                            )
+                            Text(
+                                text = "Завершить",
+                                modifier = Modifier.padding(5.dp),
+                            )
+                        }
+                    }
                 )
             }
         }
@@ -176,7 +201,7 @@ fun CompetitionContent(
         )
 
         Spacer(modifier = Modifier.height(8.dp))
-        // Счет
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
