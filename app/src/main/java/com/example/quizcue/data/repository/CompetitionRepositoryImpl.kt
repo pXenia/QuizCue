@@ -104,5 +104,7 @@ class CompetitionRepositoryImpl(
     override fun deleteCompetition(competitionId: String) {
         databaseRef.child("users").child(currentUser).child("competitionId")
             .removeValue()
+        databaseRef.child("competitions").child(competitionId)
+            .removeValue()
     }
 }

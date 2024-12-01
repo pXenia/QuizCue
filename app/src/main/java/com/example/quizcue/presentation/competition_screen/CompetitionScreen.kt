@@ -288,7 +288,6 @@ fun CardWithoutOpponent(
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
         OutlinedCard(
             modifier = Modifier

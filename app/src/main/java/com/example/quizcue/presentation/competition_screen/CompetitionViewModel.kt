@@ -60,6 +60,11 @@ class CompetitionViewModel @Inject constructor(
     }
 
     fun addOpponent(competitionId: String) {
+        _uiState.update { uiState ->
+            uiState.copy(
+                competitionId = competitionId
+            )
+        }
         competitionRepository.addOpponent(
             competitionId = competitionId,
         ) {}
