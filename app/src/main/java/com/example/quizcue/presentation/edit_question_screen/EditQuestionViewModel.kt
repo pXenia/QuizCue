@@ -43,7 +43,7 @@ class EditQuestionViewModel  @Inject constructor(
         val courseId = savedStateHandler["courseId"] ?: ""
         _uiState.update { it.copy(course = courseId) }
 
-        if (questionId.isNotEmpty()) {
+        if (questionId != "") {
             viewModelScope.launch {
                 questionRepository.getQuestionById(questionId) { question ->
                     question?.let {

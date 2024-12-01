@@ -3,9 +3,11 @@ package com.example.quizcue.di
 import android.app.Application
 import android.content.Context
 import com.example.quizcue.data.repository.AuthenticationRepositoryImpl
+import com.example.quizcue.data.repository.CompetitionRepositoryImpl
 import com.example.quizcue.data.repository.CourseRepositoryImpl
 import com.example.quizcue.data.repository.QuestionRepositoryImpl
 import com.example.quizcue.domain.repository.AuthenticationRepository
+import com.example.quizcue.domain.repository.CompetitionRepository
 import com.example.quizcue.domain.repository.CourseRepository
 import com.example.quizcue.domain.repository.QuestionRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -63,4 +65,11 @@ object FirebaseDatabaseModule {
         database: FirebaseDatabase,
         auth: FirebaseAuth
     ): CourseRepository = CourseRepositoryImpl(database, auth)
+
+    @Provides
+    @Singleton
+    fun provideCompetitionRepository(
+        database: FirebaseDatabase,
+        auth: FirebaseAuth
+    ): CompetitionRepository = CompetitionRepositoryImpl(database, auth)
 }

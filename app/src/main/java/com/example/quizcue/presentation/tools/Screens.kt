@@ -24,4 +24,6 @@ sealed class Screen(
     object Register: Screen("register", null)
     object EditQuestion: Screen("edit_question", null)
     object AddCourse: Screen("add_course", null)
+    object Competition: Screen("competition", null)
+    object AddCompetitionDialog: Screen("add_competition", null)
 }

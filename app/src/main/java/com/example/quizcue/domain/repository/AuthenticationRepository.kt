@@ -1,8 +1,8 @@
 package com.example.quizcue.domain.repository
 
-import android.graphics.Bitmap
 import android.net.Uri
 import com.example.quizcue.domain.Response
+import com.example.quizcue.domain.model.User
 import com.google.firebase.auth.AuthResult
 import kotlinx.coroutines.flow.Flow
 
@@ -13,7 +13,5 @@ interface AuthenticationRepository {
     suspend fun logout()
     suspend fun userUid(): String
     suspend fun isLoggerIn(): Boolean
-    fun getUserEmail(): Flow<String>
-    fun getUserName(): Flow<String>
-    fun getUserPhoto(): Flow<Bitmap?>
+    fun getUserInfo(userId: String, onSuccess: (User?) -> Unit)
 }

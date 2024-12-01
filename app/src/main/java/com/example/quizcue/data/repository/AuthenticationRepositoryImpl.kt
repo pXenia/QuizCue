@@ -5,13 +5,19 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Base64
+import android.util.Log
 import com.example.quizcue.domain.repository.AuthenticationRepository
 import com.example.quizcue.domain.Response
+import com.example.quizcue.domain.model.User
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import java.io.InputStream
@@ -32,8 +38,12 @@ class AuthenticationRepositoryImpl @Inject constructor(
         }
     }
 
-
-    override suspend fun register(email: String, password: String, name: String, imageUri: Uri?): Flow<Response<AuthResult>> = flow {
+    override suspend fun register(
+        email: String,
+        password: String,
+        name: String,
+        imageUri: Uri?
+    ): Flow<Response<AuthResult>> = flow {
         try {
             emit(Response.Loading)
 
@@ -75,42 +85,32 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
     override suspend fun isLoggerIn(): Boolean = auth.currentUser == null
 
-    override fun getUserEmail(): Flow<String> = flow {
-        emit(auth.currentUser?.email ?: "")
-    }
-
-    override fun getUserName(): Flow<String> = flow {
-        val userId = auth.currentUser?.uid ?: ""
-        if (userId.isNotEmpty()) {
-            try {
-                val snapshot = database.reference.child("users").child(userId).child("name").get().await()
-                emit(snapshot.getValue(String::class.java) ?: "")
-            } catch (e: Exception) {
-                emit("")
-            }
-        } else {
-            emit("")
-        }
-    }
-
-    override fun getUserPhoto(): Flow<Bitmap?> = flow {
-        val userId = auth.currentUser?.uid ?: ""
-        if (userId.isNotEmpty()) {
-            try {
-                val snapshot = database.reference.child("users").child(userId).child("picture").get().await()
-                val base64Image = snapshot.getValue(String::class.java)
-
-                val bitmap = base64Image?.let {
-                    val bytes = Base64.decode(it, Base64.DEFAULT)
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+    override fun getUserInfo(userId: String, onSuccess: (User?) -> Unit) {
+        var name: String?
+        var pictureToBitmap: Bitmap?
+        var competitionId: String?
+        database.reference.child("users").child(userId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    name = snapshot.child("name").getValue(String::class.java) ?: ""
+                    val picture = snapshot.child("picture").getValue(String::class.java)
+                    competitionId =
+                        snapshot.child("competitionId").getValue(String::class.java) ?: ""
+                    pictureToBitmap = picture?.let {
+                        val bytes = Base64.decode(it, Base64.DEFAULT)
+                        BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                    }
+                    val user = User(
+                        name = name ?: "",
+                        photo = pictureToBitmap,
+                        competitionId = competitionId ?: ""
+                    )
+                    onSuccess(user)
                 }
-                emit(bitmap)
-            } catch (e: Exception) {
-                emit(null)
-            }
-        } else {
-            emit(null)
-        }
-    }
 
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
+                }
+            })
+    }
 }
