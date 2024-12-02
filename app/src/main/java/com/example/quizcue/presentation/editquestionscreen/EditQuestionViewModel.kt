@@ -1,15 +1,9 @@
-package com.example.quizcue.presentation.edit_question_screen
+package com.example.quizcue.presentation.editquestionscreen
 
-import android.util.Log
-import android.widget.Toast
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quizcue.BuildConfig
-import com.example.quizcue.domain.Response
 import com.example.quizcue.domain.repository.QuestionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,10 +12,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.quizcue.domain.model.Question
 import com.google.ai.client.generativeai.GenerativeModel
-import com.google.android.play.integrity.internal.q
-import com.google.android.play.integrity.internal.s
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel

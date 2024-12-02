@@ -17,14 +17,12 @@ import com.example.quizcue.presentation.questions_and_learn_card_screen.Question
 import com.example.quizcue.presentation.authentication.AuthenticationNavigationViewModel
 import com.example.quizcue.presentation.authentication.login_screen.LoginScreen
 import com.example.quizcue.presentation.authentication.register_screen.RegisterScreen
-import com.example.quizcue.presentation.competition_screen.AddCompetitionDialog
-import com.example.quizcue.presentation.competition_screen.AddCompetitionEvent
 import com.example.quizcue.presentation.competition_screen.ChoseAddingCompetitionDialog
 import com.example.quizcue.presentation.competition_screen.CompetitionScreen
 import com.example.quizcue.presentation.courses_screen.AddCourseDialog
-import com.example.quizcue.presentation.edit_question_screen.EditQuestion
+import com.example.quizcue.presentation.editquestionscreen.EditQuestion
+import com.example.quizcue.presentation.quizscreen.ChoseLearningDialog
 import com.example.quizcue.presentation.quizscreen.QuizScreen
-import com.example.quizcue.presentation.quizscreen.ResultQuizCard
 import com.example.quizcue.presentation.quizscreen.ResultQuizScreen
 import com.example.quizcue.presentation.schedule_screen.ScheduleScree
 
@@ -118,9 +116,13 @@ fun BottomNavGraph(navController: NavHostController,
         dialog(
             route = Screen.AddCompetitionDialog.route,
         ) {
-            ChoseAddingCompetitionDialog(navController = navController)
+            AddCourseDialog(navController = navController)
         }
-
+        dialog(
+            route = Screen.ChoseLearningType.route,
+        ) {
+            ChoseLearningDialog("aaa",navController = navController)
+        }
     }
 }
 

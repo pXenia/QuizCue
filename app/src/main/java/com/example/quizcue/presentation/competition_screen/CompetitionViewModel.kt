@@ -1,20 +1,14 @@
 package com.example.quizcue.presentation.competition_screen
 
-import android.graphics.Bitmap
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.quizcue.domain.model.Course
 import com.example.quizcue.domain.model.User
 import com.example.quizcue.domain.repository.AuthenticationRepository
 import com.example.quizcue.domain.repository.CompetitionRepository
-import com.example.quizcue.presentation.courses_screen.EditCourseEvent
-import com.example.quizcue.presentation.edit_question_screen.EditQuestionEvent
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update

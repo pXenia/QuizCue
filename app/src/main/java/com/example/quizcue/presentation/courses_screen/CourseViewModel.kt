@@ -6,10 +6,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quizcue.domain.model.Course
-import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.repository.CourseRepository
-import com.example.quizcue.domain.repository.QuestionRepository
-import com.example.quizcue.presentation.edit_question_screen.EditQuestionEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
