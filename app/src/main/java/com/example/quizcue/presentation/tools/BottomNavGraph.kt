@@ -23,6 +23,9 @@ import com.example.quizcue.presentation.competition_screen.ChoseAddingCompetitio
 import com.example.quizcue.presentation.competition_screen.CompetitionScreen
 import com.example.quizcue.presentation.courses_screen.AddCourseDialog
 import com.example.quizcue.presentation.edit_question_screen.EditQuestion
+import com.example.quizcue.presentation.quizscreen.QuizScreen
+import com.example.quizcue.presentation.quizscreen.ResultQuizCard
+import com.example.quizcue.presentation.quizscreen.ResultQuizScreen
 import com.example.quizcue.presentation.schedule_screen.ScheduleScree
 
 @Composable
@@ -43,6 +46,12 @@ fun BottomNavGraph(navController: NavHostController,
         }
         composable(route = Screen.Schedule.route) {
             ScheduleScree()
+        }
+        composable(route = Screen.Quiz.route) {
+            QuizScreen(navController)
+        }
+        composable(route = Screen.ResultQuiz.route) {
+            ResultQuizScreen(navController)
         }
         composable(route = Screen.Competition.route + "?competitionId={competitionId}",
             arguments = listOf(

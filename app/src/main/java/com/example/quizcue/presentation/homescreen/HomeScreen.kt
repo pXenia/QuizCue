@@ -1,4 +1,4 @@
-import com.example.quizcue.presentation.home_screen.HomeScreenViewModel
+import com.example.quizcue.presentation.homescreen.HomeScreenViewModel
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
@@ -15,22 +15,15 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoGraph
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CalendarViewWeek
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.QuestionMark
-import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -51,26 +44,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph
-import coil3.compose.rememberAsyncImagePainter
 import com.example.quizcue.R
 import com.example.quizcue.domain.model.Course
 import com.example.quizcue.domain.model.User
-import com.example.quizcue.presentation.courses_screen.CourseViewModel
 import com.example.quizcue.presentation.elements.CourseCard
 import com.example.quizcue.presentation.tools.Screen
-import com.google.android.play.integrity.internal.h
-import dagger.hilt.android.lifecycle.HiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -179,8 +165,7 @@ fun Header(
 @Composable
 fun Body(
     user: User,
-    navController: NavController)
-{
+    navController: NavController) {
     val activeItems = listOf(
         listOf(Icons.Rounded.Favorite, "Избранное", "Всего вопросов: 5"),
         listOf(Icons.Filled.QuestionMark, "Все вопросы", "Всего вопросов: 15"),
@@ -201,7 +186,14 @@ fun Body(
         ) {
             activeItems.forEach { item ->
                 ActiveItem(item[0] as ImageVector, item[1].toString(), item[2].toString(),
-                    onClick = {navController.navigate(Screen.Competition.route+ "?competitionId=${user.competitionId}")})
+                    onClick = {
+                        if (item == activeItems.last()) {
+                            navController.navigate(Screen.Competition.route + "?competitionId=${user.competitionId}")
+                        } else {
+                            navController.navigate(Screen.Quiz.route)
+                        }
+                    }
+                )
             }
         }
     }
