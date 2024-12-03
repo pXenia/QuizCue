@@ -18,45 +18,54 @@ import javax.inject.Inject
 class QuizViewModel @Inject constructor(
     questionRepository: QuestionRepository
 ) : ViewModel() {
- /*
-    private val _uiState = MutableStateFlow<MutableMap<Boolean, String>>(mutableMapOf())
-    val uiState: StateFlow<Map<Boolean, String>> = _uiState
+
+    private val _uiState = MutableStateFlow<List<Pair<Boolean, String>>>(emptyList())
+    val uiState: StateFlow<List<Pair<Boolean, String>>> = _uiState
 
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
     )
 
-    fun generateCorrectAnswer() {
-        executeGeneration(
-            prompt = "Напиши один неверный ответ к данному вопросу",
-            onUpdate = { answer -> updateState {  } }
-        )
+    fun onEvent (event: QuizEvent){
+        when(event){
+            is QuizEvent.GenerateCorrectAnswer -> generateAnswer(isCorrect = true, questionText = event.questionText)
+            is QuizEvent.GenerateIncorrectAnswer -> generateAnswer(isCorrect = false, questionText = event.questionText)
+            is QuizEvent.ClearAnswers -> clearAnswer()
+        }
     }
 
-    fun generateCorrectAnswer() {
-        executeGeneration(
-            prompt = "Напиши один верный ответ к данному вопросу",
-            onUpdate = { answer -> updateState { copy(answer = answer) } }
-        )
+    private  fun generateAnswer(isCorrect: Boolean, questionText: String){
+        val prompt = if (isCorrect) {
+            "Напиши один правильный ответ на вопрос: \"$questionText\"."
+        } else {
+            "Напиши один неправильный ответ на вопрос: \"$questionText\"."
+        }
+
+        executeGeneration(prompt) { answer ->
+            updateState(isCorrect, answer)
+        }
     }
 
-    private fun executeGeneration(prompt: String, onUpdate: (String) -> Unit) {
+    private fun executeGeneration(prompt: String, onUpdate: (String) -> Unit){
         viewModelScope.launch {
             try {
                 val result = generativeModel.generateContent(prompt)
-                onUpdate(result.text ?: "Не удалось создать")
-            } catch (e: Exception) {
+                onUpdate (result.text ?: "Не удалось создать")
+            } catch ( e: Exception) {
                 onUpdate("Ошибка генерации")
             }
         }
     }
 
-    private fun updateState(isTrue: Boolean, answer: String) {
-        _uiState.update {
-            mutableMapOf(isTrue, answer)
+    private fun updateState(isCorrect: Boolean, answer: String){
+        _uiState.update {currentList ->
+            currentList+ (isCorrect to answer)
+
         }
     }
 
-  */
+    private fun clearAnswer(){
+        _uiState.update { emptyList() }
+    }
 }
