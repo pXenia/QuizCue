@@ -24,7 +24,7 @@ import androidx.navigation.NavController
 import com.example.quizcue.presentation.tools.Screen
 
 @Composable
-fun ChoseLearningDialog(
+fun ChooseLearningDialog(
     course: String,
     navController: NavController
 ) {
@@ -54,7 +54,7 @@ fun ChoseLearningDialog(
                     if (selectedItem == 0)
                         navController.navigate(Screen.LearnCard.route+"?courseId=${course}")
                     else
-                        navController.navigate(Screen.Quiz.route)
+                        navController.navigate(Screen.Quiz.route+"?courseId=${course}")
 
                 }
             ) {

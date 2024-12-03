@@ -1,15 +1,21 @@
 package com.example.quizcue.presentation.quizscreen
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material.icons.Icons
@@ -32,12 +38,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.quizcue.presentation.competition_screen.uiState
@@ -47,20 +56,19 @@ import com.example.quizcue.presentation.tools.Screen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizScreen(
-    navController: NavController = rememberNavController()
+    navController: NavController = rememberNavController(),
+    quizViewModel: QuizViewModel = hiltViewModel()
 ) {
+    val uiState by quizViewModel.uiState.collectAsState()
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("") },
+                title = { Text("Тест") },
                 navigationIcon = {
                     IconButton(
-                        onClick = {
-                            navController.navigate(Screen.Home.route)
-                        },
-                        content = {
-                            Icon(Icons.Filled.ArrowBackIosNew, "Назад")
-                        }
+                        onClick = { navController.navigate(Screen.Home.route) },
+                        content = { Icon(Icons.Filled.ArrowBackIosNew, "Назад") }
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -82,72 +90,89 @@ fun QuizScreen(
             )
         }
     ) { padding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(padding)
                 .padding(horizontal = 25.dp)
                 .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedCard(
-                modifier = Modifier
-                    .padding(bottom = 20.dp)
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-                colors = CardDefaults.cardColors(Color.Transparent),
-            ) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp),
-                    text = "Вопрос",
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        textAlign = TextAlign.Center
-                    )
+            // Отображение вопросов и ответов
+            items(uiState) { (questionText, answers) ->
+                QuizContent(
+                    questionText = questionText,
+                    answers = answers
                 )
-            }
-            LazyColumn(
-                modifier = Modifier
-                    .padding(10.dp)
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(15.dp),
-            ) {
-                items(
-                    4
-                    ) {
-                    AnswerQuizCard()
-                }
             }
         }
     }
 }
 
+
 @Composable
-fun AnswerQuizCard(){
-    OutlinedCard(
+fun QuizContent(
+    questionText: String,
+    answers: List<Pair<Boolean, String>>,
+    onSelectAnswer: (Pair<Boolean, String>) -> Unit = {}
+) {
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(IntrinsicSize.Min),
+            .height(IntrinsicSize.Min)
+    ) {
+        OutlinedCard(
+            modifier = Modifier
+                .fillMaxWidth(),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
+            colors = CardDefaults.cardColors(Color.Transparent),
+        ) {
+            Text(
+                modifier = Modifier.padding(16.dp),
+                text = questionText,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    textAlign = TextAlign.Center
+                )
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        answers.forEach { answer ->
+            AnswerQuizCard(
+                answerText = answer.second,
+                onSelectAnswer = { onSelectAnswer(answer) }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+
+@Composable
+fun AnswerQuizCard(
+    answerText: String,
+    onSelectAnswer: () -> Unit
+) {
+    OutlinedCard(
+        modifier = Modifier
+            .fillMaxWidth(),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
         colors = CardDefaults.cardColors(Color.Transparent),
     ) {
         Row(
             modifier = Modifier
-                .padding(10.dp)
-                .fillMaxSize(),
+                .padding(16.dp)
+                .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(
-                selected = true,
-                onClick = {},
+                selected = false,
+                onClick = onSelectAnswer
             )
+            Spacer(modifier = Modifier.width(10.dp))
             Text(
-                text = "ВопросВопросВопросВопросВопросВопросВопросВопрос",
+                text = answerText,
                 style = MaterialTheme.typography.titleMedium
             )
         }
     }
 }
-
