@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.navigation.compose.rememberNavController
 import com.example.quizcue.presentation.MainScreen
 import com.example.quizcue.ui.theme.QuizCueTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -14,8 +15,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()
             QuizCueTheme {
-                MainScreen()
+                MainScreen(navController)
             }
         }
     }

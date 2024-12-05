@@ -15,11 +15,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material.icons.materialIcon
@@ -38,6 +40,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,6 +57,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImagePainter.State.Empty.painter
@@ -60,11 +65,15 @@ import com.example.quizcue.R
 import com.example.quizcue.presentation.tools.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun ResultQuizScreen(
-    navController: NavController = rememberNavController()
+    navController: NavController,
+    quizViewModel: QuizViewModel = hiltViewModel()
 ) {
+    val uiState by quizViewModel.uiState.collectAsState()
+    val score by quizViewModel.score.collectAsState()
+
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -126,13 +135,15 @@ fun ResultQuizScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "3 из 5",
+                        text = "$score из ${uiState.size}",
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
             }
             Button(
-                onClick = {},
+                onClick = {
+                    navController.navigate(Screen.Home.route)
+                },
                 modifier = Modifier
                     .padding(10.dp)
                     .fillMaxWidth(),
@@ -143,7 +154,8 @@ fun ResultQuizScreen(
                 Text(
                     modifier = Modifier
                         .padding(5.dp),
-                    text = "К списку вопросов")
+                    text = "К списку вопросов"
+                )
             }
             HorizontalDivider(
                 thickness = 2.dp,
@@ -162,10 +174,12 @@ fun ResultQuizScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(15.dp),
             ) {
-                items(
-                    4
-                ) {
-                    ResultQuizCard()
+                items(uiState) { quizState ->
+                    ResultQuizCard(
+                        questionText = quizState.questionText,
+                        correctAnswer = quizState.correctAnswer,
+                        isCorrect = quizState.isCorrect == true
+                    )
                 }
             }
         }
@@ -173,8 +187,13 @@ fun ResultQuizScreen(
 }
 
 
+
 @Composable
-fun ResultQuizCard() {
+fun ResultQuizCard(
+    questionText: String,
+    correctAnswer: String,
+    isCorrect: Boolean
+) {
     OutlinedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -195,13 +214,14 @@ fun ResultQuizCard() {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Текст вопроса?",
+                    text = questionText,
                     color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.titleLarge
                 )
                 Icon(
-                    imageVector = Icons.Default.Done,
-                    contentDescription = null
+                    imageVector = if (isCorrect) Icons.Default.Done else Icons.Default.Close,
+                    contentDescription = null,
+                    tint = if (isCorrect) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
                 )
             }
             Text(
@@ -211,7 +231,7 @@ fun ResultQuizCard() {
             )
             Spacer(modifier = Modifier.height(5.dp))
             Text(
-                text = "Текст ответа Текст ответа Текст ответа Текст ответа Текст ответа",
+                text = correctAnswer,
                 style = MaterialTheme.typography.titleSmall
             )
         }

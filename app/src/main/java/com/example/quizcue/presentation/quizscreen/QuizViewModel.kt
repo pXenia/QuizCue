@@ -11,6 +11,7 @@ import com.google.ai.client.generativeai.GenerativeModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,9 +23,11 @@ class QuizViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<List<Pair<String, List<Pair<Boolean, String>>>>>(emptyList())
-    val uiState: StateFlow<List<Pair<String, List<Pair<Boolean, String>>>>> = _uiState
+    private val _uiState = MutableStateFlow<List<QuizUIState>>(emptyList())
+    val uiState: StateFlow<List<QuizUIState>> = _uiState
 
+    private val _score = MutableStateFlow(0)
+    val score: StateFlow<Int> = _score
 
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
@@ -37,19 +40,28 @@ class QuizViewModel @Inject constructor(
         createQuiz(courseId)
     }
 
-    private fun generateAnswers(questionText: String, onComplete: (List<Pair<Boolean, String>>) -> Unit) {
-        val answers = mutableListOf<Pair<Boolean, String>>()
-
+    private fun generateAnswers(
+        questionText: String,
+        onComplete: (QuizUIState) -> Unit
+    ) {
         viewModelScope.launch {
             val correctAnswer = generateAnswer(isCorrect = true, questionText = questionText)
-            correctAnswer?.let { answers.add(true to it) }
+            val incorrectAnswers = mutableListOf<String>()
 
             repeat(3) {
                 val incorrectAnswer = generateAnswer(isCorrect = false, questionText = questionText)
-                incorrectAnswer?.let { answers.add(false to it) }
+                incorrectAnswer?.let { incorrectAnswers.add(it) }
             }
 
-            onComplete(answers.shuffled())
+            if (correctAnswer != null) {
+                val allAnswers = (incorrectAnswers + correctAnswer).shuffled()
+                val uiState = QuizUIState(
+                    questionText = questionText,
+                    answers = allAnswers,
+                    correctAnswer = correctAnswer
+                )
+                onComplete(uiState)
+            }
         }
     }
 
@@ -68,9 +80,9 @@ class QuizViewModel @Inject constructor(
         }
     }
 
-    private fun updateState(questionText: String, answers: List<Pair<Boolean, String>>) {
+    private fun updateState(quizState: QuizUIState) {
         _uiState.update { currentList ->
-            currentList + (questionText to answers)
+            currentList + quizState
         }
     }
 
@@ -80,12 +92,49 @@ class QuizViewModel @Inject constructor(
                 .map { questionsList -> questionsList.filter { it.course == courseId } }
                 .collect { filteredQuestions ->
                     filteredQuestions.shuffled().take(4).forEach { question ->
-                        generateAnswers(question.text) { answers ->
-                            updateState(question.text, answers)
+                        generateAnswers(question.text) { quizState ->
+                            updateState(quizState)
                         }
                     }
                 }
         }
     }
 
+    fun processAnswer(questionText: String, selectedAnswer: String) {
+        _uiState.update { currentList ->
+            currentList.map { quizState ->
+                if (quizState.questionText == questionText) {
+                    quizState.copy(
+                        selectedAnswer = selectedAnswer,
+                        isCorrect = quizState.correctAnswer == selectedAnswer
+                    )
+                } else quizState
+            }
+        }
+    }
+
+    fun scoreCalculate() {
+        uiState.value.forEach { quizUiState ->
+            quizUiState.isCorrect?.let {
+                if (quizUiState.isCorrect)
+                    incrementScore()
+            }
+
+        }
+    }
+
+    private fun incrementScore() {
+        _score.update { it + 1 }
+    }
 }
+
+
+
+data class QuizUIState(
+    val questionText: String,
+    val answers: List<String>,
+    val correctAnswer: String,
+    val selectedAnswer: String? = null,
+    val isCorrect: Boolean? = null
+)
+

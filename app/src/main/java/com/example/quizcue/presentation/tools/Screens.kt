@@ -27,6 +27,5 @@ sealed class Screen(
     object Quiz: Screen("quiz", null)
     object Competition: Screen("competition", null)
     object ResultQuiz: Screen("result_quiz", null)
-    object ChoseLearningType: Screen("learning_type", null)
     object AddCompetitionDialog: Screen("add_competition", null)
 }

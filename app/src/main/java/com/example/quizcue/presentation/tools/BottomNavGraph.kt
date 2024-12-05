@@ -12,8 +12,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import com.example.quizcue.presentation.courses_screen.CoursesScreen
-import com.example.quizcue.presentation.questions_and_learn_card_screen.LearnCardScreen
-import com.example.quizcue.presentation.questions_and_learn_card_screen.QuestionsScreen
+import com.example.quizcue.presentation.questionslearncreens.LearnCardScreen
+import com.example.quizcue.presentation.questionslearncreens.QuestionsScreen
 import com.example.quizcue.presentation.authentication.AuthenticationNavigationViewModel
 import com.example.quizcue.presentation.authentication.login_screen.LoginScreen
 import com.example.quizcue.presentation.authentication.register_screen.RegisterScreen

@@ -40,6 +40,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,7 +57,7 @@ import com.example.quizcue.presentation.tools.Screen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizScreen(
-    navController: NavController = rememberNavController(),
+    navController: NavController,
     quizViewModel: QuizViewModel = hiltViewModel()
 ) {
     val uiState by quizViewModel.uiState.collectAsState()
@@ -79,6 +80,7 @@ fun QuizScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
+                    quizViewModel.scoreCalculate()
                     navController.navigate(Screen.ResultQuiz.route)
                 },
                 shape = RoundedCornerShape(15.dp),
@@ -98,11 +100,15 @@ fun QuizScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Отображение вопросов и ответов
-            items(uiState) { (questionText, answers) ->
+            items(uiState) { quizState ->
                 QuizContent(
-                    questionText = questionText,
-                    answers = answers
+                    quizUIState = quizState,
+                    onSelectAnswer = { selectedAnswer ->
+                        quizViewModel.processAnswer(
+                            questionText = quizState.questionText,
+                            selectedAnswer = selectedAnswer
+                        )
+                    }
                 )
             }
         }
@@ -110,11 +116,11 @@ fun QuizScreen(
 }
 
 
+
 @Composable
 fun QuizContent(
-    questionText: String,
-    answers: List<Pair<Boolean, String>>,
-    onSelectAnswer: (Pair<Boolean, String>) -> Unit = {}
+    quizUIState: QuizUIState,
+    onSelectAnswer: (String) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -122,24 +128,24 @@ fun QuizContent(
             .height(IntrinsicSize.Min)
     ) {
         OutlinedCard(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
             colors = CardDefaults.cardColors(Color.Transparent),
         ) {
             Text(
                 modifier = Modifier.padding(16.dp),
-                text = questionText,
+                text = quizUIState.questionText,
                 style = MaterialTheme.typography.titleLarge.copy(
                     textAlign = TextAlign.Center
                 )
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        answers.forEach { answer ->
+        quizUIState.answers.forEach { answerText ->
             AnswerQuizCard(
-                answerText = answer.second,
-                onSelectAnswer = { onSelectAnswer(answer) }
+                answerText = answerText,
+                isSelected = quizUIState.selectedAnswer == answerText,
+                onSelectAnswer = { onSelectAnswer(answerText) }
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -147,14 +153,15 @@ fun QuizContent(
 }
 
 
+
 @Composable
 fun AnswerQuizCard(
     answerText: String,
+    isSelected: Boolean,
     onSelectAnswer: () -> Unit
 ) {
     OutlinedCard(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
         colors = CardDefaults.cardColors(Color.Transparent),
     ) {
@@ -165,7 +172,7 @@ fun AnswerQuizCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             RadioButton(
-                selected = false,
+                selected = isSelected,
                 onClick = onSelectAnswer
             )
             Spacer(modifier = Modifier.width(10.dp))
