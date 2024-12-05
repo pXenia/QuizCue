@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.quizcue.presentation.courses_screen.CoursesScreen
 import com.example.quizcue.presentation.questionslearncreens.LearnCardScreen
@@ -17,16 +18,21 @@ import com.example.quizcue.presentation.questionslearncreens.QuestionsScreen
 import com.example.quizcue.presentation.authentication.AuthenticationNavigationViewModel
 import com.example.quizcue.presentation.authentication.login_screen.LoginScreen
 import com.example.quizcue.presentation.authentication.register_screen.RegisterScreen
+import com.example.quizcue.presentation.competition_screen.AddCompetitionDialog
+import com.example.quizcue.presentation.competition_screen.ChoseAddingCompetitionDialog
 import com.example.quizcue.presentation.competition_screen.CompetitionScreen
 import com.example.quizcue.presentation.courses_screen.AddCourseDialog
 import com.example.quizcue.presentation.editquestionscreen.EditQuestion
 import com.example.quizcue.presentation.quizscreen.QuizScreen
+import com.example.quizcue.presentation.quizscreen.QuizViewModel
 import com.example.quizcue.presentation.quizscreen.ResultQuizScreen
 import com.example.quizcue.presentation.schedule_screen.ScheduleScree
 
 @Composable
 fun BottomNavGraph(navController: NavHostController,
-                   authenticationNavigationViewModel: AuthenticationNavigationViewModel = hiltViewModel()) {
+                   authenticationNavigationViewModel: AuthenticationNavigationViewModel = hiltViewModel(),
+                   quizViewModel: QuizViewModel = hiltViewModel()
+) {
     NavHost(
         navController = navController,
         startDestination = if (authenticationNavigationViewModel.isLoggedInState.value)
@@ -43,7 +49,7 @@ fun BottomNavGraph(navController: NavHostController,
         composable(route = Screen.Schedule.route) {
             ScheduleScree()
         }
-        composable(route = Screen.Quiz.route + "?courseId={courseId}",
+        composable(route = Screen.QuizNavGraph.route + "?courseId={courseId}",
             arguments = listOf(
                 navArgument(
                     name = "courseId"
@@ -52,10 +58,7 @@ fun BottomNavGraph(navController: NavHostController,
                     defaultValue = ""
                 }
             )) {
-            QuizScreen(navController)
-        }
-        composable(route = Screen.ResultQuiz.route) {
-            ResultQuizScreen(navController)
+            QuizNavGraph(navController = rememberNavController(), parentNavController = navController)
         }
         composable(route = Screen.Competition.route + "?competitionId={competitionId}",
             arguments = listOf(
@@ -122,7 +125,7 @@ fun BottomNavGraph(navController: NavHostController,
         dialog(
             route = Screen.AddCompetitionDialog.route,
         ) {
-            AddCourseDialog(navController = navController)
+            ChoseAddingCompetitionDialog( navController = navController)
         }
     }
 }

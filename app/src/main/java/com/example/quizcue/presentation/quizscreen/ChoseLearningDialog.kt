@@ -54,8 +54,7 @@ fun ChooseLearningDialog(
                     if (selectedItem == 0)
                         navController.navigate(Screen.LearnCard.route+"?courseId=${course}")
                     else
-                        navController.navigate(Screen.Quiz.route+"?courseId=${course}")
-
+                        navController.navigate(Screen.QuizNavGraph.route+"?courseId=${course}")
                 }
             ) {
                 Text("Ок")

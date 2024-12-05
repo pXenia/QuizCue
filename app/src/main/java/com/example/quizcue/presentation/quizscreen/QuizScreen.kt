@@ -58,7 +58,7 @@ import com.example.quizcue.presentation.tools.Screen
 @Composable
 fun QuizScreen(
     navController: NavController,
-    quizViewModel: QuizViewModel = hiltViewModel()
+    quizViewModel: QuizViewModel
 ) {
     val uiState by quizViewModel.uiState.collectAsState()
 

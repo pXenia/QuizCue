@@ -28,4 +28,5 @@ sealed class Screen(
     object Competition: Screen("competition", null)
     object ResultQuiz: Screen("result_quiz", null)
     object AddCompetitionDialog: Screen("add_competition", null)
+    object QuizNavGraph: Screen("quiz_nav_graph", null)
 }

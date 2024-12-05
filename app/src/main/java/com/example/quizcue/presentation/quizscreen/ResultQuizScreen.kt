@@ -68,7 +68,7 @@ import com.example.quizcue.presentation.tools.Screen
 @Composable
 fun ResultQuizScreen(
     navController: NavController,
-    quizViewModel: QuizViewModel = hiltViewModel()
+    quizViewModel: QuizViewModel
 ) {
     val uiState by quizViewModel.uiState.collectAsState()
     val score by quizViewModel.score.collectAsState()
