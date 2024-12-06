@@ -5,9 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quizcue.BuildConfig
 import com.example.quizcue.domain.model.Question
+import com.example.quizcue.domain.model.Quiz
 import com.example.quizcue.domain.repository.QuestionRepository
+import com.example.quizcue.domain.repository.QuizRepository
 import com.example.quizcue.presentation.competition_screen.uiState
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.android.play.integrity.internal.q
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,11 +18,13 @@ import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
 class QuizViewModel @Inject constructor(
     private val questionRepository: QuestionRepository,
+    private val quizRepository: QuizRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -74,7 +79,7 @@ class QuizViewModel @Inject constructor(
 
         return try {
             val result = generativeModel.generateContent(prompt)
-            result.text
+            result.text.toString().trimEnd()
         } catch (e: Exception) {
             null
         }
@@ -91,7 +96,7 @@ class QuizViewModel @Inject constructor(
             questionRepository.getQuestions()
                 .map { questionsList -> questionsList.filter { it.course == courseId } }
                 .collect { filteredQuestions ->
-                    filteredQuestions.shuffled().take(4).forEach { question ->
+                    filteredQuestions.shuffled().take(5).forEach { question ->
                         generateAnswers(question.text) { quizState ->
                             updateState(quizState)
                         }
@@ -125,6 +130,16 @@ class QuizViewModel @Inject constructor(
 
     private fun incrementScore() {
         _score.update { it + 1 }
+    }
+
+    fun createQuiz(){
+        quizRepository.addQuiz(
+            Quiz(
+                date = System.currentTimeMillis(),
+                score = score.value,
+                course = courseId
+            )
+        )
     }
 }
 

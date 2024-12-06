@@ -130,14 +130,12 @@ fun QuizContent(
         OutlinedCard(
             modifier = Modifier.fillMaxWidth(),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-            colors = CardDefaults.cardColors(Color.Transparent),
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
         ) {
             Text(
                 modifier = Modifier.padding(16.dp),
                 text = quizUIState.questionText,
-                style = MaterialTheme.typography.titleLarge.copy(
-                    textAlign = TextAlign.Center
-                )
+                style = MaterialTheme.typography.titleMedium
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -161,7 +159,7 @@ fun AnswerQuizCard(
     onSelectAnswer: () -> Unit
 ) {
     OutlinedCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.padding(horizontal = 12.dp).fillMaxWidth(),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
         colors = CardDefaults.cardColors(Color.Transparent),
     ) {

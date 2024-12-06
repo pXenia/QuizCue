@@ -63,15 +63,18 @@ import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImagePainter.State.Empty.painter
 import com.example.quizcue.R
 import com.example.quizcue.presentation.tools.Screen
+import com.example.quizcue.ui.theme.studyLight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultQuizScreen(
+    parentNavController: NavController,
     navController: NavController,
     quizViewModel: QuizViewModel
 ) {
     val uiState by quizViewModel.uiState.collectAsState()
     val score by quizViewModel.score.collectAsState()
+    val course = quizViewModel.courseId
 
 
     Scaffold(
@@ -142,7 +145,8 @@ fun ResultQuizScreen(
             }
             Button(
                 onClick = {
-                    navController.navigate(Screen.Home.route)
+                    quizViewModel.createQuiz()
+                    parentNavController.navigate(Screen.Questions.route+"?courseId=${course}")
                 },
                 modifier = Modifier
                     .padding(10.dp)
@@ -178,7 +182,7 @@ fun ResultQuizScreen(
                     ResultQuizCard(
                         questionText = quizState.questionText,
                         correctAnswer = quizState.correctAnswer,
-                        isCorrect = quizState.isCorrect == true
+                        isCorrect = quizState.isCorrect ?: false
                     )
                 }
             }
@@ -192,7 +196,7 @@ fun ResultQuizScreen(
 fun ResultQuizCard(
     questionText: String,
     correctAnswer: String,
-    isCorrect: Boolean
+    isCorrect: Boolean = false
 ) {
     OutlinedCard(
         modifier = Modifier
@@ -208,20 +212,20 @@ fun ResultQuizCard(
             Row(
                 modifier = Modifier
                     .padding(bottom = 10.dp)
-                    .height(IntrinsicSize.Min)
                     .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
+                    modifier = Modifier.fillMaxWidth(0.9f),
                     text = questionText,
                     color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleMedium
                 )
                 Icon(
+                    modifier = Modifier.size(30.dp).fillMaxWidth(0.1f),
                     imageVector = if (isCorrect) Icons.Default.Done else Icons.Default.Close,
                     contentDescription = null,
-                    tint = if (isCorrect) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error
+                    tint = if (isCorrect) studyLight else MaterialTheme.colorScheme.error
                 )
             }
             Text(

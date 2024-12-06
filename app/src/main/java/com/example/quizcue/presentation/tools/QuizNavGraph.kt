@@ -27,7 +27,11 @@ fun QuizNavGraph(
             QuizScreen(navController, quizViewModel)
         }
         composable(route = Screen.ResultQuiz.route) {
-            ResultQuizScreen(navController, quizViewModel)
+            ResultQuizScreen(
+                parentNavController = parentNavController,
+                navController = navController,
+                quizViewModel = quizViewModel
+            )
         }
     }
 }
