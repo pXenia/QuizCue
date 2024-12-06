@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.questions_and_learn_card_screen
+package com.example.quizcue.presentation.questionslearncreens
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
@@ -28,6 +28,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.quizcue.presentation.elements.QuestionsList
+import com.example.quizcue.presentation.quizscreen.ChooseLearningDialog
 import com.example.quizcue.presentation.tools.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,6 +50,15 @@ fun QuestionsScreen(
     val questions by questionsViewModel.questions.collectAsState()
     val courseName by questionsViewModel.courseTitle
     val course = questionsViewModel.courseId
+
+    var chooseLearningDialog by remember { mutableStateOf(false) }
+
+    if (chooseLearningDialog) {
+        ChooseLearningDialog(
+            course = course,
+            navController = navController
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -69,8 +82,7 @@ fun QuestionsScreen(
         bottomBar = {
             QuestionsScreenBottomBar(
                 onClickLearn = {
-                    navController.navigate(Screen.LearnCard.route+"?courseId=${course}")
-
+                    chooseLearningDialog = true
                 },
                 onClickAdd = {
                     navController.navigate(Screen.EditQuestion.route+ "?courseId=${course}" + "?questionId=${""}")

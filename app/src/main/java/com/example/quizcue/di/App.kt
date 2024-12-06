@@ -6,10 +6,12 @@ import com.example.quizcue.data.repository.AuthenticationRepositoryImpl
 import com.example.quizcue.data.repository.CompetitionRepositoryImpl
 import com.example.quizcue.data.repository.CourseRepositoryImpl
 import com.example.quizcue.data.repository.QuestionRepositoryImpl
+import com.example.quizcue.data.repository.QuizRepositoryImpl
 import com.example.quizcue.domain.repository.AuthenticationRepository
 import com.example.quizcue.domain.repository.CompetitionRepository
 import com.example.quizcue.domain.repository.CourseRepository
 import com.example.quizcue.domain.repository.QuestionRepository
+import com.example.quizcue.domain.repository.QuizRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
@@ -72,4 +74,11 @@ object FirebaseDatabaseModule {
         database: FirebaseDatabase,
         auth: FirebaseAuth
     ): CompetitionRepository = CompetitionRepositoryImpl(database, auth)
+
+    @Provides
+    @Singleton
+    fun provideQuizRepository(
+        database: FirebaseDatabase,
+        auth: FirebaseAuth
+    ): QuizRepository = QuizRepositoryImpl(database, auth)
 }

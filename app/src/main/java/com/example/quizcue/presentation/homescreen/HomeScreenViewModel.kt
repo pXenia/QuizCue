@@ -1,19 +1,12 @@
-package com.example.quizcue.presentation.home_screen
+package com.example.quizcue.presentation.homescreen
 
-import android.graphics.Bitmap
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.quizcue.BuildConfig
-import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.model.User
 import com.example.quizcue.domain.repository.AuthenticationRepository
 import com.example.quizcue.domain.usecases.registration_UC.LogoutUseCase
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.android.play.integrity.internal.i
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
