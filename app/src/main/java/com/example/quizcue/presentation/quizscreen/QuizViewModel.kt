@@ -6,11 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.quizcue.BuildConfig
 import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.model.Quiz
+import com.example.quizcue.domain.repository.AuthenticationRepository
 import com.example.quizcue.domain.repository.QuestionRepository
 import com.example.quizcue.domain.repository.QuizRepository
 import com.example.quizcue.presentation.competition_screen.uiState
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.android.play.integrity.internal.q
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,8 +25,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuizViewModel @Inject constructor(
+    private val auth: FirebaseAuth,
     private val questionRepository: QuestionRepository,
     private val quizRepository: QuizRepository,
+    private val authenticationRepository: AuthenticationRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -41,6 +45,7 @@ class QuizViewModel @Inject constructor(
 
     val courseId: String = savedStateHandle["courseId"] ?: ""
 
+
     init {
         createQuiz(courseId)
     }
@@ -50,13 +55,13 @@ class QuizViewModel @Inject constructor(
         onComplete: (QuizUIState) -> Unit
     ) {
         viewModelScope.launch {
-            val correctAnswer = generateAnswer(isCorrect = true, questionText = questionText)
             val incorrectAnswers = mutableListOf<String>()
-
             repeat(3) {
                 val incorrectAnswer = generateAnswer(isCorrect = false, questionText = questionText)
                 incorrectAnswer?.let { incorrectAnswers.add(it) }
             }
+
+            val correctAnswer = generateAnswer(isCorrect = true, questionText = questionText)
 
             if (correctAnswer != null) {
                 val allAnswers = (incorrectAnswers + correctAnswer).shuffled()
@@ -124,7 +129,14 @@ class QuizViewModel @Inject constructor(
                 if (quizUiState.isCorrect)
                     incrementScore()
             }
-
+        }
+        authenticationRepository.getUserInfo(auth.currentUser?.uid ?: "") { user ->
+            if (user?.competitionId != null && user.competitionId != "") {
+                quizRepository.updateScore(
+                    score = score.value,
+                    competitionId = user.competitionId
+                )
+            }
         }
     }
 

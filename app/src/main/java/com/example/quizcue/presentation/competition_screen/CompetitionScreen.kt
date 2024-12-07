@@ -64,6 +64,7 @@ import androidx.navigation.NavController
 import com.example.quizcue.R
 import com.example.quizcue.domain.model.User
 import com.example.quizcue.presentation.tools.Screen
+import com.google.android.play.integrity.internal.c
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -179,6 +180,7 @@ fun CompetitionContent(
 
     if (uiState.user1 != null) {
         UserCard(
+            score = uiState.user1TestScore,
             user = uiState.user1,
             cardColor = MaterialTheme.colorScheme.primary)
     }
@@ -213,6 +215,7 @@ fun CompetitionContent(
 
     if (uiState.user2?.competitionId != "" && uiState.user2 != null) {
         UserCard(
+            score = uiState.user2TestScore,
             user = uiState.user2,
             cardColor = MaterialTheme.colorScheme.tertiary)
     } else {
@@ -227,6 +230,7 @@ fun CompetitionContent(
 
 @Composable
 fun UserCard(
+    score: Int,
     user: User,
     cardColor: Color
 ) {
@@ -269,8 +273,7 @@ fun UserCard(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(text = user.name, style = MaterialTheme.typography.headlineMedium)
-                Text("Вопросы: 27 б", style = MaterialTheme.typography.titleSmall)
-                Text("Тесты: 21 б", style = MaterialTheme.typography.titleSmall)
+                Text("Баллы: ${score}", style = MaterialTheme.typography.titleSmall)
             }
 
         }
