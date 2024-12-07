@@ -72,6 +72,11 @@ class QuestionsScreensViewModel @Inject constructor(
         }
     }
 
-
+    fun updateLastTime(){
+        courseRepository.updateLastTime(
+            courseId = courseId,
+            date = System.currentTimeMillis()
+        )
+    }
 
 }

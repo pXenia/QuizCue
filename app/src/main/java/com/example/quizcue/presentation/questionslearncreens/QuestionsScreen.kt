@@ -60,6 +60,8 @@ fun QuestionsScreen(
         )
     }
 
+    questionsViewModel.updateLastTime()
+
     Scaffold(
         topBar = {
             TopAppBar(

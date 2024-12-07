@@ -1,28 +1,25 @@
-import com.example.quizcue.presentation.homescreen.HomeScreenViewModel
+package com.example.quizcue.presentation.homescreen
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoGraph
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.QuestionMark
+import androidx.compose.material.icons.outlined.EmojiEvents
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,22 +37,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color.Companion.Transparent
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.quizcue.R
 import com.example.quizcue.domain.model.Course
 import com.example.quizcue.domain.model.User
+import com.example.quizcue.presentation.courses_screen.CourseViewModel
 import com.example.quizcue.presentation.elements.CourseCard
+import com.example.quizcue.presentation.tools.ProfileImage
 import com.example.quizcue.presentation.tools.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,94 +55,95 @@ import com.example.quizcue.presentation.tools.Screen
 @Composable
 fun HomeScreen(
     navController: NavController,
-    homeViewModel: HomeScreenViewModel = hiltViewModel()) {
+    homeViewModel: HomeScreenViewModel = hiltViewModel(),
+    courseViewModel: CourseViewModel = hiltViewModel()
+) {
+    homeViewModel.lastTimeCourse()
+    val uiState by homeViewModel.uiState.collectAsState()
+    val lastCourse by homeViewModel.lastCourse.collectAsState()
+    val lastCourseProcess = courseViewModel.progress.value[lastCourse.id] ?: 0f
+    val email = homeViewModel.email
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {},
+                title = { },
                 colors = TopAppBarDefaults.topAppBarColors(Transparent),
-                navigationIcon = {
-                    IconButton(onClick = {
-                        homeViewModel.logout()
-                        navController.navigate(Screen.Login.route) { popUpTo(0) }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.Menu,
-                            contentDescription = "Menu"
-                        )
-                    }
-                },
+                actions = {
+                    LogoutButton(
+                        onLogoutClick = {
+                            homeViewModel.logout()
+                            navController.navigate(Screen.Login.route) {
+                                popUpTo(0)
+                            }
+                        }
+                    )
+                }
             )
         },
-        modifier = Modifier
-            .padding(
-                top = WindowInsets.statusBars
-                    .asPaddingValues()
-                    .calculateTopPadding()
-            )
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh),
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     ) {
-        MainPreview(navController)
+        HomeContent(
+            user = uiState,
+            email = email,
+            navController = navController,
+            lastCourse = lastCourse,
+            lastCourseProcess = lastCourseProcess
+        )
     }
 }
 
 @Composable
-fun MainPreview(
-    navController: NavController,
-    homeViewModel: HomeScreenViewModel = hiltViewModel()
-) {
-    val user by homeViewModel.uiState.collectAsState()
-    val email = homeViewModel.email
+fun LogoutButton(onLogoutClick: () -> Unit) {
+    IconButton(onClick = onLogoutClick) {
+        Icon(
+            imageVector = Icons.Filled.Logout,
+            contentDescription = "Выход"
+        )
+    }
+}
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 30.dp)
+@Composable
+fun HomeContent(
+    user: User,
+    email: String,
+    navController: NavController,
+    lastCourse: Course,
+    lastCourseProcess: Float
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 30.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Header(user, email)
+        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
+        UserHeader(user, email)
+        Spacer(modifier = Modifier.fillMaxHeight(0.05f))
         Body(user, navController)
+        Spacer(modifier = Modifier.fillMaxHeight(0.1f))
         CourseCard(
             navController = navController,
             textColor = MaterialTheme.colorScheme.onPrimary,
             trackColor = MaterialTheme.colorScheme.tertiary,
             cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-            progress = 0.55f,
-            course = Course("","","")
+            progress = lastCourseProcess,
+            course = lastCourse
         )
     }
 }
 
 @Composable
-fun Header(
-    user: User,
-    email: String,
-    modifier: Modifier = Modifier,
-)
-{
+fun UserHeader(user: User, email: String) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.35f),
+            .height(IntrinsicSize.Min),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(
-            modifier = Modifier
-                .padding(top = 15.dp)
-                .size(140.dp)
-                .border(
-                    BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-                    CircleShape
-                )
-                .clip(CircleShape),
-            painter = if (user.photo != null)
-                BitmapPainter(user.photo!!.asImageBitmap())
-            else
-                painterResource(id = R.drawable.koshka),
-            contentDescription = "user",
-            contentScale = ContentScale.Crop,
-            colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0.5f) })
-        )
+        ProfileImage(user.photo)
+        Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = user.name,
             style = MaterialTheme.typography.headlineMedium
@@ -163,38 +156,38 @@ fun Header(
 }
 
 @Composable
-fun Body(
-    user: User,
-    navController: NavController) {
-    val activeItems = listOf(
-        listOf(Icons.Rounded.Favorite, "Избранное", "Всего вопросов: 5"),
-        listOf(Icons.Filled.QuestionMark, "Все вопросы", "Всего вопросов: 15"),
-        listOf(Icons.Filled.AutoGraph, "Статистика", "Ваш прогресс!")
-    )
+fun Body(user: User, navController: NavController) {
+
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.50f)
+            .height(IntrinsicSize.Min)
             .border(1.dp, MaterialTheme.colorScheme.tertiary, FloatingActionButtonDefaults.shape)
-            .padding(vertical = 20.dp, horizontal = 25.dp),
+            .padding(15.dp)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxHeight()
                 .align(Alignment.Center),
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            activeItems.forEach { item ->
-                ActiveItem(item[0] as ImageVector, item[1].toString(), item[2].toString(),
-                    onClick = {
-                        if (item == activeItems.last()) {
-                            navController.navigate(Screen.Competition.route + "?competitionId=${user.competitionId}")
-                        } else {
-                            navController.navigate(Screen.Quiz.route)
-                        }
-                    }
-                )
-            }
+            ActiveItem(
+                icon = Icons.Default.Favorite,
+                title = "Избранное",
+                subtitle = "Всего вопросов: 5",
+                onClick = {}
+            )
+            ActiveItem(
+                icon = Icons.Default.QuestionMark,
+                title = "Все вопросы",
+                subtitle = "Всего вопросов: 10",
+                onClick = {}
+            )
+            ActiveItem(
+                icon = Icons.Outlined.EmojiEvents,
+                title = "Соревнование",
+                subtitle = "До 27.12.2024",
+                onClick = {navController.navigate(Screen.Competition.route+"?competitionId=${user.competitionId}")}
+            )
         }
     }
 }
@@ -204,10 +197,11 @@ fun ActiveItem(
     icon: ImageVector,
     title: String,
     subtitle: String,
-    onClick: () -> Unit) {
+    onClick: () -> Unit
+) {
     Row(
+        modifier = Modifier.padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Absolute.SpaceBetween,
     ) {
         FloatingActionButton(
             modifier = Modifier.border(
@@ -221,7 +215,7 @@ fun ActiveItem(
         ) {
             Icon(imageVector = icon, contentDescription = null)
         }
-        Spacer(modifier = Modifier.fillMaxWidth(0.20f))
+        Spacer(modifier = Modifier.fillMaxWidth(0.2f))
         Column {
             Text(text = title, style = MaterialTheme.typography.titleMedium)
             Text(text = subtitle, style = MaterialTheme.typography.titleSmall)

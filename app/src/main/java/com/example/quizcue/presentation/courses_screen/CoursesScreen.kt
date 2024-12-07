@@ -2,6 +2,7 @@ package com.example.quizcue.presentation.courses_screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -105,7 +106,8 @@ fun CoursesScreen(
             color = MaterialTheme.colorScheme.tertiary
         )
         LazyColumn(
-            modifier = Modifier.height(heightScr*0.84f)
+            modifier = Modifier.height(heightScr*0.84f),
+            verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
             items(courses) {
                 CourseCard(

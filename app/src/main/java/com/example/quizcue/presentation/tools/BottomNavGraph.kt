@@ -1,6 +1,5 @@
 package com.example.quizcue.presentation.tools
 
-import HomeScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,6 +22,7 @@ import com.example.quizcue.presentation.competition_screen.ChoseAddingCompetitio
 import com.example.quizcue.presentation.competition_screen.CompetitionScreen
 import com.example.quizcue.presentation.courses_screen.AddCourseDialog
 import com.example.quizcue.presentation.editquestionscreen.EditQuestion
+import com.example.quizcue.presentation.homescreen.HomeScreen
 import com.example.quizcue.presentation.quizscreen.QuizScreen
 import com.example.quizcue.presentation.quizscreen.QuizViewModel
 import com.example.quizcue.presentation.quizscreen.ResultQuizScreen
