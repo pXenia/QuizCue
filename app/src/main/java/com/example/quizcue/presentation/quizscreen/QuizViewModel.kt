@@ -1,5 +1,6 @@
 package com.example.quizcue.presentation.quizscreen
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,25 +46,21 @@ class QuizViewModel @Inject constructor(
 
     val courseId: String = savedStateHandle["courseId"] ?: ""
 
-
-    init {
-        createQuiz(courseId)
-    }
-
     private fun generateAnswers(
         questionText: String,
         onComplete: (QuizUIState) -> Unit
     ) {
         viewModelScope.launch {
             val incorrectAnswers = mutableListOf<String>()
-            repeat(3) {
+            repeat(2) {
                 val incorrectAnswer = generateAnswer(isCorrect = false, questionText = questionText)
                 incorrectAnswer?.let { incorrectAnswers.add(it) }
             }
 
             val correctAnswer = generateAnswer(isCorrect = true, questionText = questionText)
 
-            if (correctAnswer != null) {
+            if (correctAnswer != null ) {
+                Log.d("RRR", "${incorrectAnswers.size}")
                 val allAnswers = (incorrectAnswers + correctAnswer).shuffled()
                 val uiState = QuizUIState(
                     questionText = questionText,
@@ -83,32 +80,40 @@ class QuizViewModel @Inject constructor(
         }
 
         return try {
-            val result = generativeModel.generateContent(prompt)
-            result.text.toString().trimEnd()
+            val result = generativeModel.generateContent(prompt).text
+            result.toString().trimEnd()
         } catch (e: Exception) {
-            null
+            "oошибка"
         }
     }
 
     private fun updateState(quizState: QuizUIState) {
         _uiState.update { currentList ->
-            currentList + quizState
+            if (currentList.none { it.questionText == quizState.questionText }) {
+                currentList + quizState
+            } else {
+                currentList
+            }
         }
     }
 
-    fun createQuiz(courseId: String) {
+
+    fun createQuiz() {
         viewModelScope.launch {
             questionRepository.getQuestions()
                 .map { questionsList -> questionsList.filter { it.course == courseId } }
                 .collect { filteredQuestions ->
-                    filteredQuestions.shuffled().take(5).forEach { question ->
+                    val uniqueQuestions = filteredQuestions.shuffled().take(3)
+                    uniqueQuestions.forEach { question ->
                         generateAnswers(question.text) { quizState ->
+                            Log.d("RRR", "1")
                             updateState(quizState)
                         }
                     }
                 }
         }
     }
+
 
     fun processAnswer(questionText: String, selectedAnswer: String) {
         _uiState.update { currentList ->
@@ -144,7 +149,7 @@ class QuizViewModel @Inject constructor(
         _score.update { it + 1 }
     }
 
-    fun createQuiz(){
+    fun addQuiz(){
         quizRepository.addQuiz(
             Quiz(
                 date = System.currentTimeMillis(),

@@ -31,6 +31,7 @@ class QuestionRepositoryImpl(
             "answer" to question.answer,
             "course" to question.course,
             "isStudied" to question.isStudied,
+            "isFavourite" to question.isFavourite,
         )
         databaseRef.child("questions").child(questionId)
             .setValue(questionMap)
@@ -38,6 +39,11 @@ class QuestionRepositoryImpl(
             .addOnFailureListener { exception ->
                 Log.e("FirebaseError", "Failed to add question", exception)
             }
+    }
+
+    override fun addFavourite (questionId: String, isFavourite: Boolean) {
+        databaseRef.child("questions").child(questionId).child("isFavourite")
+            .setValue(isFavourite)
     }
 
     override suspend fun deleteQuestion(question: Question) {
@@ -56,11 +62,11 @@ class QuestionRepositoryImpl(
                     val answer = child.child("answer").getValue(String::class.java) ?: ""
                     val course = child.child("course").getValue(String::class.java) ?: ""
                     val isStudied = child.child("isStudied").getValue(Boolean::class.java) ?: false
-                    val numberOfRepetitions = child.child("numberOfRepetitions").getValue(Int::class.java) ?: 0
+                    val isFavourite = child.child("isFavourite").getValue(Boolean::class.java) ?: false
                     val createdDate = child.child("createdDate").getValue(Timestamp::class.java) ?: Timestamp.now()
 
                     val question = Question(
-                        id, text, hint, answer, course, isStudied, numberOfRepetitions, createdDate
+                        id, text, hint, answer, course, isStudied, isFavourite, createdDate
                     )
                     questions.add(question)
                 }

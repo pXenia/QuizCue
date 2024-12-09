@@ -33,8 +33,6 @@ class HomeScreenViewModel @Inject constructor(
     private val _lastCourse = MutableStateFlow(Course())
     val lastCourse: StateFlow<Course> = _lastCourse
 
-    private val _lastCourseProgress = MutableStateFlow(0f)
-    val lastCourseProcess: StateFlow<Float> = _lastCourseProgress
 
     val email = auth.currentUser?.email ?: ""
 

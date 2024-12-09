@@ -20,7 +20,7 @@ class QuizRepositoryImpl(
 ) : QuizRepository {
 
     private val databaseRef = database.reference
-        .child(auth.currentUser?.uid.toString())
+    private val currentUser = auth.currentUser?.uid ?: ""
 
     override fun addQuiz(quiz: Quiz) {
         val quizId = if (quiz.id == "") databaseRef.push().key ?: return else quiz.id
@@ -30,7 +30,7 @@ class QuizRepositoryImpl(
             "course" to quiz.course,
             "score" to quiz.score,
         )
-        databaseRef.child("quiz").child(quizId)
+        databaseRef.child(currentUser).child("quiz").child(quizId)
             .setValue(quizMap)
             .addOnFailureListener { exception ->
                 Log.e("FirebaseError", "Failed to add question", exception)
@@ -38,7 +38,6 @@ class QuizRepositoryImpl(
     }
 
     override fun updateScore(score: Int, competitionId: String) {
-        val currentUser = auth.currentUser?.uid ?: ""
         val competitionRef = databaseRef.child("competitions").child(competitionId)
 
         competitionRef.get().addOnSuccessListener { snapshot ->

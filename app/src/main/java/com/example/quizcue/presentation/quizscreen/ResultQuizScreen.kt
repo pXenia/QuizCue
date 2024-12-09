@@ -145,7 +145,6 @@ fun ResultQuizScreen(
             }
             Button(
                 onClick = {
-                    quizViewModel.createQuiz()
                     parentNavController.navigate(Screen.Questions.route+"?courseId=${course}")
                 },
                 modifier = Modifier

@@ -114,7 +114,7 @@ fun QuestionsScreen(
                 questionList = questions,
                 navController = navController,
                 onAddToFavorites = { question ->
-                    questionsViewModel.addToFavorites(question)
+                    questionsViewModel.addToFavorites(question.id, !question.isFavourite)
                 },
                 onDeleteQuestion = { question ->
                     questionsViewModel.deleteQuestion(question)

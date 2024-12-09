@@ -24,6 +24,8 @@ import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.NavigateNext
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -51,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.quizcue.presentation.competition_screen.uiState
+import com.example.quizcue.presentation.tools.CircularProgress
 import com.example.quizcue.presentation.tools.Screen
 
 
@@ -68,7 +71,7 @@ fun QuizScreen(
                 title = { Text("Тест") },
                 navigationIcon = {
                     IconButton(
-                        onClick = { navController.navigate(Screen.Home.route) },
+                        onClick = {},
                         content = { Icon(Icons.Filled.ArrowBackIosNew, "Назад") }
                     )
                 },
@@ -92,24 +95,28 @@ fun QuizScreen(
             )
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(padding)
-                .padding(horizontal = 25.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            items(uiState) { quizState ->
-                QuizContent(
-                    quizUIState = quizState,
-                    onSelectAnswer = { selectedAnswer ->
-                        quizViewModel.processAnswer(
-                            questionText = quizState.questionText,
-                            selectedAnswer = selectedAnswer
-                        )
-                    }
-                )
+        if (uiState.isEmpty()){
+            CircularProgress()
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .padding(padding)
+                    .padding(horizontal = 25.dp)
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                items(uiState) { quizState ->
+                    QuizContent(
+                        quizUIState = quizState,
+                        onSelectAnswer = { selectedAnswer ->
+                            quizViewModel.processAnswer(
+                                questionText = quizState.questionText,
+                                selectedAnswer = selectedAnswer
+                            )
+                        }
+                    )
+                }
             }
         }
     }

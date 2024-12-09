@@ -174,13 +174,13 @@ fun Body(user: User, navController: NavController) {
                 icon = Icons.Default.Favorite,
                 title = "Избранное",
                 subtitle = "Всего вопросов: 5",
-                onClick = {}
+                onClick = {navController.navigate(Screen.Questions.route+"?courseId=favourite") }
             )
             ActiveItem(
                 icon = Icons.Default.QuestionMark,
                 title = "Все вопросы",
                 subtitle = "Всего вопросов: 10",
-                onClick = {}
+                onClick = {navController.navigate(Screen.Questions.route+"?courseId=all") }
             )
             ActiveItem(
                 icon = Icons.Outlined.EmojiEvents,

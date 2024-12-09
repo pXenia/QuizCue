@@ -31,7 +31,6 @@ import com.example.quizcue.presentation.schedule_screen.ScheduleScree
 @Composable
 fun BottomNavGraph(navController: NavHostController,
                    authenticationNavigationViewModel: AuthenticationNavigationViewModel = hiltViewModel(),
-                   quizViewModel: QuizViewModel = hiltViewModel()
 ) {
     NavHost(
         navController = navController,
