@@ -1,6 +1,7 @@
 package com.example.quizcue.presentation.homescreen
 
 import android.annotation.SuppressLint
+import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,10 +46,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.quizcue.domain.model.Course
 import com.example.quizcue.domain.model.User
+import com.example.quizcue.presentation.competition_screen.uiState
 import com.example.quizcue.presentation.courses_screen.CourseViewModel
 import com.example.quizcue.presentation.elements.CourseCard
 import com.example.quizcue.presentation.tools.ProfileImage
 import com.example.quizcue.presentation.tools.Screen
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -60,6 +63,9 @@ fun HomeScreen(
 ) {
     homeViewModel.lastTimeCourse()
     val uiState by homeViewModel.uiState.collectAsState()
+    val competitionDate by homeViewModel.competitionDate.collectAsState()
+    val allQuestionsSize by homeViewModel.allQuestionsAmount.collectAsState()
+    val favouriteQuestionsSize by homeViewModel.favouriteQuestionsAmount.collectAsState()
     val lastCourse by homeViewModel.lastCourse.collectAsState()
     val lastCourseProcess = courseViewModel.progress.value[lastCourse.id] ?: 0f
     val email = homeViewModel.email
@@ -85,6 +91,9 @@ fun HomeScreen(
     ) {
         HomeContent(
             user = uiState,
+            competitionDate = competitionDate,
+            allQuestionsSize = allQuestionsSize,
+            favouriteQuestionsSize = favouriteQuestionsSize,
             email = email,
             navController = navController,
             lastCourse = lastCourse,
@@ -106,6 +115,9 @@ fun LogoutButton(onLogoutClick: () -> Unit) {
 @Composable
 fun HomeContent(
     user: User,
+    competitionDate: Long,
+    allQuestionsSize: Int,
+    favouriteQuestionsSize: Int,
     email: String,
     navController: NavController,
     lastCourse: Course,
@@ -120,7 +132,13 @@ fun HomeContent(
         Spacer(modifier = Modifier.fillMaxHeight(0.05f))
         UserHeader(user, email)
         Spacer(modifier = Modifier.fillMaxHeight(0.05f))
-        Body(user, navController)
+        Body(
+            user = user,
+            competitionDate = competitionDate,
+            allQuestionsSize = allQuestionsSize,
+            favouriteQuestionsSize = favouriteQuestionsSize,
+            navController = navController
+        )
         Spacer(modifier = Modifier.fillMaxHeight(0.1f))
         CourseCard(
             navController = navController,
@@ -156,7 +174,14 @@ fun UserHeader(user: User, email: String) {
 }
 
 @Composable
-fun Body(user: User, navController: NavController) {
+fun Body(user: User,
+         competitionDate: Long,
+         allQuestionsSize: Int,
+         favouriteQuestionsSize: Int,
+         navController: NavController) {
+    val dateText = if (competitionDate != 0L)
+        SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(competitionDate)
+    else "Нет соревнований"
 
     Box(
         modifier = Modifier
@@ -173,20 +198,20 @@ fun Body(user: User, navController: NavController) {
             ActiveItem(
                 icon = Icons.Default.Favorite,
                 title = "Избранное",
-                subtitle = "Всего вопросов: 5",
-                onClick = {navController.navigate(Screen.Questions.route+"?courseId=favourite") }
+                subtitle = "Всего вопросов: $favouriteQuestionsSize",
+                onClick = { navController.navigate(Screen.Questions.route + "?courseId=favourite") }
             )
             ActiveItem(
                 icon = Icons.Default.QuestionMark,
                 title = "Все вопросы",
-                subtitle = "Всего вопросов: 10",
-                onClick = {navController.navigate(Screen.Questions.route+"?courseId=all") }
+                subtitle = "Всего вопросов: $allQuestionsSize",
+                onClick = { navController.navigate(Screen.Questions.route + "?courseId=all") }
             )
             ActiveItem(
                 icon = Icons.Outlined.EmojiEvents,
                 title = "Соревнование",
-                subtitle = "До 27.12.2024",
-                onClick = {navController.navigate(Screen.Competition.route+"?competitionId=${user.competitionId}")}
+                subtitle = dateText,
+                onClick = { navController.navigate(Screen.Competition.route + "?competitionId=${user.competitionId}") }
             )
         }
     }

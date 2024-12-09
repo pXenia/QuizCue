@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -26,10 +27,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuizViewModel @Inject constructor(
-    private val auth: FirebaseAuth,
-    private val questionRepository: QuestionRepository,
     private val quizRepository: QuizRepository,
     private val authenticationRepository: AuthenticationRepository,
+    private val questionRepository: QuestionRepository,
+    private val auth: FirebaseAuth,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -46,28 +47,40 @@ class QuizViewModel @Inject constructor(
 
     val courseId: String = savedStateHandle["courseId"] ?: ""
 
+    init {
+        createQuiz(courseId)
+    }
+
+    private fun createQuiz(courseId: String) {
+        viewModelScope.launch {
+            val questions = questionRepository.getQuestions().first()
+            val filteredQuestions = questions.filter { it.course == courseId }
+            filteredQuestions.shuffled().take(3).forEach { question ->
+                generateAnswers(question.text)
+            }
+        }
+    }
+
     private fun generateAnswers(
         questionText: String,
-        onComplete: (QuizUIState) -> Unit
     ) {
         viewModelScope.launch {
+            val correctAnswer = generateAnswer(isCorrect = true, questionText = questionText)
             val incorrectAnswers = mutableListOf<String>()
-            repeat(2) {
+
+            repeat(3) {
                 val incorrectAnswer = generateAnswer(isCorrect = false, questionText = questionText)
                 incorrectAnswer?.let { incorrectAnswers.add(it) }
             }
 
-            val correctAnswer = generateAnswer(isCorrect = true, questionText = questionText)
-
-            if (correctAnswer != null ) {
-                Log.d("RRR", "${incorrectAnswers.size}")
+            if (correctAnswer != null) {
                 val allAnswers = (incorrectAnswers + correctAnswer).shuffled()
                 val uiState = QuizUIState(
                     questionText = questionText,
                     answers = allAnswers,
                     correctAnswer = correctAnswer
                 )
-                onComplete(uiState)
+               updateState(uiState)
             }
         }
     }
@@ -80,40 +93,18 @@ class QuizViewModel @Inject constructor(
         }
 
         return try {
-            val result = generativeModel.generateContent(prompt).text
-            result.toString().trimEnd()
+            val result = generativeModel.generateContent(prompt)
+            result.text.toString().trimEnd()
         } catch (e: Exception) {
-            "oошибка"
+            null
         }
     }
 
     private fun updateState(quizState: QuizUIState) {
         _uiState.update { currentList ->
-            if (currentList.none { it.questionText == quizState.questionText }) {
-                currentList + quizState
-            } else {
-                currentList
-            }
+            currentList + quizState
         }
     }
-
-
-    fun createQuiz() {
-        viewModelScope.launch {
-            questionRepository.getQuestions()
-                .map { questionsList -> questionsList.filter { it.course == courseId } }
-                .collect { filteredQuestions ->
-                    val uniqueQuestions = filteredQuestions.shuffled().take(3)
-                    uniqueQuestions.forEach { question ->
-                        generateAnswers(question.text) { quizState ->
-                            Log.d("RRR", "1")
-                            updateState(quizState)
-                        }
-                    }
-                }
-        }
-    }
-
 
     fun processAnswer(questionText: String, selectedAnswer: String) {
         _uiState.update { currentList ->
@@ -127,7 +118,6 @@ class QuizViewModel @Inject constructor(
             }
         }
     }
-
     fun scoreCalculate() {
         uiState.value.forEach { quizUiState ->
             quizUiState.isCorrect?.let {
@@ -149,7 +139,7 @@ class QuizViewModel @Inject constructor(
         _score.update { it + 1 }
     }
 
-    fun addQuiz(){
+    fun addQuizResult(){
         quizRepository.addQuiz(
             Quiz(
                 date = System.currentTimeMillis(),
@@ -158,9 +148,8 @@ class QuizViewModel @Inject constructor(
             )
         )
     }
+
 }
-
-
 
 data class QuizUIState(
     val questionText: String,
@@ -169,4 +158,3 @@ data class QuizUIState(
     val selectedAnswer: String? = null,
     val isCorrect: Boolean? = null
 )
-

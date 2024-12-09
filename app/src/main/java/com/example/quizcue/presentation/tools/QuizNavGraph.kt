@@ -24,7 +24,6 @@ fun QuizNavGraph(
         composable(
             route = Screen.Quiz.route
         ) {
-            quizViewModel.createQuiz()
             QuizScreen(navController, quizViewModel)
         }
         composable(route = Screen.ResultQuiz.route) {
