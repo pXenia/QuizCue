@@ -9,6 +9,7 @@ import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.repository.CourseRepository
 import com.example.quizcue.domain.repository.QuestionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -19,37 +20,54 @@ import javax.inject.Inject
 class QuestionsScreensViewModel @Inject constructor(
     private val questionRepository: QuestionRepository,
     private val courseRepository: CourseRepository,
-    savedStateHandler: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
     private val _questions = MutableStateFlow<List<Question>>(emptyList())
     val questions: StateFlow<List<Question>> = _questions
 
-    val courseId: String = savedStateHandler["courseId"] ?: ""
+    val courseId: String = savedStateHandle["courseId"] ?: ""
 
-    private var _courseTitle = mutableStateOf("")
+    private val _courseTitle = mutableStateOf("")
     val courseTitle: State<String> = _courseTitle
 
     init {
-        getQuestions()
-        if (courseId != ""){
-            viewModelScope.launch {
-                courseRepository.getCourseById(courseId) { course ->
-                    course?.let {
-                        _courseTitle.value = it.name
-                    }
+        _courseTitle.value = when (courseId) {
+            "all" -> "Все вопросы"
+            "favourite" -> "Избранное"
+            else -> ""
+        }
+
+        when (courseId) {
+            "all" -> loadQuestions { questionRepository.getQuestions() }
+            "favourite" -> loadQuestions {
+                questionRepository.getQuestions().map { it.filter { question -> question.isFavourite } }
+            }
+            "" -> Unit
+            else -> {
+                loadQuestions {
+                    questionRepository.getQuestions().map { it.filter { question -> question.course == courseId } }
                 }
+                loadCourseTitle()
             }
         }
     }
 
-    private fun getQuestions() {
+    private fun loadQuestions(fetcher: suspend () -> Flow<List<Question>>) {
         viewModelScope.launch {
-            questionRepository.getQuestions()
-                .map { questionsList -> questionsList.filter { it.course == courseId } }
-                .collect { filteredQuestions ->
-                    _questions.value = filteredQuestions
+            fetcher().collect { filteredQuestions ->
+                _questions.value = filteredQuestions
+            }
+        }
+    }
+
+    private fun loadCourseTitle() {
+        viewModelScope.launch {
+            courseRepository.getCourseById(courseId) { course ->
+                course?.let {
+                    _courseTitle.value = it.name
                 }
+            }
         }
     }
 
@@ -62,8 +80,8 @@ class QuestionsScreensViewModel @Inject constructor(
 
     }
 
-    fun addToFavorites(question: Question) {
-
+    fun addToFavorites(questionId: String, isFavourite: Boolean) {
+        questionRepository.addFavourite(questionId,isFavourite)
     }
 
     fun deleteQuestion(question: Question) {
@@ -72,6 +90,11 @@ class QuestionsScreensViewModel @Inject constructor(
         }
     }
 
-
+    fun updateLastTime(){
+        courseRepository.updateLastTime(
+            courseId = courseId,
+            date = System.currentTimeMillis()
+        )
+    }
 
 }

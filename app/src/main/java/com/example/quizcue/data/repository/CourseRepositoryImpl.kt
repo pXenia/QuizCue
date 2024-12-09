@@ -2,6 +2,7 @@ package com.example.quizcue.data.repository
 
 import android.util.Log
 import com.example.quizcue.domain.model.Course
+import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.repository.CourseRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -19,19 +20,25 @@ class CourseRepositoryImpl(
     val databaseRef = database.reference
         .child(auth.currentUser?.uid.toString())
 
-    override suspend fun upsertCourse(course: Course, onSuccess: () -> Unit) {
+    override fun upsertCourse(course: Course, onSuccess: () -> Unit) {
         val courseId = if (course.id == "") databaseRef.push().key ?: return else course.id
         val courseMap = hashMapOf<String, Any>(
             "id" to courseId,
             "name" to course.name,
             "description" to course.description,
+            "date" to course.date,
         )
         databaseRef.child("courses").child(courseId)
             .setValue(courseMap)
             .addOnSuccessListener { onSuccess() }
     }
 
-    override suspend fun deleteCourse(course: Course, onSuccess: () -> Unit) {
+    override fun updateLastTime(courseId: String, date: Long) {
+        databaseRef.child("courses").child(courseId).child("date")
+            .setValue(date)
+    }
+
+    override fun deleteCourse(course: Course, onSuccess: () -> Unit) {
         databaseRef.child("courses").child(course.id)
             .removeValue()
             .addOnSuccessListener { onSuccess() }
@@ -78,13 +85,20 @@ class CourseRepositoryImpl(
 
 
 
-    override fun getCourses(): Flow<List<Course>> = callbackFlow{
+    override fun getCourses(): Flow<List<Course>> = callbackFlow {
         val courseListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val courses = mutableListOf<Course>()
                 snapshot.child("courses").children.forEach { child ->
-                    val course = child.getValue(Course::class.java)
-                    course?.let { courses.add(it) }
+                    val id = child.child("id").getValue(String::class.java) ?: ""
+                    val name = child.child("name").getValue(String::class.java) ?: ""
+                    val description = child.child("description").getValue(String::class.java) ?: ""
+                    val date = child.child("date").getValue(Long::class.java) ?: 0L
+
+                    val course = Course(
+                        id, name, description, date
+                    )
+                    courses.add(course)
                 }
                 trySend(courses).isSuccess
             }
@@ -98,7 +112,7 @@ class CourseRepositoryImpl(
         awaitClose { databaseRef.removeEventListener(courseListener) }
     }
 
-    override suspend fun getCourseById(courseId: String, onSuccess: (Course?) -> Unit) {
+    override fun getCourseById(courseId: String, onSuccess: (Course?) -> Unit) {
         databaseRef.child("courses").child(courseId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {

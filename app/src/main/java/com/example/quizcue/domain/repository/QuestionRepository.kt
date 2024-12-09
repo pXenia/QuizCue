@@ -8,4 +8,5 @@ interface QuestionRepository {
     suspend fun deleteQuestion(question: Question)
     suspend fun getQuestionById(questionId: String, onSuccess: (Question?) -> Unit)
     fun getQuestions(): Flow<List<Question>>
+    fun addFavourite(questionId: String, isFavourite: Boolean)
 }

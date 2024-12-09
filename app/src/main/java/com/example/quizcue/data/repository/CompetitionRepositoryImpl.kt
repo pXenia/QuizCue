@@ -85,12 +85,14 @@ class CompetitionRepositoryImpl(
                 override fun onDataChange(snapshot: DataSnapshot) {
                         val id = snapshot.child("id").getValue(String::class.java) ?: ""
                         val user1 = snapshot.child("user1").getValue(String::class.java) ?: ""
+                        val user1TestScore = snapshot.child("user1TestScore").getValue(Int::class.java) ?: 0
                         val user2 = snapshot.child("user2").getValue(String::class.java) ?: ""
+                        val user2TestScore = snapshot.child("user2TestScore").getValue(Int::class.java) ?: 0
                         val prize = snapshot.child("prize").getValue(String::class.java) ?: ""
                         val challengeDate =
                             snapshot.child("challengeDate").getValue(Long::class.java) ?: 0L
                         val competition = Competition(
-                            id, user1, user2, prize, challengeDate, 0, 0, 0, 0
+                            id, user1, user2, prize, challengeDate, user1TestScore, user2TestScore
                         )
                         onSuccess(competition)
                 }

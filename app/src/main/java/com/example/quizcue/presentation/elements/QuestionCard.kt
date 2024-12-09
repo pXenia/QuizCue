@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteOutline
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -107,11 +108,21 @@ fun QuestionCard(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(
-                        modifier = Modifier.padding(7.dp),
-                        imageVector = Icons.Outlined.FavoriteBorder,
-                        contentDescription = null)
-                    Text("Добавить в избранное")
+                    if (!question.isFavourite) {
+                        Icon(
+                            modifier = Modifier.padding(7.dp),
+                            imageVector = Icons.Outlined.FavoriteBorder,
+                            contentDescription = null
+                        )
+                        Text("Добавить в избранное")
+                    } else {
+                        Icon(
+                            modifier = Modifier.padding(7.dp),
+                            imageVector = Icons.Outlined.Favorite,
+                            contentDescription = null
+                        )
+                        Text("Удалить из избранного")
+                    }
                 }
 
                 Button(

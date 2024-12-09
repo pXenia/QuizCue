@@ -5,4 +5,5 @@ import com.example.quizcue.domain.model.Quiz
 
 interface QuizRepository {
    fun addQuiz(quiz: Quiz)
+   fun updateScore(score: Int, competitionId: String)
 }

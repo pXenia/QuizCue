@@ -9,6 +9,6 @@ data class Question(
     val answer: String = "",
     val course: String = "",
     val isStudied: Boolean = false,
-    val numberOfRepetitions: Int = 0,
+    val isFavourite: Boolean = false,
     val createdDate: Timestamp = Timestamp.now()
 )

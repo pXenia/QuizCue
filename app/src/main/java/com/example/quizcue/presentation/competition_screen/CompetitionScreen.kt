@@ -64,6 +64,8 @@ import androidx.navigation.NavController
 import com.example.quizcue.R
 import com.example.quizcue.domain.model.User
 import com.example.quizcue.presentation.tools.Screen
+import com.google.android.play.integrity.internal.c
+import com.google.android.play.integrity.internal.w
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -156,6 +158,8 @@ fun CompetitionContent(
     onClick: () -> Unit
 ) {
     val date = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(uiState.date)
+    val user1Score = uiState.user1TestScore
+    val user2Score = uiState.user2TestScore
 
     OutlinedCard(
         modifier = Modifier
@@ -179,8 +183,10 @@ fun CompetitionContent(
 
     if (uiState.user1 != null) {
         UserCard(
+            score = uiState.user1TestScore,
             user = uiState.user1,
-            cardColor = MaterialTheme.colorScheme.primary)
+            cardColor = MaterialTheme.colorScheme.primary
+        )
     }
 
     Column(
@@ -191,7 +197,7 @@ fun CompetitionContent(
     ) {
         Spacer(modifier = Modifier.height(8.dp))
         LinearProgressIndicator(
-            progress = { 25 / 90.toFloat() },
+            progress = { user1Score / (user1Score+user2Score).toFloat() },
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(CircleShape)
@@ -206,15 +212,17 @@ fun CompetitionContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("25 баллов", style = MaterialTheme.typography.titleLarge)
-            Text("26 баллов", style = MaterialTheme.typography.titleLarge)
+            Text(titleScore(user1Score), style = MaterialTheme.typography.titleLarge)
+            Text(titleScore(user2Score), style = MaterialTheme.typography.titleLarge)
         }
     }
 
     if (uiState.user2?.competitionId != "" && uiState.user2 != null) {
         UserCard(
+            score = uiState.user2TestScore,
             user = uiState.user2,
-            cardColor = MaterialTheme.colorScheme.tertiary)
+            cardColor = MaterialTheme.colorScheme.tertiary
+        )
     } else {
         CardWithoutOpponent(
             competitionId = uiState.competitionId,
@@ -227,6 +235,7 @@ fun CompetitionContent(
 
 @Composable
 fun UserCard(
+    score: Int,
     user: User,
     cardColor: Color
 ) {
@@ -244,15 +253,15 @@ fun UserCard(
                 .fillMaxSize()
                 .padding(
                     vertical = 30.dp,
-                    horizontal = 20.dp),
+                    horizontal = 20.dp
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             Image(
                 painter = if (user.photo != null) {
                     BitmapPainter(user.photo.asImageBitmap())
-                }
-                else
+                } else
                     painterResource(id = R.drawable.koshka),
                 contentDescription = "Фото пользователя",
                 modifier = Modifier
@@ -269,8 +278,7 @@ fun UserCard(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(text = user.name, style = MaterialTheme.typography.headlineMedium)
-                Text("Вопросы: 27 б", style = MaterialTheme.typography.titleSmall)
-                Text("Тесты: 21 б", style = MaterialTheme.typography.titleSmall)
+                Text("Баллы: ${score}", style = MaterialTheme.typography.titleSmall)
             }
 
         }
@@ -343,5 +351,14 @@ fun CardWithoutOpponent(
                 modifier = Modifier.padding(5.dp),
             )
         }
+    }
+}
+
+fun titleScore(score: Int): String {
+    return when {
+        score % 100 in 11..19 -> "$score баллов"
+        score % 10 == 1 -> "$score балл"
+        score % 10 in 2..4 -> "$score балла"
+        else -> "$score баллов"
     }
 }

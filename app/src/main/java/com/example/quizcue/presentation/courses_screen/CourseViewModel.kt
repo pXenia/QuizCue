@@ -76,4 +76,5 @@ class CourseViewModel @Inject constructor(
         courseRepository.upsertCourse(course, onSuccess)
         onSuccess()
     }
+
 }

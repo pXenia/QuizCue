@@ -7,7 +7,5 @@ data class Competition (
     val prize: String,
     val challengeDate: Long,
     val user1TestScore: Int,
-    val user1CardScore: Int,
     val user2TestScore: Int,
-    val user2CardScore: Int,
 )

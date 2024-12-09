@@ -145,7 +145,7 @@ fun ResultQuizScreen(
             }
             Button(
                 onClick = {
-                    quizViewModel.createQuiz()
+                    quizViewModel.addQuizResult()
                     parentNavController.navigate(Screen.Questions.route+"?courseId=${course}")
                 },
                 modifier = Modifier
@@ -196,7 +196,7 @@ fun ResultQuizScreen(
 fun ResultQuizCard(
     questionText: String,
     correctAnswer: String,
-    isCorrect: Boolean = false
+    isCorrect: Boolean
 ) {
     OutlinedCard(
         modifier = Modifier

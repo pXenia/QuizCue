@@ -93,9 +93,7 @@ class CompetitionViewModel @Inject constructor(
                         date = competition.challengeDate,
                         prize = competition.prize,
                         user1TestScore = competition.user1TestScore,
-                        user1CardScore = competition.user1CardScore,
                         user2TestScore = competition.user2TestScore,
-                        user2CardScore = competition.user2CardScore
                     )
                 }
 
@@ -115,7 +113,5 @@ data class uiState(
     val user1: User? = null,
     val user2: User? = null,
     val user1TestScore: Int = 0,
-    val user1CardScore: Int = 0,
     val user2TestScore: Int = 0,
-    val user2CardScore: Int = 0
 )
