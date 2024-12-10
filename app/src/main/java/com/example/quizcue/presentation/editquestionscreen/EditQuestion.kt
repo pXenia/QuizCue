@@ -55,7 +55,7 @@ fun EditQuestion(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            navController.navigateUp()
+                            navController.popBackStack()
                         },
                         content = {
                             Icon(Icons.Filled.ArrowBackIosNew, "Назад")

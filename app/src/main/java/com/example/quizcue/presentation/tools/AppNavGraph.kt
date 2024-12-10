@@ -1,14 +1,18 @@
 package com.example.quizcue.presentation.tools
 
+import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.quizcue.presentation.courses_screen.CoursesScreen
@@ -17,7 +21,6 @@ import com.example.quizcue.presentation.questionslearncreens.QuestionsScreen
 import com.example.quizcue.presentation.authentication.AuthenticationNavigationViewModel
 import com.example.quizcue.presentation.authentication.login_screen.LoginScreen
 import com.example.quizcue.presentation.authentication.register_screen.RegisterScreen
-import com.example.quizcue.presentation.competition_screen.AddCompetitionDialog
 import com.example.quizcue.presentation.competition_screen.ChoseAddingCompetitionDialog
 import com.example.quizcue.presentation.competition_screen.CompetitionScreen
 import com.example.quizcue.presentation.courses_screen.AddCourseDialog
@@ -28,78 +31,34 @@ import com.example.quizcue.presentation.quizscreen.QuizViewModel
 import com.example.quizcue.presentation.quizscreen.ResultQuizScreen
 import com.example.quizcue.presentation.schedule_screen.ScheduleScree
 
+
 @Composable
-fun BottomNavGraph(navController: NavHostController,
-                   authenticationNavigationViewModel: AuthenticationNavigationViewModel = hiltViewModel(),
+fun AppNavGraph(
+    navController: NavHostController,
+    authenticationNavigationViewModel: AuthenticationNavigationViewModel = hiltViewModel(),
 ) {
     NavHost(
         navController = navController,
         startDestination = if (authenticationNavigationViewModel.isLoggedInState.value)
-            Screen.Login.route
-        else
-            Screen.Home.route
+            Screen.Login.route else Screen.Home.route
     ) {
-        composable(route = Screen.Home.route) {
+        composable(Screen.Home.route) {
             HomeScreen(navController)
         }
-        composable(route = Screen.Courses.route) {
+        composable(Screen.Courses.route) {
             CoursesScreen(navController)
         }
-        composable(route = Screen.Schedule.route) {
+        composable(Screen.Schedule.route) {
             ScheduleScree()
         }
-        composable(route = Screen.QuizNavGraph.route + "?courseId={courseId}",
-            arguments = listOf(
-                navArgument(
-                    name = "courseId"
-                ) {
-                    type = NavType.StringType
-                    defaultValue = ""
-                }
-            )) {
-            QuizNavGraph(navController = rememberNavController(), parentNavController = navController)
-        }
-        composable(route = Screen.Competition.route + "?competitionId={competitionId}",
-            arguments = listOf(
-                navArgument(
-                    name = "competitionId"
-                ) {
-                    type = NavType.StringType
-                    defaultValue = ""
-                }
-            )) {
-            CompetitionScreen(navController)
-        }
-        composable(route = Screen.Questions.route + "?courseId={courseId}",
-            arguments = listOf(
-                navArgument(
-                    name = "courseId"
-                ) {
-                    type = NavType.StringType
-                    defaultValue = ""
-                }
-            )) {
-            QuestionsScreen(navController)
-        }
-        composable(route = Screen.LearnCard.route + "?courseId={courseId}",
-            arguments = listOf(
-                navArgument(
-                    name = "courseId"
-                ) {
-                    type = NavType.StringType
-                    defaultValue = ""
-                }
-            )) {
-            LearnCardScreen(navController)
-        }
-        composable(route = Screen.Login.route) {
+        composable(Screen.Login.route) {
             LoginScreen(navController)
         }
-        composable(route = Screen.Register.route) {
+        composable(Screen.Register.route) {
             RegisterScreen(navController)
         }
-        composable(route = Screen.EditQuestion.route+ "?courseId={courseId}" + "?questionId={questionId}",
-            arguments = listOf(
+        composable(Screen.EditQuestion.route+ "?courseId={courseId}" + "?questionId={questionId}",
+           listOf(
                 navArgument(
                     name = "courseId"
                 ) {
@@ -116,15 +75,88 @@ fun BottomNavGraph(navController: NavHostController,
         ) {
             EditQuestion(navController = navController)
         }
-        dialog(
-            route = Screen.AddCourse.route,
+        composable(Screen.Questions.route+ "?courseId={courseId}",
+            listOf(
+                navArgument(
+                    name = "courseId"
+                ) {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
         ) {
-            AddCourseDialog(navController = navController)
+            QuestionsScreen(navController = navController)
+        }
+
+        composable(Screen.LearnCard.route + "?courseId={courseId}",
+            listOf(
+                navArgument(
+                    name = "courseId"
+                ) {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )) {
+            LearnCardScreen(navController)
+        }
+
+        navigation(
+            startDestination = Screen.Quiz.route,
+            route = Screen.QuizNavGraph.route + "?courseId={courseId}",
+            arguments = listOf(
+                navArgument(name = "courseId") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
+        ) {
+            composable(Screen.Quiz.route) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Screen.QuizNavGraph.route + "?courseId={courseId}")
+                }
+                val quizViewModel = hiltViewModel<QuizViewModel>(parentEntry)
+
+                QuizScreen(
+                    navController = navController,
+                    quizViewModel = quizViewModel
+                )
+            }
+            composable(Screen.ResultQuiz.route) { backStackEntry ->
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry(Screen.QuizNavGraph.route + "?courseId={courseId}")
+                }
+                val quizViewModel = hiltViewModel<QuizViewModel>(parentEntry)
+
+                ResultQuizScreen(
+                    navController = navController,
+                    quizViewModel = quizViewModel
+                )
+            }
+        }
+        navigation(
+            route = Screen.CompetitionNavGraph.route,
+            startDestination = Screen.Competition.route) {
+            composable(Screen.Competition.route + "?competitionId={competitionId}",
+                listOf(
+                    navArgument(
+                        name = "competitionId"
+                    ) {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    }
+                )) {
+                CompetitionScreen(navController)
+            }
         }
         dialog(
-            route = Screen.AddCompetitionDialog.route,
+            route = Screen.AddCourse.route
         ) {
-            ChoseAddingCompetitionDialog( navController = navController)
+            AddCourseDialog(navController)
+        }
+        dialog(
+            route = Screen.AddCompetitionDialog.route
+        ) {
+            ChoseAddingCompetitionDialog(navController)
         }
     }
 }

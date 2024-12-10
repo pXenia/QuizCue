@@ -82,7 +82,10 @@ fun CompetitionScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            navController.navigate(Screen.Home.route)
+                            navController.popBackStack(
+                                route = Screen.Home.route,
+                                inclusive = false
+                            )
                         },
                         content = {
                             Icon(Icons.Filled.ArrowBackIosNew, "Назад")
