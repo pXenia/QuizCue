@@ -102,6 +102,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     implementation(libs.compose.markdown)
+    implementation ("io.github.ehsannarmani:compose-charts:0.1.0")
 
 
 }

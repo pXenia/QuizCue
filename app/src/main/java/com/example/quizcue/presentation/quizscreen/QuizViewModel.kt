@@ -8,6 +8,7 @@ import com.example.quizcue.BuildConfig
 import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.model.Quiz
 import com.example.quizcue.domain.repository.AuthenticationRepository
+import com.example.quizcue.domain.repository.CalendarRepository
 import com.example.quizcue.domain.repository.QuestionRepository
 import com.example.quizcue.domain.repository.QuizRepository
 import com.example.quizcue.presentation.competition_screen.uiState
@@ -30,6 +31,7 @@ class QuizViewModel @Inject constructor(
     private val quizRepository: QuizRepository,
     private val authenticationRepository: AuthenticationRepository,
     private val questionRepository: QuestionRepository,
+    private val calendarRepository: CalendarRepository,
     private val auth: FirebaseAuth,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -133,6 +135,7 @@ class QuizViewModel @Inject constructor(
                 )
             }
         }
+        updateStat()
     }
 
     private fun incrementScore() {
@@ -148,7 +151,15 @@ class QuizViewModel @Inject constructor(
             )
         )
     }
-
+    private fun updateStat(){
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        calendarRepository.updateQuizStat(calendar.timeInMillis, score.value)
+    }
 }
 
 data class QuizUIState(

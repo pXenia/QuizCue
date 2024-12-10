@@ -158,6 +158,9 @@ fun SwipeCard(
                         currentQuestion,
                         dismissRight
                     )
+                    if (dismissRight) {
+                        questionViewModel.updateStat()
+                    }
                 }) { change, dragAmount ->
                     if (cardList.isNotEmpty()) {
                         offset += (dragAmount / density) * sensitivityFactor

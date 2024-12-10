@@ -6,20 +6,25 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quizcue.domain.model.Question
+import com.example.quizcue.domain.repository.CalendarRepository
 import com.example.quizcue.domain.repository.CourseRepository
 import com.example.quizcue.domain.repository.QuestionRepository
+import com.example.quizcue.domain.repository.QuizRepository
+import com.google.android.play.integrity.internal.c
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
 class QuestionsScreensViewModel @Inject constructor(
     private val questionRepository: QuestionRepository,
     private val courseRepository: CourseRepository,
+    private val calendarRepository: CalendarRepository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -95,6 +100,16 @@ class QuestionsScreensViewModel @Inject constructor(
             courseId = courseId,
             date = System.currentTimeMillis()
         )
+    }
+
+    fun updateStat(){
+        val calendar = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        calendarRepository.updateRepetitionNumber(calendar.timeInMillis)
     }
 
 }
