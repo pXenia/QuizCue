@@ -71,7 +71,7 @@ fun EditQuestion(
             FloatingActionButton(
                 onClick = {
                     questionViewModel.onEvent(EditQuestionEvent.SaveQuestion)
-                    navController.navigate(Screen.Questions.route)
+                    navController.popBackStack()
                 },
                 shape = RoundedCornerShape(15.dp),
                 containerColor = MaterialTheme.colorScheme.tertiary,

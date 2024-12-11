@@ -54,8 +54,6 @@ class HomeScreenViewModel @Inject constructor(
     val email = auth.currentUser?.email ?: ""
 
     init {
-        loadQuestions()
-
         authenticationRepository.getUserInfo(auth.currentUser?.uid ?: "") { user ->
             user?.let {
                 _uiState.update {
@@ -65,9 +63,14 @@ class HomeScreenViewModel @Inject constructor(
                         competitionId = user.competitionId
                     )
                 }
+                competitionRepository.getCompetitionById(user.competitionId) {
+                    if (it != null) {
+                        _competitionDate.value = it.challengeDate
+                    }
+                }
             }
         }
-
+        loadQuestions()
     }
 
     private fun loadQuestions() {
@@ -75,11 +78,6 @@ class HomeScreenViewModel @Inject constructor(
             questionRepository.getQuestions().collect { questions ->
                 _allQuestionsAmount.value = questions.size
                 _favouriteQuestionsAmount.value = questions.filter { it.isFavourite }.size
-                competitionRepository.getCompetitionById(uiState.value.competitionId) {
-                    if (it != null) {
-                        _competitionDate.value = it.challengeDate
-                    }
-                }
             }
         }
     }

@@ -29,7 +29,7 @@ import com.example.quizcue.presentation.homescreen.HomeScreen
 import com.example.quizcue.presentation.quizscreen.QuizScreen
 import com.example.quizcue.presentation.quizscreen.QuizViewModel
 import com.example.quizcue.presentation.quizscreen.ResultQuizScreen
-import com.example.quizcue.presentation.schedule_screen.ScheduleScree
+import com.example.quizcue.presentation.schedule_screen.ScheduleScreen
 
 
 @Composable
@@ -49,7 +49,7 @@ fun AppNavGraph(
             CoursesScreen(navController)
         }
         composable(Screen.Schedule.route) {
-            ScheduleScree()
+            ScheduleScreen()
         }
         composable(Screen.Login.route) {
             LoginScreen(navController)

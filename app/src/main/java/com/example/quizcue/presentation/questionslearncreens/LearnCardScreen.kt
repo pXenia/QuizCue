@@ -63,7 +63,7 @@ fun LearnCardScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            navController.navigateUp()
+                            navController.popBackStack()
                         },
                         content = {
                             Icon(Icons.Filled.ArrowBackIosNew, "Назад")
@@ -158,6 +158,9 @@ fun SwipeCard(
                         currentQuestion,
                         dismissRight
                     )
+                    if (dismissRight) {
+                        questionViewModel.updateStat()
+                    }
                 }) { change, dragAmount ->
                     if (cardList.isNotEmpty()) {
                         offset += (dragAmount / density) * sensitivityFactor
