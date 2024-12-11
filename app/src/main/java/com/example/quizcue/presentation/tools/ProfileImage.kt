@@ -17,16 +17,19 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.quizcue.R
 
 
 @Composable
-fun ProfileImage(photo: Bitmap?) {
+fun ProfileImage(
+    size: Dp,
+    photo: Bitmap?) {
     Image(
         modifier = Modifier
             .padding(top = 15.dp)
-            .size(130.dp)
+            .size(size)
             .border(
                 BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
                 CircleShape

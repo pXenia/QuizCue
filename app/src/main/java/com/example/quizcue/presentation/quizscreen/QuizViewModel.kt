@@ -1,5 +1,6 @@
 package com.example.quizcue.presentation.quizscreen
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -40,6 +41,8 @@ class QuizViewModel @Inject constructor(
     private val _score = MutableStateFlow(0)
     val score: StateFlow<Int> = _score
 
+    var userPhoto: Bitmap? = null
+
     private val generativeModel = GenerativeModel(
         modelName = "gemini-1.5-flash",
         apiKey = BuildConfig.GEMINI_API_KEY
@@ -49,6 +52,9 @@ class QuizViewModel @Inject constructor(
 
     init {
         createQuiz(courseId)
+        authenticationRepository.getUserInfo(auth.currentUser?.uid ?: "") {
+            userPhoto = it?.photo
+        }
     }
 
     private fun createQuiz(courseId: String) {

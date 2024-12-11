@@ -160,7 +160,9 @@ fun UserHeader(user: User, email: String) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        ProfileImage(user.photo)
+        ProfileImage(
+            size = 130.dp,
+            photo = user.photo)
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = user.name,

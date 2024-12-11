@@ -62,6 +62,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImagePainter.State.Empty.painter
 import com.example.quizcue.R
+import com.example.quizcue.presentation.tools.ProfileImage
 import com.example.quizcue.presentation.tools.Screen
 import com.example.quizcue.ui.theme.studyLight
 
@@ -74,6 +75,7 @@ fun ResultQuizScreen(
     val uiState by quizViewModel.uiState.collectAsState()
     val score by quizViewModel.score.collectAsState()
     val course = quizViewModel.courseId
+    val userPhoto = quizViewModel.userPhoto
 
 
     Scaffold{ padding ->
@@ -92,18 +94,9 @@ fun ResultQuizScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Image(
-                    modifier = Modifier
-                        .size(100.dp)
-                        .border(
-                            BorderStroke(1.dp, MaterialTheme.colorScheme.tertiary),
-                            CircleShape
-                        )
-                        .clip(CircleShape),
-                    painter = painterResource(id = R.drawable.koshka),
-                    contentDescription = "user",
-                    contentScale = ContentScale.Crop,
-                    colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0.5f) })
+                ProfileImage(
+                    size = 100.dp,
+                    photo = userPhoto
                 )
                 Column(
                     modifier = Modifier
