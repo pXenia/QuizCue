@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.courses_screen
+package com.example.quizcue.presentation.coursesscreen
 
 sealed class EditCourseEvent {
     data class EnteredTextCourse (val value: String): EditCourseEvent()

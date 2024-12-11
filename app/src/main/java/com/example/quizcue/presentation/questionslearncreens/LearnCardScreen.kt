@@ -39,11 +39,13 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.quizcue.R
 import com.example.quizcue.domain.model.Question
 import com.example.quizcue.presentation.elements.LearnCard
 import kotlinx.coroutines.delay
@@ -133,11 +135,11 @@ fun SwipeCard(
             horizontalArrangement = Arrangement.Absolute.SpaceBetween
         ) {
             Text(
-                text = "Повторить: $repeat",
+                text = stringResource(R.string.repeat, repeat),
                 style = MaterialTheme.typography.titleLarge,
             )
             Text(
-                text = "Знаю: $ready",
+                text = stringResource(R.string.know, ready),
                 style = MaterialTheme.typography.titleLarge,
             )
         }
@@ -175,7 +177,7 @@ fun SwipeCard(
             contentAlignment = Alignment.Center) {
             if (cardList.isEmpty()) {
                 Text(
-                    "Нет доступных карточек",
+                    text = stringResource(R.string.empty_card_list),
                     modifier = Modifier.fillMaxSize(),
                     style = MaterialTheme.typography.displaySmall.copy(
                         textAlign = TextAlign.Center

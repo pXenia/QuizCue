@@ -1,11 +1,16 @@
 package com.example.quizcue.data.repository
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Base64
 import android.util.Log
+import androidx.core.content.ContextCompat.startActivity
+import androidx.navigation.Navigation.findNavController
+import com.example.quizcue.MainActivity
+import com.example.quizcue.R
 import com.example.quizcue.domain.repository.AuthenticationRepository
 import com.example.quizcue.domain.Response
 import com.example.quizcue.domain.model.User
@@ -34,7 +39,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
             val data = auth.signInWithEmailAndPassword(email, password).await()
             emit(Response.Success(data))
         } catch (e: Exception) {
-            emit(Response.Error(e.localizedMessage ?: "Oops, something went wrong."))
+            emit(Response.Error(e.localizedMessage ?:  context.getString(R.string.error)))
         }
     }
 
@@ -65,7 +70,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
 
             emit(Response.Success(data))
         } catch (e: Exception) {
-            emit(Response.Error(e.localizedMessage ?: "Oops, something went wrong."))
+            emit(Response.Error(e.localizedMessage ?:  context.getString(R.string.error)))
         }
     }
 
@@ -75,7 +80,7 @@ class AuthenticationRepositoryImpl @Inject constructor(
             val data = auth.sendPasswordResetEmail(email).await()
             emit(Response.Success(data))
         } catch (e: Exception) {
-            emit(Response.Error(e.localizedMessage ?: "Oops, something went wrong."))
+            emit(Response.Error(e.localizedMessage ?: context.getString(R.string.error)))
         }
     }
 
@@ -109,7 +114,6 @@ class AuthenticationRepositoryImpl @Inject constructor(
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
                 }
             })
     }

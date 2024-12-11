@@ -48,7 +48,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
@@ -77,20 +79,21 @@ fun RegisterScreen(
 ) {
     val scope = rememberCoroutineScope()
     val hostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(hostState = hostState) },
         topBar = {
             TopAppBar(
-                title = { Text(text = "Register") },
+                title = { Text(text = stringResource(R.string.new_register)) },
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.popBackStack() }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "back button"
+                            contentDescription = null
                         )
                     }
                 }
@@ -103,8 +106,7 @@ fun RegisterScreen(
             onNavigateToLogin = { navController.popBackStack() },
             onRegister = { email, password, name, image -> registerViewModel.register(email, password, name, image) },
             registerSuccess = { navController.navigate(Screen.Home.route) },
-            registerError = { scope.launch { hostState.showSnackbar("Упс! что-то пошло не так, " +
-                    "проверьте подключение и повторите попытку") } }
+            registerError = { scope.launch { hostState.showSnackbar(context.getString(R.string.error_connction)) } }
         )
     }
 }
@@ -147,7 +149,7 @@ fun Content(
                     CircleShape
                 )
                 .clip(CircleShape)
-                .clickable{launcher.launch("image/*")},
+                .clickable { launcher.launch("image/*") },
             painter = if (selectedImageUri.value != null)
                 rememberAsyncImagePainter(selectedImageUri.value)
             else
@@ -156,16 +158,6 @@ fun Content(
             contentScale = ContentScale.Crop,
             colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0.5f) })
         )
-        Text(
-            style = MaterialTheme.typography.titleMedium,
-            text = "Добавить фото",
-            modifier = Modifier
-                .wrapContentWidth()
-                .wrapContentHeight()
-                .align(alignment = Alignment.CenterHorizontally)
-                .padding(20.dp)
-                .clickable { },
-        )
         TextField(
             modifier = Modifier
                 .fillMaxWidth()
@@ -173,10 +165,10 @@ fun Content(
                 .padding(start = 20.dp, end = 20.dp, top = 5.dp),
             value = nameText.value,
             onValueChange = { text -> nameText.value = text },
-            label = { Text("Name") },
+            label = { Text(stringResource(R.string.name)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            leadingIcon = { Icon(Icons.Filled.AccountCircle, "email") },
+            leadingIcon = { Icon(Icons.Filled.AccountCircle, null) },
         )
 
         TextField(
@@ -186,10 +178,10 @@ fun Content(
                 .padding(start = 20.dp, end = 20.dp, top = 20.dp),
             value = emailText.value,
             onValueChange = { text -> emailText.value = text },
-            label = { Text("Email") },
+            label = { Text(stringResource(R.string.email)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            leadingIcon = { Icon(Icons.Filled.Email, "email") },
+            leadingIcon = { Icon(Icons.Filled.Email, null) },
         )
         TextField(
             modifier = Modifier
@@ -198,11 +190,11 @@ fun Content(
                 .padding(20.dp),
             value = passwordText.value,
             onValueChange = { text -> passwordText.value = text },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.password)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = PasswordVisualTransformation(),
             singleLine = true,
-            leadingIcon = { Icon(Icons.Filled.Lock, "password") },
+            leadingIcon = { Icon(Icons.Filled.Lock, null) },
         )
         Button(
             onClick = { onRegister(emailText.value, passwordText.value, nameText.value, selectedImageUri.value
@@ -217,8 +209,8 @@ fun Content(
         Text(
             style = MaterialTheme.typography.titleMedium,
             text = buildAnnotatedString {
-                append("Already have an account?")
-                withStyle(style = SpanStyle(MaterialTheme.colorScheme.primary)) { append(" Login") }
+                append(stringResource(R.string.already_have_an_account))
+                withStyle(style = SpanStyle(MaterialTheme.colorScheme.primary)) { append(stringResource(R.string.log_in)) }
             },
             modifier = Modifier
                 .wrapContentWidth()

@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.courses_screen
+package com.example.quizcue.presentation.coursesscreen
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -14,7 +14,6 @@ import javax.inject.Inject
 @HiltViewModel
 class CourseViewModel @Inject constructor(
     private val courseRepository: CourseRepository,
-    savedStateHandler: SavedStateHandle
 ): ViewModel() {
 
     private val _courses = mutableStateOf<List<Course>>(emptyList())
@@ -34,7 +33,7 @@ class CourseViewModel @Inject constructor(
         getCoursesProgress()
     }
 
-    fun getCourses() {
+    private fun getCourses() {
         viewModelScope.launch {
             courseRepository.getCourses().collect{ coursesList ->
                 _courses.value = coursesList
@@ -42,7 +41,7 @@ class CourseViewModel @Inject constructor(
         }
     }
 
-    fun getCoursesProgress() {
+    private fun getCoursesProgress() {
         viewModelScope.launch {
             courseRepository.getCoursesProgress().collect{ coursesProgress ->
                 _progress.value = coursesProgress
@@ -67,14 +66,18 @@ class CourseViewModel @Inject constructor(
                         name = name.value,
                         description = description.value
                     )
-                ) {}
+                )
             }
         }
     }
 
-    fun upsertCourse(course: Course, onSuccess: () -> Unit) = viewModelScope.launch {
-        courseRepository.upsertCourse(course, onSuccess)
-        onSuccess()
+    private fun upsertCourse(course: Course){
+        courseRepository.upsertCourse(course)
+    }
+
+
+    fun deleteCourse(course: Course){
+        courseRepository.deleteCourse(course)
     }
 
 }

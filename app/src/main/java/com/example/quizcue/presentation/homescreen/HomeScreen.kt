@@ -14,14 +14,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoGraph
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.outlined.EmojiEvents
-import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -38,16 +35,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.example.quizcue.R
 import com.example.quizcue.domain.model.Course
 import com.example.quizcue.domain.model.User
-import com.example.quizcue.presentation.competition_screen.uiState
-import com.example.quizcue.presentation.courses_screen.CourseViewModel
+import com.example.quizcue.presentation.coursesscreen.CourseViewModel
 import com.example.quizcue.presentation.elements.CourseCard
 import com.example.quizcue.presentation.tools.ProfileImage
 import com.example.quizcue.presentation.tools.Screen
@@ -80,9 +78,10 @@ fun HomeScreen(
                         onLogoutClick = {
                             homeViewModel.logout()
                             navController.navigate(Screen.Login.route) {
-                                popUpTo(0)
-                            }
-                        }
+                                popUpTo(
+                                    0
+                                )
+                            }                        }
                     )
                 }
             )
@@ -183,7 +182,7 @@ fun Body(user: User,
          navController: NavController) {
     val dateText = if (competitionDate != 0L)
         SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(competitionDate)
-    else "Нет соревнований"
+    else stringResource(R.string.no_competitions)
 
     Box(
         modifier = Modifier
@@ -199,19 +198,19 @@ fun Body(user: User,
         ) {
             ActiveItem(
                 icon = Icons.Default.Favorite,
-                title = "Избранное",
-                subtitle = "Всего вопросов: $favouriteQuestionsSize",
+                title = stringResource(R.string.favourites),
+                subtitle = stringResource(R.string.all_questions, favouriteQuestionsSize),
                 onClick = { navController.navigate(Screen.Questions.route + "?courseId=favourite") }
             )
             ActiveItem(
                 icon = Icons.Default.QuestionMark,
-                title = "Все вопросы",
-                subtitle = "Всего вопросов: $allQuestionsSize",
+                title = stringResource(R.string.all_questions_title),
+                subtitle = stringResource(R.string.all_questions, allQuestionsSize),
                 onClick = { navController.navigate(Screen.Questions.route + "?courseId=all") }
             )
             ActiveItem(
                 icon = Icons.Outlined.EmojiEvents,
-                title = "Соревнование",
+                title = stringResource(R.string.competition),
                 subtitle = dateText,
                 onClick = { navController.navigate(Screen.Competition.route + "?competitionId=${user.competitionId}")}
             )

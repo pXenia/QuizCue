@@ -67,22 +67,17 @@ class QuestionsScreensViewModel @Inject constructor(
     }
 
     private fun loadCourseTitle() {
-        viewModelScope.launch {
-            courseRepository.getCourseById(courseId) { course ->
-                course?.let {
-                    _courseTitle.value = it.name
-                }
+        courseRepository.getCourseById(courseId) { course ->
+            course?.let {
+                _courseTitle.value = it.name
             }
         }
     }
 
     fun updateQuestionIsStudied(question: Question, isStudied: Boolean){
-        viewModelScope.launch {
             questionRepository.upsertQuestion(
                 question.copy(isStudied = isStudied)
-            ){}
-        }
-
+            )
     }
 
     fun addToFavorites(questionId: String, isFavourite: Boolean) {
@@ -90,9 +85,7 @@ class QuestionsScreensViewModel @Inject constructor(
     }
 
     fun deleteQuestion(question: Question) {
-        viewModelScope.launch {
             questionRepository.deleteQuestion(question)
-        }
     }
 
     fun updateLastTime(){

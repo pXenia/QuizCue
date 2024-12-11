@@ -1,11 +1,9 @@
 package com.example.quizcue.presentation.tools
 
-import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -13,23 +11,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.quizcue.presentation.courses_screen.CoursesScreen
+import com.example.quizcue.presentation.coursesscreen.CoursesScreen
 import com.example.quizcue.presentation.questionslearncreens.LearnCardScreen
 import com.example.quizcue.presentation.questionslearncreens.QuestionsScreen
 import com.example.quizcue.presentation.authentication.AuthenticationNavigationViewModel
 import com.example.quizcue.presentation.authentication.login_screen.LoginScreen
 import com.example.quizcue.presentation.authentication.register_screen.RegisterScreen
-import com.example.quizcue.presentation.competition_screen.ChoseAddingCompetitionDialog
-import com.example.quizcue.presentation.competition_screen.CompetitionScreen
-import com.example.quizcue.presentation.courses_screen.AddCourseDialog
+import com.example.quizcue.presentation.competitionscreen.ChoseAddingCompetitionDialog
+import com.example.quizcue.presentation.competitionscreen.CompetitionScreen
+import com.example.quizcue.presentation.coursesscreen.AddCourseDialog
 import com.example.quizcue.presentation.editquestionscreen.EditQuestion
 import com.example.quizcue.presentation.homescreen.HomeScreen
 import com.example.quizcue.presentation.quizscreen.QuizScreen
 import com.example.quizcue.presentation.quizscreen.QuizViewModel
 import com.example.quizcue.presentation.quizscreen.ResultQuizScreen
-import com.example.quizcue.presentation.schedule_screen.ScheduleScreen
+import com.example.quizcue.presentation.schedulescreen.ScheduleScreen
 
 
 @Composable

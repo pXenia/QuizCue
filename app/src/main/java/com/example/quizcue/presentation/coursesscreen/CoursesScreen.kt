@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.courses_screen
+package com.example.quizcue.presentation.coursesscreen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
@@ -20,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -109,16 +108,17 @@ fun CoursesScreen(
             modifier = Modifier.height(heightScr*0.84f),
             verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
-            items(courses) {
+            items(courses) { course ->
                 CourseCard(
                     navController= navController,
                     cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
                     textColor = MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.tertiary,
-                    progress = progress[it.id] ?: 0f,
-                    course = it
+                    progress = progress[course.id] ?: 0f,
+                    course = course,
+                    onDelete = {courseViewModel.deleteCourse(course)}
                 )
-                if (it == courses.last()) {
+                if (course == courses.last()) {
                     Spacer(modifier = Modifier.height(80.dp))
                 }
             }

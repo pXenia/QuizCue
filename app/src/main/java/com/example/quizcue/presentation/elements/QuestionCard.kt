@@ -44,7 +44,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.Key.Companion.I
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.quizcue.R
 import com.example.quizcue.domain.model.Question
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -114,14 +116,14 @@ fun QuestionCard(
                             imageVector = Icons.Outlined.FavoriteBorder,
                             contentDescription = null
                         )
-                        Text("Добавить в избранное")
+                        Text(stringResource(R.string.add_favourite))
                     } else {
                         Icon(
                             modifier = Modifier.padding(7.dp),
                             imageVector = Icons.Outlined.Favorite,
                             contentDescription = null
                         )
-                        Text("Удалить из избранного")
+                        Text(stringResource(R.string.remove_favourite))
                     }
                 }
 
@@ -136,7 +138,7 @@ fun QuestionCard(
                     Icon(modifier = Modifier.padding(7.dp),
                         imageVector = Icons.Outlined.Delete,
                         contentDescription = null)
-                    Text("Удалить")
+                    Text(stringResource(R.string.delete))
                 }
                 Spacer(modifier = Modifier.height(20.dp))
             }

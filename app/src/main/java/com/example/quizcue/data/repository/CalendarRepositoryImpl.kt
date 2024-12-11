@@ -36,7 +36,6 @@ class CalendarRepositoryImpl (
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e("FirebaseError", "Failed to retrieve questions", error.toException())
             }
         }
 
@@ -54,8 +53,6 @@ class CalendarRepositoryImpl (
             if (data == null)
                 calendarDataRef.child("data").setValue(date)
             calendarDataRef.child("quizScore").setValue(quizScoreOld + quizScore)
-        }.addOnFailureListener { exception ->
-            Log.e("UpdateScore", "Ошибка при получении текущего счёта", exception)
         }
     }
 
@@ -68,8 +65,6 @@ class CalendarRepositoryImpl (
             if (data == 0L)
                 calendarDataRef.child("date").setValue(date)
             calendarDataRef.child("repetitionNumber").setValue(repetitionNumberOld + 1)
-        }.addOnFailureListener { exception ->
-            Log.e("UpdateScore", "Ошибка при получении текущего счёта", exception)
         }
     }
 }

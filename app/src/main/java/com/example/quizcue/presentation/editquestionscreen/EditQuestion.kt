@@ -33,10 +33,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.quizcue.R
 import com.example.quizcue.presentation.tools.Screen
 
 
@@ -76,7 +78,7 @@ fun EditQuestion(
                 shape = RoundedCornerShape(15.dp),
                 containerColor = MaterialTheme.colorScheme.tertiary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                content = { Icon(Icons.Filled.Done, "Сохранить вопрос") }
+                content = { Icon(Icons.Filled.Done, stringResource(R.string.save_question)) }
             )
         }
     ) { padding ->
@@ -97,7 +99,7 @@ fun EditQuestion(
 
             // поле для ввода подсказки
             TextFieldForQuestion(
-                title = "Подсказка:",
+                title = stringResource(R.string.hint),
                 value = uiState.hint,
                 onValueChange = {questionViewModel.onEvent(EditQuestionEvent.EnteredHintQuestion(it))},
                 modifier = Modifier
@@ -107,13 +109,14 @@ fun EditQuestion(
                     if (uiState.answer != "")
                     questionViewModel.generateHint()
                     else
-                        Toast.makeText(context, "Сначала добавьте ответ на вопрос",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context,
+                            context.getString(R.string.warning_answer),Toast.LENGTH_SHORT).show()
                 }
             )
 
             // поле для ввода ответа
             TextFieldForQuestion(
-                title = "Ответ:",
+                title = stringResource(R.string.answer),
                 value = uiState.answer,
                 onValueChange = {questionViewModel.onEvent(EditQuestionEvent.EnteredAnswerQuestion(it))},
                 modifier = Modifier
@@ -123,7 +126,8 @@ fun EditQuestion(
                     if (uiState.text != "")
                         questionViewModel.generateAnswer()
                     else
-                        Toast.makeText(context, "Сначала введите вопрос",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context,
+                            context.getString(R.string.warning_question),Toast.LENGTH_SHORT).show()
                 }
             )
         }
@@ -143,7 +147,6 @@ fun TextFieldForQuestion(
         modifier = modifier
     ) {
 
-        // заголовок поля
         Row(
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -179,7 +182,7 @@ fun TextFieldForQuestion(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(text = "Добавить ...") },
+            placeholder = { Text(text = stringResource(R.string.add_hint)) },
             textStyle = MaterialTheme.typography.bodyLarge,
             keyboardOptions = KeyboardOptions.Default.copy(
                 capitalization = KeyboardCapitalization.Sentences

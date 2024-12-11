@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.competition_screen
+package com.example.quizcue.presentation.competitionscreen
 
 sealed class AddCompetitionEvent {
     data class EditCompetitionDate(val value: Long): AddCompetitionEvent()

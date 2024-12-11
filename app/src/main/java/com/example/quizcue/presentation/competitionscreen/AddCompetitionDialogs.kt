@@ -1,11 +1,8 @@
-package com.example.quizcue.presentation.competition_screen
+package com.example.quizcue.presentation.competitionscreen
 
-import android.app.TimePickerDialog
 import android.icu.text.SimpleDateFormat
-import android.icu.util.Calendar
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,13 +19,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,13 +34,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.example.quizcue.R
 import com.example.quizcue.presentation.tools.Screen
-import java.util.Date
 import java.util.Locale
 
 
@@ -69,7 +65,7 @@ fun ChoseAddingCompetitionDialog(
     }
 
     AlertDialog(
-        title = { Text(text = "Создание соревнования") },
+        title = { Text(text = stringResource(R.string.add_competition)) },
         onDismissRequest = {},
         confirmButton = {
             TextButton(
@@ -77,7 +73,7 @@ fun ChoseAddingCompetitionDialog(
                     showAddCompetitionDialog = true
                 }
             ) {
-                Text("Создать")
+                Text(stringResource(R.string.create))
             }
         },
         dismissButton = {
@@ -86,7 +82,7 @@ fun ChoseAddingCompetitionDialog(
                     showAddCompetitionByKeyDialog = true
                 }
             ) {
-                Text("Ввести Код")
+                Text(stringResource(R.string.add_code))
             }
         }
     )
@@ -102,7 +98,6 @@ fun AddCompetitionDialog(
     var showForCompetitionDialog by remember { mutableStateOf(false) }
     val competitionKey by competitionViewModel.competitionKey
 
-    // Для управления состоянием DatePicker
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
 
@@ -113,7 +108,6 @@ fun AddCompetitionDialog(
         )
     }
 
-    // Диалог выбора даты
     if (showDatePicker) {
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
@@ -125,12 +119,12 @@ fun AddCompetitionDialog(
                     }
                     showDatePicker = false
                 }) {
-                    Text("OK")
+                    Text(stringResource(R.string.ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDatePicker = false }) {
-                    Text("Cancel")
+                    Text(stringResource(R.string.cansel))
                 }
             }
         ) {
@@ -140,22 +134,21 @@ fun AddCompetitionDialog(
 
     // Основной диалог
     AlertDialog(
-        title = { Text(text = "Создание соревнования") },
+        title = { Text(text = stringResource(R.string.creation_competition)) },
         text = {
             Column {
 
-                // Поле для выбора даты
                 OutlinedTextField(
                     modifier = Modifier
                         .background(Color.Transparent),
                     value = if (uiState.date != 0L) {
                         SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(uiState.date)
                     } else {
-                        "Выберите дату"
+                        stringResource(R.string.Choose_date)
                     },
                     onValueChange = {},
                     readOnly = true,
-                    placeholder = { Text(text = "Дата") },
+                    placeholder = { Text(text = stringResource(R.string.date)) },
                     leadingIcon = {
                         IconButton(
                             onClick = { showDatePicker = true }
@@ -165,7 +158,6 @@ fun AddCompetitionDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Поле для ввода названия соревнования
                 OutlinedTextField(
                     modifier = Modifier
                         .background(Color.Transparent),
@@ -173,7 +165,7 @@ fun AddCompetitionDialog(
                     onValueChange = {
                         competitionViewModel.onEvent(AddCompetitionEvent.EditCompetitionPrize(it))
                     },
-                    placeholder = { Text(text = "Приз") }
+                    placeholder = { Text(text = stringResource(R.string.prise)) }
                 )
 
             }
@@ -186,7 +178,7 @@ fun AddCompetitionDialog(
                     showForCompetitionDialog = true
                 }
             ) {
-                Text("Создать ключ")
+                Text(stringResource(R.string.create_key))
             }
         }
     )
@@ -205,7 +197,7 @@ fun AddCompetitionByKeyDialog(
 
 
     AlertDialog(
-        title = { Text(text = "Присоединение к соревнованию") },
+        title = { Text(text = stringResource(R.string.add_opponent)) },
         text = {
             Column {
                 OutlinedTextField(
@@ -217,7 +209,7 @@ fun AddCompetitionByKeyDialog(
                     },
                     placeholder = {
                         Text(
-                            text = "Ключ",
+                            text = stringResource(R.string.key),
                         )
                     }
                 )
@@ -233,7 +225,7 @@ fun AddCompetitionByKeyDialog(
                     }
                 }
             ) {
-                Text("Присоединиться")
+                Text(stringResource(R.string.join))
             }
         }
     )
@@ -248,7 +240,7 @@ fun KeyForCompetitionDialog(
     val context = LocalContext.current
 
     AlertDialog(
-        title = { Text(text = "Создание соревнования") },
+        title = { Text(text = stringResource(R.string.add_competition)) },
         onDismissRequest = {
             navController.navigate(Screen.Competition.route + "?competitionId=${competitionKey}") {
                 popUpTo(Screen.Competition.route) { inclusive = true }
@@ -267,11 +259,11 @@ fun KeyForCompetitionDialog(
                 )
                 IconButton(onClick = {
                     clipboardManager.setText(AnnotatedString(competitionKey))
-                    Toast.makeText(context, "Ключ скопирован в буфер обмена", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(R.string.copy_key), Toast.LENGTH_SHORT).show()
                 }) {
                     Icon(
                         imageVector = Icons.Default.ContentCopy,
-                        contentDescription = "Копировать ключ"
+                        contentDescription = null
                     )
                 }
             }
@@ -284,7 +276,7 @@ fun KeyForCompetitionDialog(
                     }
                 }
             ) {
-                Text("Ок")
+                Text(stringResource(R.string.ok))
             }
         }
     )

@@ -22,7 +22,7 @@ class QuestionRepositoryImpl(
     private val databaseRef = database.reference
         .child(auth.currentUser?.uid.toString())
 
-    override suspend fun upsertQuestion(question: Question, onSuccess: () -> Unit) {
+    override fun upsertQuestion(question: Question) {
         val questionId = if (question.id == "") databaseRef.push().key ?: return else question.id
         val questionMap = hashMapOf<String, Any>(
             "id" to questionId,
@@ -35,18 +35,15 @@ class QuestionRepositoryImpl(
         )
         databaseRef.child("questions").child(questionId)
             .setValue(questionMap)
-            .addOnSuccessListener { onSuccess() }
-            .addOnFailureListener { exception ->
-                Log.e("FirebaseError", "Failed to add question", exception)
-            }
+
     }
 
-    override fun addFavourite (questionId: String, isFavourite: Boolean) {
+    override fun addFavourite(questionId: String, isFavourite: Boolean) {
         databaseRef.child("questions").child(questionId).child("isFavourite")
             .setValue(isFavourite)
     }
 
-    override suspend fun deleteQuestion(question: Question) {
+    override fun deleteQuestion(question: Question) {
         databaseRef.child("questions").child(question.id)
             .removeValue()
     }
@@ -83,7 +80,7 @@ class QuestionRepositoryImpl(
         awaitClose { databaseRef.removeEventListener(questionsListener) }
     }
 
-    override suspend fun getQuestionById(questionId: String, onSuccess: (Question?) -> Unit) {
+    override fun getQuestionById(questionId: String, onSuccess: (Question?) -> Unit) {
         databaseRef.child("questions").child(questionId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -92,7 +89,6 @@ class QuestionRepositoryImpl(
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
                 }
             })
     }

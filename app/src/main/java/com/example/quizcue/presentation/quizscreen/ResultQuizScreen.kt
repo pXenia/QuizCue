@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
@@ -105,7 +106,7 @@ fun ResultQuizScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Ваш результат:",
+                        text = stringResource(R.string.your_score),
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleLarge
                     )
@@ -134,7 +135,7 @@ fun ResultQuizScreen(
                 Text(
                     modifier = Modifier
                         .padding(5.dp),
-                    text = "К списку вопросов"
+                    text = stringResource(R.string.back_questions_list)
                 )
             }
             HorizontalDivider(
@@ -143,7 +144,7 @@ fun ResultQuizScreen(
             )
             Text(
                 modifier = Modifier.padding(20.dp),
-                text = "ПРАВИЛЬНЫЕ ОТВЕТЫ",
+                text = stringResource(R.string.correct_answers_title),
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Medium
                 )
@@ -198,14 +199,16 @@ fun ResultQuizCard(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Icon(
-                    modifier = Modifier.size(30.dp).fillMaxWidth(0.1f),
+                    modifier = Modifier
+                        .size(30.dp)
+                        .fillMaxWidth(0.1f),
                     imageVector = if (isCorrect) Icons.Default.Done else Icons.Default.Close,
                     contentDescription = null,
                     tint = if (isCorrect) studyLight else MaterialTheme.colorScheme.error
                 )
             }
             Text(
-                text = "Верный ответ:",
+                text = stringResource(R.string.correct_answer),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.titleSmall
             )

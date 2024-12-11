@@ -25,7 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,25 +32,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextDirection.Companion.Content
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.quizcue.R
 import com.example.quizcue.domain.Response
 import com.example.quizcue.presentation.tools.AppAlertDialog
 import com.example.quizcue.presentation.tools.CircularProgress
 import com.example.quizcue.presentation.tools.Screen
 import com.google.firebase.auth.AuthResult
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @Composable
@@ -96,6 +94,8 @@ fun Content(
     loginSuccess: () -> Unit,
     hostState: SnackbarHostState
 ) {
+    val context = LocalContext.current
+
     var emailText by remember {
         mutableStateOf("")
     }
@@ -116,15 +116,14 @@ fun Content(
                     showForgotPasswordDialog = false
                 } else {
                     scope.launch {
-                        hostState.showSnackbar("Введите email")
+                        hostState.showSnackbar(context.getString(R.string.add_email))
                     }
                 }
             },
-            title = "Забыли пароль?",
-            text = "Отправьте электронное письмо для сброса пароля на " +
-                    "указанный адрес электронной почты.",
-            confirmButtonText = "Отправить",
-            dismissButtonText = "Отмена",
+            title = stringResource(R.string.forgot_your_password),
+            text = stringResource(R.string.reset_password),
+            confirmButtonText = stringResource(R.string.send),
+            dismissButtonText = stringResource(R.string.cansel),
             cancelable = true
         )
     Column(
@@ -134,7 +133,7 @@ fun Content(
             .verticalScroll(rememberScrollState())
     ) {
         Text(
-            text = "Вход",
+            text = stringResource(R.string.log_in),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 25.dp, end = 20.dp, top = 20.dp),
@@ -142,7 +141,7 @@ fun Content(
             fontWeight = FontWeight.SemiBold
         )
         Text(
-            text = "Зарегестрируйтесь чтобы продолжить",
+            text = stringResource(R.string.кegister_to_continue),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 25.dp, end = 20.dp, top = 20.dp),
@@ -156,9 +155,9 @@ fun Content(
             singleLine = true,
             value = emailText,
             onValueChange = { text -> emailText = text },
-            label = { Text(text = "Email") },
+            label = { Text(text = stringResource(R.string.email)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            leadingIcon = { Icon(Icons.Filled.Email, "email") }
+            leadingIcon = { Icon(Icons.Filled.Email, null) }
         )
         TextField(
             modifier = Modifier
@@ -168,10 +167,10 @@ fun Content(
             singleLine = true,
             value = passwordText,
             onValueChange = { text -> passwordText = text },
-            label = { Text("Пароль") },
+            label = { Text(stringResource(R.string.password)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = PasswordVisualTransformation(),
-            leadingIcon = { Icon(Icons.Filled.Lock, "password") }
+            leadingIcon = { Icon(Icons.Filled.Lock, null) }
         )
         Button(
             onClick = {
@@ -181,11 +180,11 @@ fun Content(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(start = 25.dp, end = 20.dp, top = 20.dp),
-            content = { Text(text = "Вход") }
+            content = { Text(text = stringResource(R.string.log_in)) }
         )
         Text(
             color = MaterialTheme.colorScheme.primary,
-            text = "Forgot Password?",
+            text = stringResource(R.string.forgot_your_password),
             modifier = Modifier
                 .wrapContentWidth()
                 .wrapContentHeight()
@@ -197,8 +196,10 @@ fun Content(
         Spacer(modifier = Modifier.weight(1f))
         Text(
             text = buildAnnotatedString {
-                append("Don't have an account?")
-                withStyle(style = SpanStyle(MaterialTheme.colorScheme.primary)) { append(" Register now") }
+                append(stringResource(R.string.dont_have_an_account))
+                withStyle(style = SpanStyle(MaterialTheme.colorScheme.primary)) { append(
+                    stringResource(R.string.register)
+                ) }
             },
             modifier = Modifier
                 .wrapContentWidth()
@@ -206,18 +207,18 @@ fun Content(
                 .align(alignment = Alignment.CenterHorizontally)
                 .padding(20.dp)
                 .clickable { onRegisterNow() },
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleSmall
         )
     }
     LoginInState(
         flow = signInStateFlow,
         onSuccess = { loginSuccess() },
-        onError = { scope.launch { hostState.showSnackbar("The email address or password is incorrect") } }
+        onError = { scope.launch { hostState.showSnackbar(context.getString(R.string.the_email_address_or_password_is_incorrect)) } }
     )
     ResetPasswordState(
         flow = resetPasswordStateFlow,
-        onSuccess = { scope.launch { hostState.showSnackbar("Email sent successfully, check your inbox") } },
-        onError = { scope.launch { hostState.showSnackbar("Oops! something went wrong, try again") } }
+        onSuccess = { scope.launch { hostState.showSnackbar(context.getString(R.string.Email_sent_successfully)) } },
+        onError = { scope.launch { hostState.showSnackbar(context.getString(R.string.something_went_wrong)) } }
     )
 }
 

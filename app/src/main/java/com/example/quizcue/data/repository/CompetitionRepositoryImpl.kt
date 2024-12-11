@@ -26,7 +26,6 @@ class CompetitionRepositoryImpl(
 
     override fun addOpponent(
         competitionId: String,
-        onSuccess: (String) -> Unit
     ){
         var user2: String? = null
         databaseRef.child("competitions").child(competitionId)
@@ -35,15 +34,11 @@ class CompetitionRepositoryImpl(
                     user2 = snapshot.child("user2").getValue(String::class.java)
                 }
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
                 }
             })
         if (user2 == null){
             databaseRef.child("competitions").child(competitionId).child("user2").setValue(currentUser)
-            onSuccess("Вы успешно присоединились к соревнованию!")
             databaseRef.child("users").child(currentUser).child("competitionId").setValue(competitionId)
-        } else {
-            onSuccess("К сожалению, в сореановании не может быть более 2х участников")
         }
     }
 
@@ -57,8 +52,7 @@ class CompetitionRepositoryImpl(
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
-                }
+               }
             })
 
         if (competitionId == null) {
@@ -74,8 +68,6 @@ class CompetitionRepositoryImpl(
                 onSuccess(it)
                 databaseRef.child("users").child(currentUser).child("competitionId").setValue(competitionId)
             }
-        } else {
-            onSuccess("Вы уже учавствуете в соревновании! Сначала завершите его.")
         }
     }
 
@@ -98,7 +90,6 @@ class CompetitionRepositoryImpl(
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("FirebaseError", "Failed to retrieve competition by id", error.toException())
                 }
             })
     }

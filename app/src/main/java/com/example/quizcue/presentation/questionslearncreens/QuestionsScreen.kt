@@ -33,13 +33,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.quizcue.R
 import com.example.quizcue.presentation.elements.QuestionsList
 import com.example.quizcue.presentation.quizscreen.ChooseLearningDialog
 import com.example.quizcue.presentation.tools.Screen
+import com.google.android.play.integrity.internal.c
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,7 +75,7 @@ fun QuestionsScreen(
                             navController.popBackStack()
                         },
                         content = {
-                            Icon(Icons.Filled.ArrowBackIosNew, "Назад")
+                            Icon(Icons.Filled.ArrowBackIosNew, null)
                         }
                     )
                 },
@@ -91,7 +94,8 @@ fun QuestionsScreen(
                 },
                 modifier = Modifier
                     .padding(horizontal = 20.dp, vertical = 10.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                course = course
             )
         }
     ) { padding ->
@@ -128,7 +132,8 @@ fun QuestionsScreen(
 fun QuestionsScreenBottomBar(
     onClickLearn: () -> Unit,
     onClickAdd: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    course: String
 ) {
     Row(
         modifier = modifier,
@@ -143,21 +148,23 @@ fun QuestionsScreenBottomBar(
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
         ) {
             Text(
-                text = "Учить",
+                text = stringResource(R.string.study),
                 color = MaterialTheme.colorScheme.onPrimary,
                 style = MaterialTheme.typography.titleMedium.copy(
                     textAlign = TextAlign.Center
                 ),
             )
         }
-        Spacer(modifier = Modifier.width(5.dp))
-        FloatingActionButton(
-            onClick = onClickAdd,
-            shape = RoundedCornerShape(15.dp),
-            containerColor = MaterialTheme.colorScheme.tertiary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        ) {
-            Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
+        if (course != "all" && course != "favourite") {
+            Spacer(modifier = Modifier.width(5.dp))
+            FloatingActionButton(
+                onClick = onClickAdd,
+                shape = RoundedCornerShape(15.dp),
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add")
+            }
         }
     }
 }

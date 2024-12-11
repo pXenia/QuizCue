@@ -32,9 +32,6 @@ class QuizRepositoryImpl(
         )
         databaseRef.child(currentUser).child("quiz").child(quizId)
             .setValue(quizMap)
-            .addOnFailureListener { exception ->
-                Log.e("FirebaseError", "Failed to add question", exception)
-            }
     }
 
     override fun updateScore(score: Int, competitionId: String) {
@@ -50,8 +47,6 @@ class QuizRepositoryImpl(
             } else if (user2 == currentUser){
                 competitionRef.child("user2TestScore").setValue(user2TestScore + score)
             }
-        }.addOnFailureListener { exception ->
-            Log.e("UpdateScore", "Ошибка при получении текущего счёта", exception)
         }
     }
 

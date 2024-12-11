@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.competition_screen
+package com.example.quizcue.presentation.competitionscreen
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -61,7 +61,7 @@ class CompetitionViewModel @Inject constructor(
         }
         competitionRepository.addOpponent(
             competitionId = competitionId,
-        ) {}
+        )
     }
 
     fun getCompetitionById(competitionId: String) {

@@ -1,6 +1,5 @@
-package com.example.quizcue.presentation.schedule_screen
+package com.example.quizcue.presentation.schedulescreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quizcue.domain.model.CalendarData
@@ -9,7 +8,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import okhttp3.internal.notify
 import java.util.Calendar
 import javax.inject.Inject
 

@@ -1,4 +1,4 @@
-package com.example.quizcue.presentation.competition_screen
+package com.example.quizcue.presentation.competitionscreen
 
 import android.icu.text.SimpleDateFormat
 import android.widget.Toast
@@ -10,14 +10,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsEndWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -25,10 +22,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Update
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -45,10 +40,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.asImageBitmap
@@ -56,17 +49,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.quizcue.R
 import com.example.quizcue.domain.model.User
 import com.example.quizcue.presentation.tools.Screen
-import com.google.android.play.integrity.internal.c
-import com.google.android.play.integrity.internal.w
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,7 +77,7 @@ fun CompetitionScreen(
                             navController.popBackStack()
                         },
                         content = {
-                            Icon(Icons.Filled.ArrowBackIosNew, "Назад")
+                            Icon(Icons.Filled.ArrowBackIosNew, stringResource(R.string.back))
                         }
                     )
                 },
@@ -104,7 +95,7 @@ fun CompetitionScreen(
                     shape = RoundedCornerShape(15.dp),
                     containerColor = MaterialTheme.colorScheme.tertiary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
-                    content = { Icon(Icons.Filled.Add, "Добавить") }
+                    content = { Icon(Icons.Filled.Add, stringResource(R.string.add)) }
                 )
             } else {
                 FloatingActionButton(
@@ -123,10 +114,10 @@ fun CompetitionScreen(
                             Icon(
                                 modifier = Modifier.padding(5.dp),
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Завершить"
+                                contentDescription = stringResource(R.string.complete)
                             )
                             Text(
-                                text = "Завершить",
+                                text = stringResource(R.string.complete),
                                 modifier = Modifier.padding(5.dp),
                             )
                         }
@@ -147,7 +138,7 @@ fun CompetitionScreen(
                     uiState = uiState,
                     onClick = {competitionViewModel.getCompetitionById(uiState.competitionId)})
             } else {
-                Text("Добавьте соревнование")
+                Text(stringResource(R.string.adding_competition))
             }
         }
     }
@@ -177,8 +168,8 @@ fun CompetitionContent(
             verticalArrangement = Arrangement.SpaceAround,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Дата окончания ${date}")
-            Text("Приз: ${uiState.prize}")
+            Text(stringResource(R.string.date_to, date))
+            Text(stringResource(R.string.prise_is, uiState.prize))
         }
     }
 
@@ -264,7 +255,7 @@ fun UserCard(
                     BitmapPainter(user.photo.asImageBitmap())
                 } else
                     painterResource(id = R.drawable.koshka),
-                contentDescription = "Фото пользователя",
+                contentDescription = stringResource(R.string.users_photo),
                 modifier = Modifier
                     .size(150.dp)
                     .clip(CircleShape)
@@ -279,7 +270,7 @@ fun UserCard(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(text = user.name, style = MaterialTheme.typography.headlineMedium)
-                Text("Баллы: ${score}", style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.scores, score), style = MaterialTheme.typography.titleSmall)
             }
 
         }
@@ -311,7 +302,7 @@ fun CardWithoutOpponent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
-                text = "Чтобы пригласить друга, скопируйте код ниже и отправьте ему!",
+                text = stringResource(R.string.add_friend_text),
                 style = MaterialTheme.typography.titleSmall.copy(
                     textAlign = TextAlign.Center
                 )
@@ -328,12 +319,10 @@ fun CardWithoutOpponent(
                 )
                 IconButton(onClick = {
                     clipboardManager.setText(AnnotatedString(competitionId))
-                    Toast.makeText(context, "Ключ скопирован в буфер обмена", Toast.LENGTH_SHORT)
-                        .show()
                 }) {
                     Icon(
                         imageVector = Icons.Default.ContentCopy,
-                        contentDescription = "Копировать ключ"
+                        contentDescription = null
                     )
                 }
             }
@@ -345,10 +334,10 @@ fun CardWithoutOpponent(
             Icon(
                 modifier = Modifier.padding(5.dp),
                 imageVector = Icons.Default.Update,
-                contentDescription = "Update"
+                contentDescription = null
             )
             Text(
-                text = "Обновить",
+                text = stringResource(R.string.update),
                 modifier = Modifier.padding(5.dp),
             )
         }

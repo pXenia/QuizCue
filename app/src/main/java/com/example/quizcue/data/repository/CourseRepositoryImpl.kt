@@ -17,10 +17,11 @@ class CourseRepositoryImpl(
     private val database: FirebaseDatabase,
     private val auth: FirebaseAuth
 ) : CourseRepository {
-    val databaseRef = database.reference
+
+    private val databaseRef = database.reference
         .child(auth.currentUser?.uid.toString())
 
-    override fun upsertCourse(course: Course, onSuccess: () -> Unit) {
+    override fun upsertCourse(course: Course) {
         val courseId = if (course.id == "" ) databaseRef.push().key ?: return else course.id
         val courseMap = hashMapOf<String, Any>(
             "id" to courseId,
@@ -30,7 +31,6 @@ class CourseRepositoryImpl(
         )
         databaseRef.child("courses").child(courseId)
             .setValue(courseMap)
-            .addOnSuccessListener { onSuccess() }
     }
 
     override fun updateLastTime(courseId: String, date: Long) {
@@ -38,10 +38,9 @@ class CourseRepositoryImpl(
             .setValue(date)
     }
 
-    override fun deleteCourse(course: Course, onSuccess: () -> Unit) {
+    override fun deleteCourse(course: Course) {
         databaseRef.child("courses").child(course.id)
             .removeValue()
-            .addOnSuccessListener { onSuccess() }
     }
 
     override fun getCoursesProgress(): Flow<Map<String, Float>> = callbackFlow {
@@ -74,12 +73,10 @@ class CourseRepositoryImpl(
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e("FirebaseError", "Failed to retrieve questions", error.toException())
             }
         }
 
         questionsRef.addValueEventListener(questionListener)
-
         awaitClose { questionsRef.removeEventListener(questionListener) }
     }
 
@@ -104,11 +101,9 @@ class CourseRepositoryImpl(
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.e("FirebaseError", "Failed to retrieve questions", error.toException())
             }
         }
         databaseRef.addValueEventListener(courseListener)
-
         awaitClose { databaseRef.removeEventListener(courseListener) }
     }
 
@@ -121,7 +116,6 @@ class CourseRepositoryImpl(
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Log.e("FirebaseError", "Failed to retrieve question by id", error.toException())
                 }
             })
     }

@@ -1,27 +1,22 @@
 package com.example.quizcue.presentation.quizscreen
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.quizcue.BuildConfig
-import com.example.quizcue.domain.model.Question
 import com.example.quizcue.domain.model.Quiz
 import com.example.quizcue.domain.repository.AuthenticationRepository
 import com.example.quizcue.domain.repository.CalendarRepository
 import com.example.quizcue.domain.repository.QuestionRepository
 import com.example.quizcue.domain.repository.QuizRepository
-import com.example.quizcue.presentation.competition_screen.uiState
+import com.example.quizcue.presentation.tools.PromptProvider
 import com.google.ai.client.generativeai.GenerativeModel
-import com.google.android.play.integrity.internal.q
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.forEach
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Calendar
@@ -34,6 +29,7 @@ class QuizViewModel @Inject constructor(
     private val questionRepository: QuestionRepository,
     private val calendarRepository: CalendarRepository,
     private val auth: FirebaseAuth,
+    private val promptProvider: PromptProvider,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -69,9 +65,7 @@ class QuizViewModel @Inject constructor(
         }
     }
 
-    private fun generateAnswers(
-        questionText: String,
-    ) {
+    private fun generateAnswers(questionText: String) {
         viewModelScope.launch {
             val correctAnswer = generateAnswer(isCorrect = true, questionText = questionText)
             val incorrectAnswers = mutableListOf<String>()
@@ -88,16 +82,16 @@ class QuizViewModel @Inject constructor(
                     answers = allAnswers,
                     correctAnswer = correctAnswer
                 )
-               updateState(uiState)
+                updateState(uiState)
             }
         }
     }
 
     private suspend fun generateAnswer(isCorrect: Boolean, questionText: String): String? {
         val prompt = if (isCorrect) {
-            "Напиши один правильный ответ в официальном стиле на вопрос: \"$questionText\", используя не более 20 слов."
+            promptProvider.correctAnswerPrompt(questionText)
         } else {
-            "Напиши один неправильный ответ в официальном стиле на вопрос: \"$questionText\", используя не более 20 слов."
+            promptProvider.incorrectAnswerPrompt(questionText)
         }
 
         return try {
@@ -126,6 +120,7 @@ class QuizViewModel @Inject constructor(
             }
         }
     }
+
     fun scoreCalculate() {
         uiState.value.forEach { quizUiState ->
             quizUiState.isCorrect?.let {
@@ -148,7 +143,7 @@ class QuizViewModel @Inject constructor(
         _score.update { it + 1 }
     }
 
-    fun addQuizResult(){
+    fun addQuizResult() {
         quizRepository.addQuiz(
             Quiz(
                 date = System.currentTimeMillis(),
@@ -157,7 +152,8 @@ class QuizViewModel @Inject constructor(
             )
         )
     }
-    private fun updateStat(){
+
+    private fun updateStat() {
         val calendar = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 0)
             set(Calendar.MINUTE, 0)
@@ -167,6 +163,7 @@ class QuizViewModel @Inject constructor(
         calendarRepository.updateQuizStat(calendar.timeInMillis, score.value)
     }
 }
+
 
 data class QuizUIState(
     val questionText: String,

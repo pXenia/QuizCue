@@ -11,12 +11,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.quizcue.domain.model.Question
+import com.example.quizcue.presentation.tools.PromptProvider
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
-class EditQuestionViewModel  @Inject constructor(
+class EditQuestionViewModel @Inject constructor(
     private val questionRepository: QuestionRepository,
+    private val promptProvider: PromptProvider,
     savedStateHandler: SavedStateHandle
 ) : ViewModel() {
 
@@ -33,7 +35,7 @@ class EditQuestionViewModel  @Inject constructor(
         val courseId = savedStateHandler["courseId"] ?: ""
         _uiState.update { it.copy(course = courseId) }
 
-        if (questionId != "") {
+        if (questionId.isNotEmpty()) {
             viewModelScope.launch {
                 questionRepository.getQuestionById(questionId) { question ->
                     question?.let {
@@ -67,14 +69,14 @@ class EditQuestionViewModel  @Inject constructor(
     private fun saveQuestion() {
         viewModelScope.launch {
             val upsertQuestion = _uiState.value
-            questionRepository.upsertQuestion(question = upsertQuestion) {}
+            questionRepository.upsertQuestion(question = upsertQuestion)
         }
     }
 
     fun generateAnswer() {
         updateState { copy(answer = "Generating ...") }
         executeGeneration(
-            prompt = "Напиши ответ на вопрос: ${uiState.value.text}",
+            prompt = promptProvider.generateAnswerPrompt(uiState.value.text),
             onUpdate = { answer -> updateState { copy(answer = answer) } }
         )
     }
@@ -82,19 +84,18 @@ class EditQuestionViewModel  @Inject constructor(
     fun generateHint() {
         updateState { copy(hint = "Generating ...") }
         executeGeneration(
-            prompt = "Напиши подсказку для запоминания ответа: $${uiState.value.answer} не более 20 слов",
+            prompt = promptProvider.generateHintPrompt(uiState.value.answer),
             onUpdate = { hint -> updateState { copy(hint = hint) } }
         )
     }
-
 
     private fun executeGeneration(prompt: String, onUpdate: (String) -> Unit) {
         viewModelScope.launch {
             try {
                 val result = generativeModel.generateContent(prompt)
-                onUpdate(result.text ?: "Не удалось создать")
+                onUpdate(result.text ?: promptProvider.generationFailed())
             } catch (e: Exception) {
-                onUpdate("Ошибка генерации")
+                onUpdate(promptProvider.generationError())
             }
         }
     }

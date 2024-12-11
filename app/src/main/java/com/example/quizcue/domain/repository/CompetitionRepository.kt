@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CompetitionRepository {
     fun addCompetition(prize: String, challengeDate: Long, onSuccess: (String) -> Unit)
-    fun addOpponent(competitionId: String, onSuccess: (String) -> Unit)
+    fun addOpponent(competitionId: String)
     fun deleteCompetition(competitionId: String)
     fun getCompetitionById(competitionId: String, onSuccess: (Competition?) -> Unit)
 }
