@@ -3,11 +3,13 @@ package com.example.quizcue.di
 import android.app.Application
 import android.content.Context
 import com.example.quizcue.data.repository.AuthenticationRepositoryImpl
+import com.example.quizcue.data.repository.CalendarRepositoryImpl
 import com.example.quizcue.data.repository.CompetitionRepositoryImpl
 import com.example.quizcue.data.repository.CourseRepositoryImpl
 import com.example.quizcue.data.repository.QuestionRepositoryImpl
 import com.example.quizcue.data.repository.QuizRepositoryImpl
 import com.example.quizcue.domain.repository.AuthenticationRepository
+import com.example.quizcue.domain.repository.CalendarRepository
 import com.example.quizcue.domain.repository.CompetitionRepository
 import com.example.quizcue.domain.repository.CourseRepository
 import com.example.quizcue.domain.repository.QuestionRepository
@@ -81,4 +83,11 @@ object FirebaseDatabaseModule {
         database: FirebaseDatabase,
         auth: FirebaseAuth
     ): QuizRepository = QuizRepositoryImpl(database, auth)
+
+    @Provides
+    @Singleton
+    fun provideCalendarRepository(
+        database: FirebaseDatabase,
+        auth: FirebaseAuth
+    ): CalendarRepository = CalendarRepositoryImpl(database, auth)
 }

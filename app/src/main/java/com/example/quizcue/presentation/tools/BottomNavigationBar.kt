@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
 import com.exyte.animatednavbar.animation.indendshape.Height
@@ -35,7 +36,10 @@ fun BottomNavigationBar(navController: NavHostController) {
         Screen.Courses,
         Screen.Schedule
     )
-    var selectedIndex by remember { mutableStateOf(0) }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    val selectedIndex = screens.indexOfFirst { it.route == currentRoute }.takeIf { it != -1 } ?: 0
 
     AnimatedNavigationBar(
         modifier = Modifier
@@ -54,10 +58,12 @@ fun BottomNavigationBar(navController: NavHostController) {
                 modifier = Modifier
                     .fillMaxSize()
                     .noRippleClickable {
-                        selectedIndex = screens.indexOf(item)
-                        navController.navigate(item.route) {
-                            popUpTo(navController.graph.findStartDestination().id)
-                            launchSingleTop = true
+                        if (currentRoute != item.route) {
+                            navController.navigate(item.route) {
+                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     },
                 contentAlignment = Alignment.Center

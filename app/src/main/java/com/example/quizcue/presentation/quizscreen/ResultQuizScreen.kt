@@ -68,7 +68,6 @@ import com.example.quizcue.ui.theme.studyLight
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultQuizScreen(
-    parentNavController: NavController,
     navController: NavController,
     quizViewModel: QuizViewModel
 ) {
@@ -77,30 +76,11 @@ fun ResultQuizScreen(
     val course = quizViewModel.courseId
 
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.navigate(Screen.Home.route)
-                        },
-                        content = {
-                            Icon(Icons.Filled.ArrowBackIosNew, "Назад")
-                        }
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
-            )
-        }
-    ) { padding ->
+    Scaffold{ padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(horizontal = 25.dp)
+                .padding(25.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -146,7 +126,10 @@ fun ResultQuizScreen(
             Button(
                 onClick = {
                     quizViewModel.addQuizResult()
-                    parentNavController.navigate(Screen.Questions.route+"?courseId=${course}")
+                    navController.popBackStack(
+                        route = Screen.Questions.route + "?courseId=${course}",
+                        inclusive = false
+                    )
                 },
                 modifier = Modifier
                     .padding(10.dp)

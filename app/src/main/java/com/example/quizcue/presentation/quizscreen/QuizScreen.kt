@@ -71,7 +71,9 @@ fun QuizScreen(
                 title = { Text("Тест") },
                 navigationIcon = {
                     IconButton(
-                        onClick = {},
+                        onClick = {
+                            navController.popBackStack()
+                        },
                         content = { Icon(Icons.Filled.ArrowBackIosNew, "Назад") }
                     )
                 },

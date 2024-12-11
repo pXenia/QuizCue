@@ -55,7 +55,7 @@ fun EditQuestion(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            navController.navigateUp()
+                            navController.popBackStack()
                         },
                         content = {
                             Icon(Icons.Filled.ArrowBackIosNew, "Назад")
@@ -71,7 +71,7 @@ fun EditQuestion(
             FloatingActionButton(
                 onClick = {
                     questionViewModel.onEvent(EditQuestionEvent.SaveQuestion)
-                    navController.navigate(Screen.Questions.route)
+                    navController.popBackStack()
                 },
                 shape = RoundedCornerShape(15.dp),
                 containerColor = MaterialTheme.colorScheme.tertiary,

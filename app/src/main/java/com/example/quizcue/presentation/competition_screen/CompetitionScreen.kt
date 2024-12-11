@@ -61,6 +61,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.quizcue.R
 import com.example.quizcue.domain.model.User
 import com.example.quizcue.presentation.tools.Screen
@@ -82,7 +83,7 @@ fun CompetitionScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            navController.navigate(Screen.Home.route)
+                            navController.popBackStack()
                         },
                         content = {
                             Icon(Icons.Filled.ArrowBackIosNew, "Назад")

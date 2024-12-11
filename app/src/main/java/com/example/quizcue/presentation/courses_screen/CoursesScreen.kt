@@ -112,7 +112,7 @@ fun CoursesScreen(
             items(courses) {
                 CourseCard(
                     navController= navController,
-                    cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerHighest),
+                    cardColor = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
                     textColor = MaterialTheme.colorScheme.primary,
                     trackColor = MaterialTheme.colorScheme.tertiary,
                     progress = progress[it.id] ?: 0f,
