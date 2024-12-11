@@ -211,7 +211,7 @@ fun Body(user: User,
                 icon = Icons.Outlined.EmojiEvents,
                 title = "Соревнование",
                 subtitle = dateText,
-                onClick = { navController.navigate(Screen.Competition.route + "?competitionId=${user.competitionId}") }
+                onClick = { navController.navigate(Screen.Competition.route + "?competitionId=${user.competitionId}")}
             )
         }
     }

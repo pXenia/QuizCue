@@ -96,10 +96,12 @@ class QuestionsScreensViewModel @Inject constructor(
     }
 
     fun updateLastTime(){
-        courseRepository.updateLastTime(
-            courseId = courseId,
-            date = System.currentTimeMillis()
-        )
+        if (courseId != "all" && courseId != "favourite") {
+            courseRepository.updateLastTime(
+                courseId = courseId,
+                date = System.currentTimeMillis()
+            )
+        }
     }
 
     fun updateStat(){

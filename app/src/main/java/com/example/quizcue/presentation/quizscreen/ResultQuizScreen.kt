@@ -80,7 +80,7 @@ fun ResultQuizScreen(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(horizontal = 25.dp)
+                .padding(25.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

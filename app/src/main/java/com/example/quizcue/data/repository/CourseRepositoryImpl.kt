@@ -21,7 +21,7 @@ class CourseRepositoryImpl(
         .child(auth.currentUser?.uid.toString())
 
     override fun upsertCourse(course: Course, onSuccess: () -> Unit) {
-        val courseId = if (course.id == "") databaseRef.push().key ?: return else course.id
+        val courseId = if (course.id == "" ) databaseRef.push().key ?: return else course.id
         val courseMap = hashMapOf<String, Any>(
             "id" to courseId,
             "name" to course.name,

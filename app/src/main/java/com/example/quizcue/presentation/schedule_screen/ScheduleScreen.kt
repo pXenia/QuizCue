@@ -1,9 +1,11 @@
 package com.example.quizcue.presentation.schedule_screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -12,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,16 +54,23 @@ import java.util.Locale
 import java.util.Random
 
 @Composable
-fun ScheduleScree(
+fun ScheduleScreen(
     scheduleViewModel: ScheduleViewModel = hiltViewModel()
-){
+) {
+
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .padding(20.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         val lastWeekData by scheduleViewModel.calendarDataLastWeek.collectAsState()
+        val data by scheduleViewModel.calendarData.collectAsState()
+        CalendarWithEvents(data)
         LineChartScreen(lastWeekData)
     }
 }
+
 
 @Composable
 fun LineChartScreen(
@@ -72,51 +84,46 @@ fun LineChartScreen(
         val repetitionNumbers = sortedData.map { it.repetitionNumber.toDouble() }
         val labels = sortedData.map { formatDate(it.date) }
 
-        Column(
+        LineChart(
             modifier = Modifier
-                .padding(20.dp)
+                .fillMaxHeight(0.8f)
                 .fillMaxWidth(),
-        ) {
-            LineChart(
-                modifier = Modifier
-                    .fillMaxHeight(0.5f)
-                    .fillMaxWidth(),
-                labelProperties = LabelProperties(
-                    enabled = true,
-                    labels = labels
-                ),
-                data = listOf(
-                    Line(
-                        label = "Баллы за тесты",
-                        values = quizScores,
-                        color = SolidColor(MaterialTheme.colorScheme.primary),
-                        curvedEdges = true,
-                        dotProperties = DotProperties(
-                            enabled = true,
-                            color = SolidColor(Color.White),
-                            strokeWidth = 4.dp,
-                            radius = 7.dp,
-                            strokeColor = SolidColor(MaterialTheme.colorScheme.primary),
-                        )
-                    ),
-                    Line(
-                        label = "Повторений вопросов",
-                        values = repetitionNumbers,
-                        color = SolidColor(MaterialTheme.colorScheme.secondary),
-                        curvedEdges = true,
-                        dotProperties = DotProperties(
-                            enabled = true,
-                            color = SolidColor(Color.White),
-                            strokeWidth = 4.dp,
-                            radius = 7.dp,
-                            strokeColor = SolidColor(MaterialTheme.colorScheme.secondary),
-                        )
+            labelProperties = LabelProperties(
+                enabled = true,
+                labels = labels
+            ),
+            data = listOf(
+                Line(
+                    label = "Баллы за тесты",
+                    values = quizScores,
+                    color = SolidColor(MaterialTheme.colorScheme.primary),
+                    curvedEdges = true,
+                    dotProperties = DotProperties(
+                        enabled = true,
+                        color = SolidColor(Color.White),
+                        strokeWidth = 4.dp,
+                        radius = 7.dp,
+                        strokeColor = SolidColor(MaterialTheme.colorScheme.primary),
                     )
                 ),
-                curvedEdges = false
-            )
-        }
+                Line(
+                    label = "Повторений вопросов",
+                    values = repetitionNumbers,
+                    color = SolidColor(MaterialTheme.colorScheme.secondary),
+                    curvedEdges = true,
+                    dotProperties = DotProperties(
+                        enabled = true,
+                        color = SolidColor(Color.White),
+                        strokeWidth = 4.dp,
+                        radius = 7.dp,
+                        strokeColor = SolidColor(MaterialTheme.colorScheme.secondary),
+                    )
+                )
+            ),
+            curvedEdges = false
+        )
     }
+
 }
 
 fun formatDate(timestamp: Long): String {

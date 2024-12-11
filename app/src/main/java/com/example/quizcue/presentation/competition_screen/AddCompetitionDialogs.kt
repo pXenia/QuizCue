@@ -43,6 +43,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.quizcue.presentation.tools.Screen
 import java.util.Date
 import java.util.Locale
@@ -227,7 +228,9 @@ fun AddCompetitionByKeyDialog(
             TextButton(
                 onClick = {
                     competitionViewModel.addOpponent(competitionId = addedCompetitionId)
-                    navController.navigate(Screen.Competition.route + "?competitionId=${addedCompetitionId}")
+                    navController.navigate(Screen.Competition.route + "?competitionId=${addedCompetitionId}"){
+                        popUpTo(navController.graph.findStartDestination().id)
+                    }
                 }
             ) {
                 Text("Присоединиться")
@@ -247,7 +250,9 @@ fun KeyForCompetitionDialog(
     AlertDialog(
         title = { Text(text = "Создание соревнования") },
         onDismissRequest = {
-            navController.navigate(Screen.Competition.route + "?competitionId=${competitionKey}")
+            navController.navigate(Screen.Competition.route + "?competitionId=${competitionKey}") {
+                popUpTo(Screen.Competition.route) { inclusive = true }
+            }
         },
         text = {
             Row(
@@ -274,7 +279,9 @@ fun KeyForCompetitionDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    navController.navigate(Screen.Competition.route + "?competitionId=${competitionKey}")
+                    navController.navigate(Screen.Competition.route + "?competitionId=${competitionKey}"){
+                        popUpTo(navController.graph.findStartDestination().id)
+                    }
                 }
             ) {
                 Text("Ок")

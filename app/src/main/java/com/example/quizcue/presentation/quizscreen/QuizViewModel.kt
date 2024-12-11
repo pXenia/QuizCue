@@ -89,9 +89,9 @@ class QuizViewModel @Inject constructor(
 
     private suspend fun generateAnswer(isCorrect: Boolean, questionText: String): String? {
         val prompt = if (isCorrect) {
-            "Напиши один правильный ответ на вопрос: \"$questionText\", используя не более 20 слов."
+            "Напиши один правильный ответ в официальном стиле на вопрос: \"$questionText\", используя не более 20 слов."
         } else {
-            "Напиши один неправильный ответ на вопрос: \"$questionText\", используя не более 20 слов."
+            "Напиши один неправильный ответ в официальном стиле на вопрос: \"$questionText\", используя не более 20 слов."
         }
 
         return try {
